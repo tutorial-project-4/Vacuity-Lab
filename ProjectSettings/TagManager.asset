@@ -11,12 +11,12 @@ TagManager:
   - Solid
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Ground
+  - Player
+  - Boss
+  - Hazard
+  - OneWayPlatform
+  -
   - 
   - 
   - 
