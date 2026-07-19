@@ -27,9 +27,10 @@ public class PlayerHealth : MonoBehaviour
 
     private void Awake()
     {
-        playerController = GetComponent<PlayerController>();
+        CacheComponents();
         maxHearts = Mathf.Clamp(maxHearts, 1, UpgradedMaxHearts);
         currentHearts = Mathf.Clamp(currentHearts, 0, maxHearts);
+        ResetState(currentHearts);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -44,6 +45,8 @@ public class PlayerHealth : MonoBehaviour
 
     public bool TakeDamage(int damage, Vector2 damageSourcePosition)
     {
+        CacheComponents();
+
         if (damage <= 0 || IsDead || IsInvincible)
         {
             return false;
@@ -65,6 +68,29 @@ public class PlayerHealth : MonoBehaviour
         }
 
         return true;
+    }
+
+    public void ResetState(int hearts = BaseMaxHearts)
+    {
+        CacheComponents();
+
+        if (invincibleRoutine != null)
+        {
+            StopCoroutine(invincibleRoutine);
+            invincibleRoutine = null;
+        }
+
+        IsDead = false;
+        IsInvincible = false;
+        currentHearts = Mathf.Clamp(hearts, 0, maxHearts);
+        playerController.ResetState();
+        HealthChanged?.Invoke(currentHearts, maxHearts);
+    }
+
+    public void Respawn(Vector2 position, int hearts = -1)
+    {
+        transform.position = new Vector3(position.x, position.y, transform.position.z);
+        ResetState(hearts < 0 ? maxHearts : hearts);
     }
 
     private void TryTakeDamageFrom(Collider2D other)
@@ -132,6 +158,11 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
+        if (IsDead)
+        {
+            return;
+        }
+
         IsDead = true;
         IsInvincible = false;
 
@@ -148,6 +179,14 @@ public class PlayerHealth : MonoBehaviour
     private void RequestHitStop()
     {
         // TODO: Call the hit-stop manager here when it is added.
+    }
+
+    private void CacheComponents()
+    {
+        if (playerController == null)
+        {
+            playerController = GetComponent<PlayerController>();
+        }
     }
 
     private void OnValidate()

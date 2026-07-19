@@ -20,6 +20,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Collision")]
     [SerializeField] private LayerMask solidLayer;
+    [SerializeField] private int maxCollisionChecksPerMove = 200;
 
     private BoxCollider2D bodyCollider;
     private float xRemainder;
@@ -145,9 +146,11 @@ public class PlayerMovement : MonoBehaviour
 
         xRemainder -= move * moveStep;
         int sign = move > 0 ? 1 : -1;
+        int remainingChecks = maxCollisionChecksPerMove;
 
-        while (move != 0)
+        while (move != 0 && remainingChecks > 0)
         {
+            remainingChecks--;
             Vector2 nextPosition = (Vector2)transform.position + new Vector2(sign * moveStep, 0f);
 
             if (!CollideAt(nextPosition))
@@ -161,6 +164,11 @@ public class PlayerMovement : MonoBehaviour
                 onCollide?.Invoke();
                 break;
             }
+        }
+
+        if (move != 0 && remainingChecks <= 0)
+        {
+            xRemainder = 0f;
         }
     }
 
@@ -176,9 +184,11 @@ public class PlayerMovement : MonoBehaviour
 
         yRemainder -= move * moveStep;
         int sign = move > 0 ? 1 : -1;
+        int remainingChecks = maxCollisionChecksPerMove;
 
-        while (move != 0)
+        while (move != 0 && remainingChecks > 0)
         {
+            remainingChecks--;
             Vector2 nextPosition = (Vector2)transform.position + new Vector2(0f, sign * moveStep);
 
             if (!CollideAt(nextPosition))
@@ -192,6 +202,11 @@ public class PlayerMovement : MonoBehaviour
                 onCollide?.Invoke();
                 break;
             }
+        }
+
+        if (move != 0 && remainingChecks <= 0)
+        {
+            yRemainder = 0f;
         }
     }
 
@@ -229,6 +244,17 @@ public class PlayerMovement : MonoBehaviour
         yRemainder = 0f;
     }
 
+    public void ResetMovementState(bool lockControl = false)
+    {
+        xRemainder = 0f;
+        yRemainder = 0f;
+        ySpeed = 0f;
+        coyoteTimer = 0f;
+        jumpBufferTimer = 0f;
+        IsGrounded = false;
+        IsControlLocked = lockControl;
+    }
+
     private void OnDrawGizmosSelected()
     {
         BoxCollider2D boxCollider = bodyCollider != null ? bodyCollider : GetComponent<BoxCollider2D>();
@@ -254,5 +280,6 @@ public class PlayerMovement : MonoBehaviour
         maxFallSpeed = Mathf.Max(0f, maxFallSpeed);
         coyoteTime = Mathf.Max(0f, coyoteTime);
         jumpBufferTime = Mathf.Max(0f, jumpBufferTime);
+        maxCollisionChecksPerMove = Mathf.Max(1, maxCollisionChecksPerMove);
     }
 }

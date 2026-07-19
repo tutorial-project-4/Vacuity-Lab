@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Hit Reaction")]
@@ -20,12 +21,13 @@ public class PlayerController : MonoBehaviour
 
     private void Awake()
     {
-        movement = GetComponent<PlayerMovement>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        CacheComponents();
     }
 
     public void ReceiveHit(Vector2 damageSourcePosition, float invincibleDuration)
     {
+        CacheComponents();
+
         if (knockbackRoutine != null)
         {
             StopCoroutine(knockbackRoutine);
@@ -51,6 +53,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnDeath()
     {
+        CacheComponents();
         CanAttack = false;
 
         if (knockbackRoutine != null)
@@ -66,7 +69,17 @@ public class PlayerController : MonoBehaviour
         }
 
         IsKnockbacking = false;
-        movement.SetControlLocked(true);
+        movement.ResetMovementState(true);
+        SetSpriteVisible(true);
+    }
+
+    public void ResetState()
+    {
+        CacheComponents();
+        StopHitReaction();
+        CanAttack = true;
+        IsKnockbacking = false;
+        movement.ResetMovementState(false);
         SetSpriteVisible(true);
     }
 
@@ -100,6 +113,21 @@ public class PlayerController : MonoBehaviour
         knockbackRoutine = null;
     }
 
+    private void StopHitReaction()
+    {
+        if (knockbackRoutine != null)
+        {
+            StopCoroutine(knockbackRoutine);
+            knockbackRoutine = null;
+        }
+
+        if (blinkRoutine != null)
+        {
+            StopCoroutine(blinkRoutine);
+            blinkRoutine = null;
+        }
+    }
+
     private IEnumerator BlinkRoutine(float duration)
     {
         float elapsed = 0f;
@@ -124,6 +152,19 @@ public class PlayerController : MonoBehaviour
         if (spriteRenderer != null)
         {
             spriteRenderer.enabled = isVisible;
+        }
+    }
+
+    private void CacheComponents()
+    {
+        if (movement == null)
+        {
+            movement = GetComponent<PlayerMovement>();
+        }
+
+        if (spriteRenderer == null)
+        {
+            spriteRenderer = GetComponent<SpriteRenderer>();
         }
     }
 

@@ -120,6 +120,7 @@ MonoBehaviour:
   solidLayer:
     serializedVersion: 2
     m_Bits: 8
+  maxCollisionChecksPerMove: 200
 --- !u!114 &1232372875776751571
 MonoBehaviour:
   m_ObjectHideFlags: 0
