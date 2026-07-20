@@ -1,12 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 보스 체력을 <b>숫자 없이 비율 게이지로만</b> 표시(기획: 수치화 금지).
+/// 보스 체력을 숫자 없이 비율 게이지로만 표시(기획: 수치화 금지).
 /// Fill 방식 Image의 fillAmount를 HpRatio에 맞춘다.
 ///
 /// 사용법: Image(Image Type = Filled)와 BossHealth를 인스펙터에 연결.
-/// </summary>
+
 public class BossHealthGauge : MonoBehaviour
 {
     [SerializeField] BossHealth boss;
