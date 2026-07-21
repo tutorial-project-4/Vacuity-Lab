@@ -131,7 +131,6 @@ GameObject:
   - component: {fileID: 32187943}
   - component: {fileID: 32187942}
   - component: {fileID: 32187945}
-  - component: {fileID: 32187946}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -223,7 +222,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
-  m_Name:
+  m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
   m_RenderShadows: 1
   m_RequiresDepthTextureOption: 2
@@ -257,29 +256,6 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!114 &32187946
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 32187941}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63f20d0e42594f449a168530b705d7cb, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  target: {fileID: 0}
-  autoFindPlayer: 1
-  targetOffset: {x: 0, y: 0.75}
-  orthographicSize: 5
-  followDamping: {x: 0.22, y: 0.18}
-  deadZoneScreenSize: {x: 0.18, y: 0.12}
-  horizontalLookAhead: 1.35
-  verticalLookOffset: 1.25
-  lookSmoothTime: 0.2
-  initialBounds: {fileID: 0}
-  confinerDamping: 0.2
 --- !u!1 &144028966 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5635505131102873374, guid: 5ff8748113a663f46981cad1d4fc81f4, type: 3}
