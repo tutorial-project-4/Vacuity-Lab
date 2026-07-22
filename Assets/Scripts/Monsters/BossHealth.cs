@@ -1,19 +1,18 @@
 using System;
 using UnityEngine;
 
-/// <summary>
-/// 보스의 정수 HP 체력. 플레이어의 하트 체력과는 별개 시스템이다.
+/// 보스의 정수 HP 체력. 플레이어의 하트 체력과는 별개 시스템
 ///
 /// 데미지 계약(플레이어 담당자 코드 기준):
-///   - 플레이어 → 보스: 플레이어 공격이 <c>GetComponent&lt;BossHealth&gt;().TakeDamage(int)</c> 호출
+///   - 플레이어 → 보스: 플레이어 공격이 GetComponent&lt;BossHealth&gt;().TakeDamage(int) 호출
 ///     (PlayerHealth가 PlayerDamageSource를 읽는 방식과 대칭. 아직 플레이어 공격 미구현 → 계약만 확정)
-///   - 보스 → 플레이어: 보스 공격 콜라이더에 <c>PlayerDamageSource</c>(int Damage)를 붙이면
+///   - 보스 → 플레이어: 보스 공격 콜라이더에 PlayerDamageSource (int Damage)를 붙이면
 ///     PlayerHealth가 스스로 감지해 받는다. (보스 쪽 전용 스크립트 불필요)
 ///
-/// - 피격 시 <see cref="invulnDuration"/> 동안 무적(기획: 보스 0.1초)
+/// - 피격 시 BossHealthGauge 동안 무적(기획: 보스 0.1초)
 /// - 전투 중 회복 없음(기획: 처치 시에만 풀 회복 → 회복 로직 없음)
-/// - HP는 게이지로만 노출, 숫자는 표시하지 않는다(<see cref="BossHealthGauge"/>)
-/// </summary>
+/// - HP는 게이지로만 노출, 숫자는 표시하지 않는다.
+
 [DisallowMultipleComponent]
 public class BossHealth : MonoBehaviour
 {
@@ -25,7 +24,7 @@ public class BossHealth : MonoBehaviour
     public float HpRatio => maxHp > 0 ? (float)CurrentHp / maxHp : 0f;
     public bool IsDead => CurrentHp <= 0;
 
-    /// <summary>피격 후 남은 HP를 전달. (게이지·페이즈 전환이 구독)</summary>
+    /// 피격 후 남은 HP를 전달. (게이지, 페이즈 전환이 구독)
     public event Action<int> OnDamaged;
     public event Action OnDeath;
 
@@ -46,7 +45,7 @@ public class BossHealth : MonoBehaviour
         if (CurrentHp == 0) OnDeath?.Invoke();
     }
 
-    /// <summary>리스폰(#15) 시 초기 상태로 되돌린다.</summary>
+    /// 리스폰(#15) 시 초기 상태로 되돌린다.
     public void ResetHealth()
     {
         CurrentHp = maxHp;
