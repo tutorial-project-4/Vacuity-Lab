@@ -81,12 +81,12 @@ public class PlayerMovement : MonoBehaviour
         dashCooldownTimer -= deltaTime;
         float horizontal = 0f;
 
-        if (Keyboard.current.leftArrowKey.isPressed)
+        if (keyboard.aKey.isPressed)
         {
             horizontal -= 1f;
         }
 
-        if (Keyboard.current.rightArrowKey.isPressed)
+        if (keyboard.dKey.isPressed)
         {
             horizontal += 1f;
         }
@@ -97,11 +97,11 @@ public class PlayerMovement : MonoBehaviour
             AttackDirection = new Vector2(FacingDirection, 0f);
         }
 
-        if (Keyboard.current.upArrowKey.isPressed)
+        if (keyboard.wKey.isPressed)
         {
             AttackDirection = Vector2.up;
         }
-        else if (Keyboard.current.downArrowKey.isPressed)
+        else if (keyboard.sKey.isPressed)
         {
             AttackDirection = Vector2.down;
         }
@@ -311,6 +311,11 @@ public class PlayerMovement : MonoBehaviour
         IsGliding = false;
     }
 
+    public void ResetAttackDirectionToFacing()
+    {
+        AttackDirection = new Vector2(FacingDirection, 0f);
+    }
+
     public void ResetMovementState(bool lockControl = false)
     {
         xRemainder = 0f;
@@ -328,6 +333,7 @@ public class PlayerMovement : MonoBehaviour
         IsDashing = false;
         IsGrounded = false;
         IsControlLocked = lockControl;
+        ResetAttackDirectionToFacing();
     }
 
     private bool CanStartDash(Keyboard keyboard)
