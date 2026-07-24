@@ -81,12 +81,12 @@ public class PlayerMovement : MonoBehaviour
         dashCooldownTimer -= deltaTime;
         float horizontal = 0f;
 
-        if (keyboard.aKey.isPressed)
+        if (Keyboard.current.leftArrowKey.isPressed)
         {
             horizontal -= 1f;
         }
 
-        if (keyboard.dKey.isPressed)
+        if (Keyboard.current.rightArrowKey.isPressed)
         {
             horizontal += 1f;
         }
@@ -97,11 +97,11 @@ public class PlayerMovement : MonoBehaviour
             AttackDirection = new Vector2(FacingDirection, 0f);
         }
 
-        if (keyboard.wKey.isPressed)
+        if (Keyboard.current.upArrowKey.isPressed)
         {
             AttackDirection = Vector2.up;
         }
-        else if (keyboard.sKey.isPressed)
+        else if (Keyboard.current.downArrowKey.isPressed)
         {
             AttackDirection = Vector2.down;
         }
