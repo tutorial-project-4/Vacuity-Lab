@@ -6,7 +6,11 @@ public class CameraRoomTrigger : MonoBehaviour
 {
     [SerializeField] private CameraBounds2D roomBounds;
     [SerializeField] private CinemachinePlatformerCamera cameraFollow;
+    [SerializeField] private LayerMask playerLayer;
     [SerializeField] private bool snapOnEnter;
+
+    private bool warnedMissingCamera;
+    private bool warnedMissingBounds;
 
     private void Reset()
     {
@@ -14,44 +18,63 @@ public class CameraRoomTrigger : MonoBehaviour
         trigger.isTrigger = true;
     }
 
-    private void Awake()
-    {
-        if (cameraFollow == null && Camera.main != null)
-        {
-            cameraFollow = Camera.main.GetComponent<CinemachinePlatformerCamera>();
-        }
-    }
-
     private void OnTriggerEnter2D(Collider2D other)
     {
-        PlayerMovement playerMovement = other.GetComponent<PlayerMovement>();
-        if (playerMovement == null)
-        {
-            playerMovement = other.GetComponentInParent<PlayerMovement>();
-        }
-
-        if (playerMovement == null)
+        if (!IsPlayerCollider(other, out PlayerMovement playerMovement))
         {
             return;
-        }
-
-        if (cameraFollow == null && Camera.main != null)
-        {
-            cameraFollow = Camera.main.GetComponent<CinemachinePlatformerCamera>();
         }
 
         if (cameraFollow == null)
         {
+            if (!warnedMissingCamera)
+            {
+                Debug.LogWarning("[CameraRoomTrigger] CinemachinePlatformerCamera is not assigned.", this);
+                warnedMissingCamera = true;
+            }
+
             return;
         }
 
         cameraFollow.SetTarget(playerMovement.transform);
-        cameraFollow.SetBounds(roomBounds != null ? roomBounds.BoundsCollider : null);
+
+        if (roomBounds == null || roomBounds.BoundsCollider == null)
+        {
+            cameraFollow.ClearBounds();
+
+            if (!warnedMissingBounds)
+            {
+                Debug.LogWarning("[CameraRoomTrigger] roomBounds is not assigned. Camera bounds were cleared.", this);
+                warnedMissingBounds = true;
+            }
+        }
+        else
+        {
+            cameraFollow.SetBounds(roomBounds.BoundsCollider);
+        }
 
         if (snapOnEnter)
         {
             cameraFollow.SnapToTarget();
         }
+    }
+
+    private bool IsPlayerCollider(Collider2D other, out PlayerMovement playerMovement)
+    {
+        playerMovement = other.GetComponentInParent<PlayerMovement>();
+        if (playerMovement == null)
+        {
+            return false;
+        }
+
+        if (playerLayer.value == 0)
+        {
+            return true;
+        }
+
+        int colliderLayer = 1 << other.gameObject.layer;
+        int playerRootLayer = 1 << playerMovement.gameObject.layer;
+        return (playerLayer.value & (colliderLayer | playerRootLayer)) != 0;
     }
 
     private void OnValidate()

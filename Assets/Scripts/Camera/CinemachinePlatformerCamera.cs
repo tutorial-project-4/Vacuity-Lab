@@ -6,7 +6,6 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Camera))]
 public class CinemachinePlatformerCamera : MonoBehaviour
 {
-    private const string VirtualCameraName = "Player Follow Camera";
     private const float CameraDistance = 10f;
 
     [Header("Target")]
@@ -30,21 +29,23 @@ public class CinemachinePlatformerCamera : MonoBehaviour
     [SerializeField] private Collider2D initialBounds;
     [SerializeField] private float confinerDamping = 0.2f;
 
+    [Header("Cinemachine References")]
+    [SerializeField] private CinemachineBrain brain;
+    [SerializeField] private CinemachineCamera virtualCamera;
+    [SerializeField] private CinemachinePositionComposer positionComposer;
+    [SerializeField] private CinemachineScreenShake2D screenShake;
+    [SerializeField] private CinemachineConfiner2D confiner;
+
     private Camera unityCamera;
-    private CinemachineBrain brain;
-    private CinemachineCamera virtualCamera;
-    private CinemachinePositionComposer positionComposer;
-    private CinemachineScreenShake2D screenShake;
     private PlayerMovement playerMovement;
     private Vector2 lookOffset;
     private Vector2 lookVelocity;
-
-    private CinemachineConfiner2D confiner;
+    private Transform assignedTarget;
 
     private void Awake()
     {
-        unityCamera = GetComponent<Camera>();
-        EnsureCinemachineRig();
+        CacheLocalReferences();
+        ValidateRequiredReferences();
         CacheTargetComponents();
         ApplyStaticSettings();
     }
@@ -59,8 +60,6 @@ public class CinemachinePlatformerCamera : MonoBehaviour
     private void LateUpdate()
     {
         FindTargetIfNeeded();
-        AssignTargetToVirtualCamera();
-        CacheTargetComponents();
         UpdateLookOffset();
         ApplyDynamicTargetOffset();
     }
@@ -85,8 +84,6 @@ public class CinemachinePlatformerCamera : MonoBehaviour
 
     public void Shake(float duration, float strength)
     {
-        EnsureCinemachineRig();
-
         if (screenShake != null)
         {
             screenShake.Shake(duration, strength);
@@ -114,52 +111,34 @@ public class CinemachinePlatformerCamera : MonoBehaviour
         lookVelocity = Vector2.zero;
     }
 
-    private void EnsureCinemachineRig()
+    private void CacheLocalReferences()
     {
         if (unityCamera == null)
         {
             unityCamera = GetComponent<Camera>();
         }
 
-        unityCamera.orthographic = true;
-        unityCamera.orthographicSize = orthographicSize;
-
-        brain = GetComponent<CinemachineBrain>();
         if (brain == null)
         {
-            brain = gameObject.AddComponent<CinemachineBrain>();
+            brain = GetComponent<CinemachineBrain>();
         }
+    }
 
-        GameObject virtualCameraObject = GameObject.Find(VirtualCameraName);
-        if (virtualCameraObject == null)
+    private void ValidateRequiredReferences()
+    {
+        if (brain == null)
         {
-            virtualCameraObject = new GameObject(VirtualCameraName);
-            virtualCameraObject.transform.position = transform.position;
-            virtualCameraObject.transform.rotation = Quaternion.identity;
+            Debug.LogWarning("[CinemachinePlatformerCamera] CinemachineBrain reference is missing.", this);
         }
 
-        virtualCamera = virtualCameraObject.GetComponent<CinemachineCamera>();
         if (virtualCamera == null)
         {
-            virtualCamera = virtualCameraObject.AddComponent<CinemachineCamera>();
+            Debug.LogWarning("[CinemachinePlatformerCamera] CinemachineCamera reference is missing.", this);
         }
 
-        positionComposer = virtualCameraObject.GetComponent<CinemachinePositionComposer>();
         if (positionComposer == null)
         {
-            positionComposer = virtualCameraObject.AddComponent<CinemachinePositionComposer>();
-        }
-
-        screenShake = virtualCameraObject.GetComponent<CinemachineScreenShake2D>();
-        if (screenShake == null)
-        {
-            screenShake = virtualCameraObject.AddComponent<CinemachineScreenShake2D>();
-        }
-
-        confiner = virtualCameraObject.GetComponent<CinemachineConfiner2D>();
-        if (confiner == null)
-        {
-            confiner = virtualCameraObject.AddComponent<CinemachineConfiner2D>();
+            Debug.LogWarning("[CinemachinePlatformerCamera] CinemachinePositionComposer reference is missing.", this);
         }
     }
 
@@ -169,6 +148,9 @@ public class CinemachinePlatformerCamera : MonoBehaviour
         {
             return;
         }
+
+        unityCamera.orthographic = true;
+        unityCamera.orthographicSize = orthographicSize;
 
         LensSettings lens = virtualCamera.Lens;
         lens.ModeOverride = LensSettings.OverrideModes.Orthographic;
@@ -219,10 +201,11 @@ public class CinemachinePlatformerCamera : MonoBehaviour
 
     private void AssignTargetToVirtualCamera()
     {
-        if (virtualCamera != null)
+        if (virtualCamera != null && assignedTarget != target)
         {
             virtualCamera.Follow = target;
             virtualCamera.LookAt = target;
+            assignedTarget = target;
         }
     }
 
@@ -301,7 +284,7 @@ public class CinemachinePlatformerCamera : MonoBehaviour
 
         if (Application.isPlaying)
         {
-            EnsureCinemachineRig();
+            CacheLocalReferences();
             ApplyStaticSettings();
         }
     }

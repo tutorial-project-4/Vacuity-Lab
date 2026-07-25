@@ -42,12 +42,13 @@ public class CameraBounds2D : MonoBehaviour
     private void OnDrawGizmos()
     {
         BoxCollider2D gizmoCollider = BoundsCollider != null ? BoundsCollider : GetComponent<BoxCollider2D>();
-        if (gizmoCollider == null)
+        if (gizmoCollider == null || !gizmoCollider.enabled || !gizmoCollider.gameObject.activeInHierarchy)
         {
             return;
         }
 
         Gizmos.color = Color.cyan;
-        Gizmos.DrawWireCube(gizmoCollider.bounds.center, gizmoCollider.bounds.size);
+        Gizmos.matrix = gizmoCollider.transform.localToWorldMatrix;
+        Gizmos.DrawWireCube(gizmoCollider.offset, gizmoCollider.size);
     }
 }
