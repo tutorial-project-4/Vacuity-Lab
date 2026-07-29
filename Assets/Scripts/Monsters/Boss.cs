@@ -42,4 +42,20 @@ public class Boss : MonoBehaviour
         _agent.End(); // 그래프 정지. 사망 연출, 보상 훅은 #14
         Debug.Log("[Boss] 사망 — 그래프 정지");
     }
+
+#if UNITY_EDITOR
+    // #5 검증용: 플레이 모드에서 컴포넌트 우클릭 → 사망 정지 / 리셋 재시작 확인.
+    // 정식 리스폰 진입점(ResetForRetry)은 #15에서 승격.
+    [ContextMenu("Test: Kill")]
+    void TestKill() => _health.TakeDamage(int.MaxValue);
+
+    [ContextMenu("Test: Reset")]
+    void TestReset()
+    {
+        Debug.Log("[Boss] 리셋 — 그래프 재시작");
+        _health.ResetHealth();
+        _agent.Restart(); // Restart()는 첫 노드까지 동기 실행하므로 로그를 먼저 찍는다
+
+    }
+#endif
 }
