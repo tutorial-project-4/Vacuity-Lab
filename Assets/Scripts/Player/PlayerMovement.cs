@@ -31,6 +31,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask solidLayer;
     [SerializeField] private int maxCollisionChecksPerMove = 200;
 
+    [Header("Platform")]
+    [SerializeField] private float platformDropThroughDuration = 0.2f;
+    [SerializeField] private float platformDropSpeed = 2f;
+    [SerializeField] private float platformLandingTolerance = 0.02f;
+
     private BoxCollider2D bodyCollider;
     private float xRemainder;
     private float yRemainder;
@@ -43,6 +48,12 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 dashDirection;
     private bool canGlide;
     private bool canAirDash = true;
+    private readonly Collider2D[] collisionBuffer = new Collider2D[32];
+    private Collider2D currentGroundPlatform;
+    private Collider2D ignoredDropThroughPlatform;
+    private float platformDropThroughTimer;
+    private int collisionYSign;
+    private bool isGroundCheck;
 
     public Vector2 AttackDirection { get; private set; } = Vector2.right;
     public int FacingDirection { get; private set; } = 1;
@@ -50,6 +61,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsControlLocked { get; private set; }
     public bool IsGliding { get; private set; }
     public bool IsDashing { get; private set; }
+    public LayerMask SolidLayer => solidLayer;
 
     private void Awake()
     {
@@ -58,7 +70,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (solidLayer.value == 0)
         {
-            solidLayer = LayerMask.GetMask("Solid");
+            solidLayer = LayerMask.GetMask("Solid", "DashPassableWall", "OneWayPlatform");
         }
 
         ResetGlide();
@@ -79,6 +91,7 @@ public class PlayerMovement : MonoBehaviour
 
         float deltaTime = Time.deltaTime;
         dashCooldownTimer -= deltaTime;
+        UpdatePlatformDropThrough(deltaTime);
         float horizontal = 0f;
 
         if (keyboard.aKey.isPressed)
@@ -107,6 +120,14 @@ public class PlayerMovement : MonoBehaviour
         }
 
         IsGrounded = CheckGrounded();
+        bool droppedThroughPlatform = false;
+
+        if (CanDropThroughPlatform(keyboard))
+        {
+            StartPlatformDropThrough();
+            IsGrounded = false;
+            droppedThroughPlatform = true;
+        }
 
         if (IsGrounded)
         {
@@ -135,7 +156,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (keyboard.spaceKey.wasPressedThisFrame)
+        if (keyboard.spaceKey.wasPressedThisFrame && !droppedThroughPlatform)
         {
             jumpBufferTimer = jumpBufferTime;
         }
@@ -191,6 +212,11 @@ public class PlayerMovement : MonoBehaviour
 
     public void MoveX(float amount, Action onCollide)
     {
+        MoveX(amount, onCollide, null);
+    }
+
+    public void MoveX(float amount, Action onCollide, Func<Collider2D, bool> canPassThrough)
+    {
         xRemainder += amount;
         int move = Mathf.RoundToInt(xRemainder / moveStep);
 
@@ -208,7 +234,7 @@ public class PlayerMovement : MonoBehaviour
             remainingChecks--;
             Vector2 nextPosition = (Vector2)transform.position + new Vector2(sign * moveStep, 0f);
 
-            if (!CollideAt(nextPosition))
+            if (!CollideAt(nextPosition, canPassThrough))
             {
                 transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z);
                 move -= sign;
@@ -229,6 +255,11 @@ public class PlayerMovement : MonoBehaviour
 
     public void MoveY(float amount, Action onCollide)
     {
+        MoveY(amount, onCollide, null);
+    }
+
+    public void MoveY(float amount, Action onCollide, Func<Collider2D, bool> canPassThrough)
+    {
         yRemainder += amount;
         int move = Mathf.RoundToInt(yRemainder / moveStep);
 
@@ -240,13 +271,14 @@ public class PlayerMovement : MonoBehaviour
         yRemainder -= move * moveStep;
         int sign = move > 0 ? 1 : -1;
         int remainingChecks = maxCollisionChecksPerMove;
+        collisionYSign = sign;
 
         while (move != 0 && remainingChecks > 0)
         {
             remainingChecks--;
             Vector2 nextPosition = (Vector2)transform.position + new Vector2(0f, sign * moveStep);
 
-            if (!CollideAt(nextPosition))
+            if (!CollideAt(nextPosition, canPassThrough))
             {
                 transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z);
                 move -= sign;
@@ -263,18 +295,75 @@ public class PlayerMovement : MonoBehaviour
         {
             yRemainder = 0f;
         }
+
+        collisionYSign = 0;
     }
 
-    private bool CollideAt(Vector2 position)
+    public bool CollideAtPosition(Vector2 position, Func<Collider2D, bool> canPassThrough = null)
     {
-        Vector2 checkCenter = position + Vector2.Scale(bodyCollider.offset, transform.lossyScale);
-        Vector2 checkSize = Vector2.Scale(bodyCollider.size, transform.lossyScale);
-        return Physics2D.OverlapBox(checkCenter, checkSize, 0f, solidLayer) != null;
+        return CollideAt(position, canPassThrough);
+    }
+
+    public Vector2 GetColliderCenterAt(Vector2 position)
+    {
+        return position + Vector2.Scale(bodyCollider.offset, transform.lossyScale);
+    }
+
+    public Vector2 GetColliderSize()
+    {
+        return Vector2.Scale(bodyCollider.size, transform.lossyScale);
+    }
+
+    public int OverlapBodyAt(Vector2 position, ContactFilter2D filter, Collider2D[] results)
+    {
+        return Physics2D.OverlapBox(GetColliderCenterAt(position), GetColliderSize(), 0f, filter, results);
+    }
+
+    private bool CollideAt(Vector2 position, Func<Collider2D, bool> canPassThrough = null)
+    {
+        Vector2 checkCenter = GetColliderCenterAt(position);
+        Vector2 checkSize = GetColliderSize();
+        int overlapCount = Physics2D.OverlapBoxNonAlloc(checkCenter, checkSize, 0f, collisionBuffer, solidLayer);
+
+        for (int i = 0; i < overlapCount; i++)
+        {
+            Collider2D hit = collisionBuffer[i];
+            if (hit == null || hit == bodyCollider)
+            {
+                continue;
+            }
+
+            if (IsPlatform(hit))
+            {
+                if (ShouldPassThroughPlatform(hit, position))
+                {
+                    continue;
+                }
+
+                if (isGroundCheck)
+                {
+                    currentGroundPlatform = hit;
+                }
+            }
+
+            if (canPassThrough != null && canPassThrough(hit))
+            {
+                continue;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     private bool CheckGrounded()
     {
-        return CollideAt((Vector2)transform.position + Vector2.down * moveStep);
+        currentGroundPlatform = null;
+        isGroundCheck = true;
+        bool grounded = CollideAt((Vector2)transform.position + Vector2.down * moveStep);
+        isGroundCheck = false;
+        return grounded;
     }
 
     private void OnVerticalCollide()
@@ -329,6 +418,11 @@ public class PlayerMovement : MonoBehaviour
         dashDirection = Vector2.zero;
         canGlide = true;
         canAirDash = true;
+        currentGroundPlatform = null;
+        ignoredDropThroughPlatform = null;
+        platformDropThroughTimer = 0f;
+        collisionYSign = 0;
+        isGroundCheck = false;
         IsGliding = false;
         IsDashing = false;
         IsGrounded = false;
@@ -342,6 +436,96 @@ public class PlayerMovement : MonoBehaviour
             && dashCooldownTimer <= 0f
             && (IsGrounded || canAirDash)
             && (keyboard.leftShiftKey.wasPressedThisFrame || keyboard.rightShiftKey.wasPressedThisFrame);
+    }
+
+    private bool CanDropThroughPlatform(Keyboard keyboard)
+    {
+        return IsGrounded
+            && currentGroundPlatform != null
+            && keyboard.sKey.isPressed
+            && keyboard.spaceKey.wasPressedThisFrame;
+    }
+
+    private void StartPlatformDropThrough()
+    {
+        ignoredDropThroughPlatform = currentGroundPlatform;
+        currentGroundPlatform = null;
+        platformDropThroughTimer = platformDropThroughDuration;
+        jumpBufferTimer = 0f;
+        coyoteTimer = 0f;
+        yRemainder = 0f;
+        ySpeed = Mathf.Min(ySpeed, -platformDropSpeed);
+        IsGliding = false;
+    }
+
+    private void UpdatePlatformDropThrough(float deltaTime)
+    {
+        if (platformDropThroughTimer > 0f)
+        {
+            platformDropThroughTimer -= deltaTime;
+        }
+
+        if (ignoredDropThroughPlatform == null)
+        {
+            return;
+        }
+
+        if (platformDropThroughTimer <= 0f && !IsBodyOverlappingCollider(ignoredDropThroughPlatform))
+        {
+            ignoredDropThroughPlatform = null;
+        }
+    }
+
+    private bool ShouldPassThroughPlatform(Collider2D platform, Vector2 nextPosition)
+    {
+        if (platform == ignoredDropThroughPlatform)
+        {
+            return true;
+        }
+
+        if (collisionYSign > 0)
+        {
+            return true;
+        }
+
+        if (collisionYSign == 0 && !isGroundCheck)
+        {
+            return true;
+        }
+
+        float platformTop = platform.bounds.max.y;
+        float currentFeetY = GetBodyBottomAt(transform.position);
+        float nextFeetY = GetBodyBottomAt(nextPosition);
+
+        if (currentFeetY < platformTop - platformLandingTolerance)
+        {
+            return true;
+        }
+
+        return nextFeetY > platformTop + platformLandingTolerance;
+    }
+
+    private bool IsPlatform(Collider2D collider)
+    {
+        TerrainDescriptor descriptor = TerrainDescriptor.From(collider);
+        return descriptor != null && descriptor.terrainKind == TerrainKind.Platform;
+    }
+
+    private bool IsBodyOverlappingCollider(Collider2D collider)
+    {
+        if (collider == null)
+        {
+            return false;
+        }
+
+        Bounds bodyBounds = bodyCollider.bounds;
+        return bodyBounds.Intersects(collider.bounds);
+    }
+
+    private float GetBodyBottomAt(Vector2 position)
+    {
+        Vector2 center = GetColliderCenterAt(position);
+        return center.y - GetColliderSize().y * 0.5f;
     }
 
     private void StartDash(float horizontal)
@@ -438,5 +622,8 @@ public class PlayerMovement : MonoBehaviour
         dashDuration = Mathf.Max(0f, dashDuration);
         dashCooldown = Mathf.Max(0f, dashCooldown);
         maxCollisionChecksPerMove = Mathf.Max(1, maxCollisionChecksPerMove);
+        platformDropThroughDuration = Mathf.Max(0f, platformDropThroughDuration);
+        platformDropSpeed = Mathf.Max(0f, platformDropSpeed);
+        platformLandingTolerance = Mathf.Max(0f, platformLandingTolerance);
     }
 }

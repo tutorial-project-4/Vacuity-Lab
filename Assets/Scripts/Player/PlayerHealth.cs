@@ -16,10 +16,12 @@ public class PlayerHealth : MonoBehaviour
 
     private PlayerController playerController;
     private Coroutine invincibleRoutine;
+    private bool damageInvincible;
+    private int invincibleOverrideCount;
 
     public int MaxHearts => maxHearts;
     public int CurrentHearts => currentHearts;
-    public bool IsInvincible { get; private set; }
+    public bool IsInvincible => damageInvincible || invincibleOverrideCount > 0;
     public bool IsDead { get; private set; }
 
     public event Action<int, int> HealthChanged;
@@ -81,7 +83,8 @@ public class PlayerHealth : MonoBehaviour
         }
 
         IsDead = false;
-        IsInvincible = false;
+        damageInvincible = false;
+        invincibleOverrideCount = 0;
         currentHearts = Mathf.Clamp(hearts, 0, maxHearts);
         playerController.ResetState();
         HealthChanged?.Invoke(currentHearts, maxHearts);
@@ -126,6 +129,16 @@ public class PlayerHealth : MonoBehaviour
         HealthChanged?.Invoke(currentHearts, maxHearts);
     }
 
+    public void AddInvincibleOverride()
+    {
+        invincibleOverrideCount++;
+    }
+
+    public void RemoveInvincibleOverride()
+    {
+        invincibleOverrideCount = Mathf.Max(0, invincibleOverrideCount - 1);
+    }
+
     public void UpgradeMaxHealth(bool healToFull = false)
     {
         SetMaxHealth(UpgradedMaxHearts, healToFull);
@@ -150,9 +163,9 @@ public class PlayerHealth : MonoBehaviour
 
     private IEnumerator InvincibleRoutine()
     {
-        IsInvincible = true;
+        damageInvincible = true;
         yield return new WaitForSeconds(invincibleDuration);
-        IsInvincible = false;
+        damageInvincible = false;
         invincibleRoutine = null;
     }
 
@@ -164,7 +177,8 @@ public class PlayerHealth : MonoBehaviour
         }
 
         IsDead = true;
-        IsInvincible = false;
+        damageInvincible = false;
+        invincibleOverrideCount = 0;
 
         if (invincibleRoutine != null)
         {
