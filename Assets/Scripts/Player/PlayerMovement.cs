@@ -53,7 +53,9 @@ public class PlayerMovement : MonoBehaviour
     private Collider2D ignoredDropThroughPlatform;
     private float platformDropThroughTimer;
     private int collisionYSign;
+    private bool isHorizontalCollisionCheck;
     private bool isGroundCheck;
+    private bool warnedCollisionBufferFull;
 
     public Vector2 AttackDirection { get; private set; } = Vector2.right;
     public int FacingDirection { get; private set; } = 1;
@@ -228,28 +230,36 @@ public class PlayerMovement : MonoBehaviour
         xRemainder -= move * moveStep;
         int sign = move > 0 ? 1 : -1;
         int remainingChecks = maxCollisionChecksPerMove;
+        isHorizontalCollisionCheck = true;
 
-        while (move != 0 && remainingChecks > 0)
+        try
         {
-            remainingChecks--;
-            Vector2 nextPosition = (Vector2)transform.position + new Vector2(sign * moveStep, 0f);
-
-            if (!CollideAt(nextPosition, canPassThrough))
+            while (move != 0 && remainingChecks > 0)
             {
-                transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z);
-                move -= sign;
+                remainingChecks--;
+                Vector2 nextPosition = (Vector2)transform.position + new Vector2(sign * moveStep, 0f);
+
+                if (!CollideAt(nextPosition, canPassThrough))
+                {
+                    transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z);
+                    move -= sign;
+                }
+                else
+                {
+                    xRemainder = 0f;
+                    onCollide?.Invoke();
+                    break;
+                }
             }
-            else
+
+            if (move != 0 && remainingChecks <= 0)
             {
                 xRemainder = 0f;
-                onCollide?.Invoke();
-                break;
             }
         }
-
-        if (move != 0 && remainingChecks <= 0)
+        finally
         {
-            xRemainder = 0f;
+            isHorizontalCollisionCheck = false;
         }
     }
 
@@ -273,30 +283,35 @@ public class PlayerMovement : MonoBehaviour
         int remainingChecks = maxCollisionChecksPerMove;
         collisionYSign = sign;
 
-        while (move != 0 && remainingChecks > 0)
+        try
         {
-            remainingChecks--;
-            Vector2 nextPosition = (Vector2)transform.position + new Vector2(0f, sign * moveStep);
-
-            if (!CollideAt(nextPosition, canPassThrough))
+            while (move != 0 && remainingChecks > 0)
             {
-                transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z);
-                move -= sign;
+                remainingChecks--;
+                Vector2 nextPosition = (Vector2)transform.position + new Vector2(0f, sign * moveStep);
+
+                if (!CollideAt(nextPosition, canPassThrough))
+                {
+                    transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z);
+                    move -= sign;
+                }
+                else
+                {
+                    yRemainder = 0f;
+                    onCollide?.Invoke();
+                    break;
+                }
             }
-            else
+
+            if (move != 0 && remainingChecks <= 0)
             {
                 yRemainder = 0f;
-                onCollide?.Invoke();
-                break;
             }
         }
-
-        if (move != 0 && remainingChecks <= 0)
+        finally
         {
-            yRemainder = 0f;
+            collisionYSign = 0;
         }
-
-        collisionYSign = 0;
     }
 
     public bool CollideAtPosition(Vector2 position, Func<Collider2D, bool> canPassThrough = null)
@@ -324,6 +339,7 @@ public class PlayerMovement : MonoBehaviour
         Vector2 checkCenter = GetColliderCenterAt(position);
         Vector2 checkSize = GetColliderSize();
         int overlapCount = Physics2D.OverlapBoxNonAlloc(checkCenter, checkSize, 0f, collisionBuffer, solidLayer);
+        WarnIfCollisionBufferFull(overlapCount);
 
         for (int i = 0; i < overlapCount; i++)
         {
@@ -361,9 +377,14 @@ public class PlayerMovement : MonoBehaviour
     {
         currentGroundPlatform = null;
         isGroundCheck = true;
-        bool grounded = CollideAt((Vector2)transform.position + Vector2.down * moveStep);
-        isGroundCheck = false;
-        return grounded;
+        try
+        {
+            return CollideAt((Vector2)transform.position + Vector2.down * moveStep);
+        }
+        finally
+        {
+            isGroundCheck = false;
+        }
     }
 
     private void OnVerticalCollide()
@@ -422,6 +443,7 @@ public class PlayerMovement : MonoBehaviour
         ignoredDropThroughPlatform = null;
         platformDropThroughTimer = 0f;
         collisionYSign = 0;
+        isHorizontalCollisionCheck = false;
         isGroundCheck = false;
         IsGliding = false;
         IsDashing = false;
@@ -488,9 +510,14 @@ public class PlayerMovement : MonoBehaviour
             return true;
         }
 
-        if (collisionYSign == 0 && !isGroundCheck)
+        if (isHorizontalCollisionCheck)
         {
             return true;
+        }
+
+        if (IsNeutralCollisionCheck())
+        {
+            return false;
         }
 
         float platformTop = platform.bounds.max.y;
@@ -511,6 +538,11 @@ public class PlayerMovement : MonoBehaviour
         return descriptor != null && descriptor.terrainKind == TerrainKind.Platform;
     }
 
+    private bool IsNeutralCollisionCheck()
+    {
+        return collisionYSign == 0 && !isGroundCheck && !isHorizontalCollisionCheck;
+    }
+
     private bool IsBodyOverlappingCollider(Collider2D collider)
     {
         if (collider == null)
@@ -526,6 +558,17 @@ public class PlayerMovement : MonoBehaviour
     {
         Vector2 center = GetColliderCenterAt(position);
         return center.y - GetColliderSize().y * 0.5f;
+    }
+
+    private void WarnIfCollisionBufferFull(int overlapCount)
+    {
+        if (warnedCollisionBufferFull || overlapCount < collisionBuffer.Length)
+        {
+            return;
+        }
+
+        Debug.LogWarning("[PlayerMovement] Collision buffer is full. Some movement collisions may be skipped.", this);
+        warnedCollisionBufferFull = true;
     }
 
     private void StartDash(float horizontal)

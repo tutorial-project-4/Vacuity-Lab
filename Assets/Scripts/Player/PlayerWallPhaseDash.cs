@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public interface IPlayerDashDamageable
+{
+    void TakeDamage(int damage);
+}
+
 [DisallowMultipleComponent]
 [RequireComponent(typeof(PlayerMovement))]
 [RequireComponent(typeof(PlayerHealth))]
@@ -33,6 +38,8 @@ public class PlayerWallPhaseDash : MonoBehaviour
     private float cooldownTimer;
     private bool canAirWallPhaseDash = true;
     private bool hasInvincibleOverride;
+    private bool warnedOverlapBufferFull;
+    private bool warnedResolveDistanceExceeded;
 
     public bool IsWallPhaseDashing { get; private set; }
 
@@ -102,6 +109,50 @@ public class PlayerWallPhaseDash : MonoBehaviour
 
     private IEnumerator DashRoutine(Vector2 direction)
     {
+        bool shouldApplyBossContactDamage = false;
+        try
+        {
+            BeginDashState();
+
+            Vector2 startPosition = transform.position;
+            DamageTargetsAtPosition(startPosition);
+            DamageTargetsAlongPath(startPosition, direction);
+
+            float elapsed = 0f;
+            bool blocked = false;
+            while (elapsed < dashDuration && !blocked)
+            {
+                elapsed += Time.deltaTime;
+                float progress = Mathf.Clamp01(elapsed / dashDuration);
+                Vector2 targetPosition = startPosition + direction * dashDistance * progress;
+                Vector2 delta = targetPosition - (Vector2)transform.position;
+
+                if (Mathf.Abs(delta.x) > 0f)
+                {
+                    movement.MoveX(delta.x, () => blocked = true, CanPassDuringWallPhaseDash);
+                }
+
+                DamageTargetsAtPosition(transform.position);
+                yield return null;
+            }
+
+            ResolveDashPassableWallExit(direction);
+            shouldApplyBossContactDamage = true;
+        }
+        finally
+        {
+            CleanupDashState();
+            dashRoutine = null;
+        }
+
+        if (shouldApplyBossContactDamage)
+        {
+            ApplyBossContactDamageIfNeeded();
+        }
+    }
+
+    private void BeginDashState()
+    {
         IsWallPhaseDashing = true;
         cooldownTimer = dashCooldown;
         damagedTargets.Clear();
@@ -113,35 +164,8 @@ public class PlayerWallPhaseDash : MonoBehaviour
 
         movement.SetControlLocked(true);
         movement.StopVerticalMovement();
-        health.AddInvincibleOverride();
+        health.AddInvincibleOverride(this);
         hasInvincibleOverride = true;
-
-        Vector2 startPosition = transform.position;
-        DamageTargetsAtPosition(startPosition);
-        DamageTargetsAlongPath(startPosition, direction);
-
-        float elapsed = 0f;
-        bool blocked = false;
-        while (elapsed < dashDuration && !blocked)
-        {
-            elapsed += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsed / dashDuration);
-            Vector2 targetPosition = startPosition + direction * dashDistance * progress;
-            Vector2 delta = targetPosition - (Vector2)transform.position;
-
-            if (Mathf.Abs(delta.x) > 0f)
-            {
-                movement.MoveX(delta.x, () => blocked = true, CanPassDuringWallPhaseDash);
-            }
-
-            DamageTargetsAtPosition(transform.position);
-            yield return null;
-        }
-
-        ResolveDashPassableWallExit(direction);
-        RemoveInvincibleOverride();
-        FinishDash();
-        ApplyBossContactDamageIfNeeded();
     }
 
     private bool CanPassDuringWallPhaseDash(Collider2D collider)
@@ -176,6 +200,7 @@ public class PlayerWallPhaseDash : MonoBehaviour
         filter.useTriggers = true;
 
         int overlapCount = movement.OverlapBodyAt(position, filter, overlapBuffer);
+        WarnIfOverlapBufferFull(overlapCount);
         for (int i = 0; i < overlapCount; i++)
         {
             Collider2D overlap = overlapBuffer[i];
@@ -189,34 +214,48 @@ public class PlayerWallPhaseDash : MonoBehaviour
     private void TryDamageTarget(Collider2D hitCollider)
     {
         BossHealth bossHealth = hitCollider.GetComponentInParent<BossHealth>();
-        if (bossHealth == null)
+        if (bossHealth != null)
         {
-            TrySendGenericDamage(hitCollider);
+            int bossTargetId = bossHealth.GetInstanceID();
+            if (!damagedTargets.Add(bossTargetId))
+            {
+                return;
+            }
+
+            bossHealth.TakeDamage(damage);
             return;
         }
 
-        int targetId = bossHealth.GetInstanceID();
+        IPlayerDashDamageable damageable = FindDashDamageable(hitCollider);
+        if (damageable == null)
+        {
+            return;
+        }
+
+        int targetId = damageable is Component component
+            ? component.GetInstanceID()
+            : damageable.GetHashCode();
+
         if (!damagedTargets.Add(targetId))
         {
             return;
         }
 
-        bossHealth.TakeDamage(damage);
+        damageable.TakeDamage(damage);
     }
 
-    private void TrySendGenericDamage(Collider2D hitCollider)
+    private IPlayerDashDamageable FindDashDamageable(Collider2D hitCollider)
     {
-        Transform targetRoot = hitCollider.attachedRigidbody != null
-            ? hitCollider.attachedRigidbody.transform
-            : hitCollider.transform.root;
-
-        int targetId = targetRoot.GetInstanceID();
-        if (!damagedTargets.Add(targetId))
+        MonoBehaviour[] behaviours = hitCollider.GetComponentsInParent<MonoBehaviour>();
+        for (int i = 0; i < behaviours.Length; i++)
         {
-            return;
+            if (behaviours[i] is IPlayerDashDamageable damageable)
+            {
+                return damageable;
+            }
         }
 
-        targetRoot.SendMessage("TakeDamage", damage, SendMessageOptions.DontRequireReceiver);
+        return null;
     }
 
     private void ResolveDashPassableWallExit(Vector2 direction)
@@ -234,6 +273,12 @@ public class PlayerWallPhaseDash : MonoBehaviour
             transform.position = new Vector3(nextPosition.x, nextPosition.y, transform.position.z);
             resolvedDistance += resolveStep;
         }
+
+        if (!warnedResolveDistanceExceeded && IsOverlappingDashPassableWall((Vector2)transform.position))
+        {
+            Debug.LogWarning("[PlayerWallPhaseDash] Could not fully resolve the player out of a dash-passable wall.", this);
+            warnedResolveDistanceExceeded = true;
+        }
     }
 
     private bool IsOverlappingDashPassableWall(Vector2 position)
@@ -244,6 +289,7 @@ public class PlayerWallPhaseDash : MonoBehaviour
         filter.useTriggers = true;
 
         int overlapCount = movement.OverlapBodyAt(position, filter, overlapBuffer);
+        WarnIfOverlapBufferFull(overlapCount);
         for (int i = 0; i < overlapCount; i++)
         {
             Collider2D overlap = overlapBuffer[i];
@@ -264,6 +310,7 @@ public class PlayerWallPhaseDash : MonoBehaviour
         filter.useTriggers = true;
 
         int overlapCount = movement.OverlapBodyAt(transform.position, filter, overlapBuffer);
+        WarnIfOverlapBufferFull(overlapCount);
         for (int i = 0; i < overlapCount; i++)
         {
             Collider2D overlap = overlapBuffer[i];
@@ -279,13 +326,6 @@ public class PlayerWallPhaseDash : MonoBehaviour
         }
     }
 
-    private void FinishDash()
-    {
-        movement.SetControlLocked(false);
-        IsWallPhaseDashing = false;
-        dashRoutine = null;
-    }
-
     private void CleanupDashState()
     {
         RemoveInvincibleOverride();
@@ -298,6 +338,17 @@ public class PlayerWallPhaseDash : MonoBehaviour
         IsWallPhaseDashing = false;
     }
 
+    private void WarnIfOverlapBufferFull(int overlapCount)
+    {
+        if (warnedOverlapBufferFull || overlapCount < overlapBuffer.Length)
+        {
+            return;
+        }
+
+        Debug.LogWarning("[PlayerWallPhaseDash] Overlap buffer is full. Some dash targets may be skipped.", this);
+        warnedOverlapBufferFull = true;
+    }
+
     private void RemoveInvincibleOverride()
     {
         if (!hasInvincibleOverride || health == null)
@@ -305,7 +356,7 @@ public class PlayerWallPhaseDash : MonoBehaviour
             return;
         }
 
-        health.RemoveInvincibleOverride();
+        health.RemoveInvincibleOverride(this);
         hasInvincibleOverride = false;
     }
 

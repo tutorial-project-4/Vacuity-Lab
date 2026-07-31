@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerController))]
@@ -17,11 +18,12 @@ public class PlayerHealth : MonoBehaviour
     private PlayerController playerController;
     private Coroutine invincibleRoutine;
     private bool damageInvincible;
-    private int invincibleOverrideCount;
+    private int anonymousInvincibleOverrideCount;
+    private readonly HashSet<object> invincibleOverrideSources = new HashSet<object>();
 
     public int MaxHearts => maxHearts;
     public int CurrentHearts => currentHearts;
-    public bool IsInvincible => damageInvincible || invincibleOverrideCount > 0;
+    public bool IsInvincible => damageInvincible || anonymousInvincibleOverrideCount > 0 || invincibleOverrideSources.Count > 0;
     public bool IsDead { get; private set; }
 
     public event Action<int, int> HealthChanged;
@@ -84,7 +86,8 @@ public class PlayerHealth : MonoBehaviour
 
         IsDead = false;
         damageInvincible = false;
-        invincibleOverrideCount = 0;
+        anonymousInvincibleOverrideCount = 0;
+        invincibleOverrideSources.Clear();
         currentHearts = Mathf.Clamp(hearts, 0, maxHearts);
         playerController.ResetState();
         HealthChanged?.Invoke(currentHearts, maxHearts);
@@ -131,12 +134,34 @@ public class PlayerHealth : MonoBehaviour
 
     public void AddInvincibleOverride()
     {
-        invincibleOverrideCount++;
+        anonymousInvincibleOverrideCount++;
     }
 
     public void RemoveInvincibleOverride()
     {
-        invincibleOverrideCount = Mathf.Max(0, invincibleOverrideCount - 1);
+        anonymousInvincibleOverrideCount = Mathf.Max(0, anonymousInvincibleOverrideCount - 1);
+    }
+
+    public bool AddInvincibleOverride(object source)
+    {
+        if (source == null)
+        {
+            AddInvincibleOverride();
+            return true;
+        }
+
+        return invincibleOverrideSources.Add(source);
+    }
+
+    public bool RemoveInvincibleOverride(object source)
+    {
+        if (source == null)
+        {
+            RemoveInvincibleOverride();
+            return true;
+        }
+
+        return invincibleOverrideSources.Remove(source);
     }
 
     public void UpgradeMaxHealth(bool healToFull = false)
@@ -178,7 +203,8 @@ public class PlayerHealth : MonoBehaviour
 
         IsDead = true;
         damageInvincible = false;
-        invincibleOverrideCount = 0;
+        anonymousInvincibleOverrideCount = 0;
+        invincibleOverrideSources.Clear();
 
         if (invincibleRoutine != null)
         {
