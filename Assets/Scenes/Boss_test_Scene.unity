@@ -885,6 +885,7 @@ MonoBehaviour:
   m_BlackboardVariableOverridesList:
   - rid: 6043797081653248219
   - rid: 6043797081653248220
+  - rid: 6043797323666161971
   m_OriginalGraph: {fileID: 0}
   m_IsInitialised: 0
   m_IsStarted: 0
@@ -907,6 +908,14 @@ MonoBehaviour:
           m_Value1: 5427085450988712949
         Name: Target
         m_Value: {fileID: 1137568772}
+    - rid: 6043797323666161971
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 3657794441780029770
+          m_Value1: 7088331727686953275
+        Name: ElectricFloor
+        m_Value: {fileID: 1296182648}
 --- !u!114 &602780627
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4995,7 +5004,7 @@ MonoBehaviour:
   - {fileID: 1947831662}
   - {fileID: 1812300616}
   restDuration: 2
-  autoStart: 1
+  autoStart: 0
 --- !u!4 &1296182650
 Transform:
   m_ObjectHideFlags: 0

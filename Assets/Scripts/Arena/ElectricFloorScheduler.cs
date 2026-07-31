@@ -15,8 +15,8 @@ public sealed class ElectricFloorScheduler : MonoBehaviour
     [Tooltip("전기 종료 후 다음 배치까지 대기 (잠정 2s, 플레이테스트 범위 1.5~3s)")]
     [SerializeField, Min(0f)] private float restDuration = 2f;
 
-    [Tooltip("#9 연결 전 테스트용 자동 시작. 실전 흐름에선 끄고 Begin()을 호출한다.")]
-    [SerializeField] private bool autoStart = true;
+    [Tooltip("단독 테스트용 자동 시작. 실전 흐름(#9)은 그래프가 학습 패턴 종료 후 Begin()을 호출한다.")]
+    [SerializeField] private bool autoStart = false;
 
     private Coroutine loop;
 
@@ -35,6 +35,20 @@ public sealed class ElectricFloorScheduler : MonoBehaviour
         {
             loop = StartCoroutine(Loop());
         }
+    }
+
+    /// #9 최초 학습 패턴 고정 배치(세부기획 C-4): B1~B3 1사이클만 발동한다.
+    /// 루프와 무관한 1회성 — 루프 시작은 학습 패턴 종료 후 Begin()으로.
+    public void RunLearningBatch()
+    {
+        for (int i = 0; i < 3 && i < zones.Length; i++)
+        {
+            if (zones[i] != null)
+            {
+                zones[i].StartCycle();
+            }
+        }
+        Debug.Log("[ElectricFloor] 학습 배치: B1~B3 사이클 시작");
     }
 
     /// 즉시 중단하고 모든 예고·판정을 제거한다 (#10 전환 컷신, #15 리셋용).
