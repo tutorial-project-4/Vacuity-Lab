@@ -9,7 +9,8 @@ using UnityEngine;
 /// Active 중 직접 겹침 검사로 PlayerHealth.TakeDamage를 호출한다.
 /// 무적/중복 피격 정책은 PlayerHealth가 책임진다 (문서 9.5).
 
-public abstract class HazardBase : MonoBehaviour
+// abstract 아님: 전기 바닥 구역(#8)처럼 외부 스케줄러가 StartCycle()을 직접 호출하는 존은 이 클래스를 그대로 부착한다.
+public class HazardBase : MonoBehaviour
 {
     public enum HazardState { Inactive, Warning, Active, Cooldown }
 
