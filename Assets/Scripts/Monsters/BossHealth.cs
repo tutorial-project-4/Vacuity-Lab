@@ -28,6 +28,9 @@ public class BossHealth : MonoBehaviour
     public event Action<int> OnDamaged;
     public event Action OnDeath;
 
+    /// #10 전환 컷신 등 외부에서 켜는 피격 불가 상태 (피격 무적 타이머와 별개)
+    public bool Invulnerable { get; set; }
+
     float _invulnUntil;
 
     void Awake() => CurrentHp = maxHp;
@@ -35,6 +38,7 @@ public class BossHealth : MonoBehaviour
     public void TakeDamage(int damage)
     {
         if (IsDead) return;                    // 죽은 뒤 재호출 무시(사망 1회 보장)
+        if (Invulnerable) return;              // 컷신 등 외부 피격 불가
         if (Time.time < _invulnUntil) return;  // 무적 중
         if (damage <= 0) return;
 
