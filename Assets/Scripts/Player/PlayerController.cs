@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Coroutine knockbackRoutine;
     private Coroutine blinkRoutine;
+    private bool cutsceneLocked;
 
     public bool CanAttack { get; private set; } = true;
     public bool IsKnockbacking { get; private set; }
@@ -49,6 +50,24 @@ public class PlayerController : MonoBehaviour
 
         knockbackRoutine = StartCoroutine(KnockbackRoutine(knockbackDirection));
         blinkRoutine = StartCoroutine(BlinkRoutine(invincibleDuration));
+    }
+
+    /// 보스 페이즈 전환 컷신(#10) 등 연출 중 조작 잠금 — 이동·점프·대시(ControlLock)와 공격(CanAttack)을 함께 막는다.
+    public void SetCutsceneLock(bool locked)
+    {
+        CacheComponents();
+        cutsceneLocked = locked;
+
+        if (locked)
+        {
+            StopHitReaction();
+            IsKnockbacking = false;
+            SetSpriteVisible(true);
+            movement.StopVerticalMovement();
+        }
+
+        CanAttack = !locked;
+        movement.SetControlLocked(locked);
     }
 
     public void OnDeath()
@@ -107,8 +126,8 @@ public class PlayerController : MonoBehaviour
         }
 
         IsKnockbacking = false;
-        CanAttack = true;
-        movement.SetControlLocked(false);
+        CanAttack = !cutsceneLocked;                 // 넉백 종료가 컷신 잠금을 풀지 않도록
+        movement.SetControlLocked(cutsceneLocked);
         movement.StopVerticalMovement();
         knockbackRoutine = null;
     }
