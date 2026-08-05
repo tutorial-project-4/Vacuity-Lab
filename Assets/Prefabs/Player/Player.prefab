@@ -111,13 +111,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   moveSpeed: 10
   moveStep: 0.01
-  jumpSpeed: 10
+  jumpSpeed: 13
   gravity: 18
   fallGravityMultiplier: 1.5
   lowJumpGravityMultiplier: 2
   maxFallSpeed: 10
   coyoteTime: 0.1
   jumpBufferTime: 0.1
+  maxAirJumps: 1
   glideDuration: 2
   glideFallSpeed: 2
   dashSpeed: 16
@@ -161,6 +162,9 @@ MonoBehaviour:
   maxHearts: 4
   currentHearts: 4
   invincibleDuration: 0.8
+  damageSourceLayer:
+    serializedVersion: 2
+    m_Bits: 4294967295
 --- !u!114 &7770000000000000001
 MonoBehaviour:
   m_ObjectHideFlags: 0

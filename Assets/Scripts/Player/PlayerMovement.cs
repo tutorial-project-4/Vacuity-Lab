@@ -18,6 +18,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float coyoteTime = 0.1f;
     [SerializeField] private float jumpBufferTime = 0.1f;
 
+    [Header("Double Jump")]
+    [SerializeField] private int maxAirJumps = 1;
+
     [Header("Glide")]
     [SerializeField] private float glideDuration = 2f;
     [SerializeField] private float glideFallSpeed = 2f;
@@ -48,7 +51,9 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 dashDirection;
     private bool canGlide;
     private bool canAirDash = true;
+    private int airJumpsRemaining;
     private readonly Collider2D[] collisionBuffer = new Collider2D[32];
+    private readonly RaycastHit2D[] platformCastBuffer = new RaycastHit2D[16];
     private Collider2D currentGroundPlatform;
     private Collider2D ignoredDropThroughPlatform;
     private float platformDropThroughTimer;
@@ -56,6 +61,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isHorizontalCollisionCheck;
     private bool isGroundCheck;
     private bool warnedCollisionBufferFull;
+    private bool warnedPlatformCastBufferFull;
 
     public Vector2 AttackDirection { get; private set; } = Vector2.right;
     public int FacingDirection { get; private set; } = 1;
@@ -76,6 +82,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         ResetGlide();
+        ResetAirJumps();
     }
 
     private void Update()
@@ -135,6 +142,7 @@ public class PlayerMovement : MonoBehaviour
         {
             coyoteTimer = coyoteTime;
             canAirDash = true;
+            ResetAirJumps();
             ResetGlide();
 
             if (ySpeed < 0f)
@@ -169,12 +177,11 @@ public class PlayerMovement : MonoBehaviour
 
         if (jumpBufferTimer > 0f && coyoteTimer > 0f)
         {
-            ySpeed = jumpSpeed;
-            jumpBufferTimer = 0f;
-            coyoteTimer = 0f;
-            IsGliding = false;
-            canGlide = true;
-            glideTimer = glideDuration;
+            PerformJump(jumpSpeed);
+        }
+        else if (jumpBufferTimer > 0f && CanDoubleJump())
+        {
+            PerformDoubleJump();
         }
 
         if (CanStartGlide(keyboard))
@@ -439,6 +446,7 @@ public class PlayerMovement : MonoBehaviour
         dashDirection = Vector2.zero;
         canGlide = true;
         canAirDash = true;
+        airJumpsRemaining = maxAirJumps;
         currentGroundPlatform = null;
         ignoredDropThroughPlatform = null;
         platformDropThroughTimer = 0f;
@@ -458,6 +466,33 @@ public class PlayerMovement : MonoBehaviour
             && dashCooldownTimer <= 0f
             && (IsGrounded || canAirDash)
             && (keyboard.leftShiftKey.wasPressedThisFrame || keyboard.rightShiftKey.wasPressedThisFrame);
+    }
+
+    private bool CanDoubleJump()
+    {
+        return !IsGrounded
+            && airJumpsRemaining > 0;
+    }
+
+    private void PerformJump(float speed)
+    {
+        ySpeed = speed;
+        jumpBufferTimer = 0f;
+        coyoteTimer = 0f;
+        IsGliding = false;
+        canGlide = true;
+        glideTimer = glideDuration;
+    }
+
+    private void PerformDoubleJump()
+    {
+        airJumpsRemaining--;
+        PerformJump(jumpSpeed);
+    }
+
+    private void ResetAirJumps()
+    {
+        airJumpsRemaining = maxAirJumps;
     }
 
     private bool CanDropThroughPlatform(Keyboard keyboard)
@@ -520,16 +555,7 @@ public class PlayerMovement : MonoBehaviour
             return false;
         }
 
-        float platformTop = platform.bounds.max.y;
-        float currentFeetY = GetBodyBottomAt(transform.position);
-        float nextFeetY = GetBodyBottomAt(nextPosition);
-
-        if (currentFeetY < platformTop - platformLandingTolerance)
-        {
-            return true;
-        }
-
-        return nextFeetY > platformTop + platformLandingTolerance;
+        return !IsFallingOntoPlatform(platform, nextPosition);
     }
 
     private bool IsPlatform(Collider2D collider)
@@ -543,6 +569,39 @@ public class PlayerMovement : MonoBehaviour
         return collisionYSign == 0 && !isGroundCheck && !isHorizontalCollisionCheck;
     }
 
+    private bool IsFallingOntoPlatform(Collider2D platform, Vector2 nextPosition)
+    {
+        Vector2 currentCenter = GetColliderCenterAt(transform.position);
+        Vector2 nextCenter = GetColliderCenterAt(nextPosition);
+        Vector2 checkSize = GetColliderSize();
+        float castDistance = Mathf.Abs(currentCenter.y - nextCenter.y) + moveStep + platformLandingTolerance;
+
+        int hitCount = Physics2D.BoxCastNonAlloc(
+            currentCenter,
+            checkSize,
+            0f,
+            Vector2.down,
+            platformCastBuffer,
+            castDistance,
+            solidLayer
+        );
+
+        WarnIfPlatformCastBufferFull(hitCount);
+
+        for (int i = 0; i < hitCount; i++)
+        {
+            RaycastHit2D hit = platformCastBuffer[i];
+            if (hit.collider != platform)
+            {
+                continue;
+            }
+
+            return hit.normal.y > 0.5f;
+        }
+
+        return false;
+    }
+
     private bool IsBodyOverlappingCollider(Collider2D collider)
     {
         if (collider == null)
@@ -554,12 +613,6 @@ public class PlayerMovement : MonoBehaviour
         return bodyBounds.Intersects(collider.bounds);
     }
 
-    private float GetBodyBottomAt(Vector2 position)
-    {
-        Vector2 center = GetColliderCenterAt(position);
-        return center.y - GetColliderSize().y * 0.5f;
-    }
-
     private void WarnIfCollisionBufferFull(int overlapCount)
     {
         if (warnedCollisionBufferFull || overlapCount < collisionBuffer.Length)
@@ -569,6 +622,17 @@ public class PlayerMovement : MonoBehaviour
 
         Debug.LogWarning("[PlayerMovement] Collision buffer is full. Some movement collisions may be skipped.", this);
         warnedCollisionBufferFull = true;
+    }
+
+    private void WarnIfPlatformCastBufferFull(int hitCount)
+    {
+        if (warnedPlatformCastBufferFull || hitCount < platformCastBuffer.Length)
+        {
+            return;
+        }
+
+        Debug.LogWarning("[PlayerMovement] Platform cast buffer is full. Some platform hits may be skipped.", this);
+        warnedPlatformCastBufferFull = true;
     }
 
     private void StartDash(float horizontal)
@@ -659,6 +723,7 @@ public class PlayerMovement : MonoBehaviour
         maxFallSpeed = Mathf.Max(0f, maxFallSpeed);
         coyoteTime = Mathf.Max(0f, coyoteTime);
         jumpBufferTime = Mathf.Max(0f, jumpBufferTime);
+        maxAirJumps = Mathf.Max(0, maxAirJumps);
         glideDuration = Mathf.Max(0f, glideDuration);
         glideFallSpeed = Mathf.Max(0f, glideFallSpeed);
         dashSpeed = Mathf.Max(0f, dashSpeed);

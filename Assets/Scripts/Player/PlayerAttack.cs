@@ -11,18 +11,19 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private PlayerController playerController;
     [SerializeField] private BoxCollider2D swordCollider;
+    [SerializeField] private Camera worldCamera;
+    [SerializeField] private Transform attackOrigin;
 
     [Header("Attack")]
-    [SerializeField] private int damage = 1;
+    [SerializeField] private int damage = 20;
     [SerializeField] private float attackCooldown = 0.35f;
     [SerializeField] private float activeDuration = 0.08f;
     [SerializeField] private LayerMask targetLayer;
 
     [Header("Hitbox")]
-    [SerializeField] private Vector2 horizontalOffset = new Vector2(1.6f, 0f);
-    [SerializeField] private Vector2 horizontalSize = new Vector2(2.2f, 3f);
-    [SerializeField] private Vector2 verticalOffset = new Vector2(0f, 1.6f);
-    [SerializeField] private Vector2 verticalSize = new Vector2(2.2f, 3f);
+    [SerializeField] private float attackOffsetDistance = 1.6f;
+    [SerializeField] private Vector2 hitboxSize = new Vector2(2.2f, 3f);
+    [SerializeField] private float hitboxAngleOffset;
 
     private readonly Collider2D[] hitBuffer = new Collider2D[16];
     private readonly HashSet<BossHealth> damagedTargets = new HashSet<BossHealth>();
@@ -90,6 +91,7 @@ public class PlayerAttack : MonoBehaviour
         cooldownTimer = attackCooldown;
         damagedTargets.Clear();
         UpdateSwordPose();
+        Debug.Log($"[PlayerAttack] 공격 시작 무기 위치={transform.position}, 타겟레이어={targetLayer.value}", this);
         ConfigureCollider(true);
         DetectHits();
 
@@ -128,33 +130,62 @@ public class PlayerAttack : MonoBehaviour
             return;
         }
 
-        Vector2 direction = playerMovement.AttackDirection;
-        if (direction.sqrMagnitude <= 0.0001f)
-        {
-            direction = new Vector2(playerMovement.FacingDirection, 0f);
-        }
-
-        direction.Normalize();
-
-        Vector2 offset;
-        float angle;
-        if (Mathf.Abs(direction.y) > Mathf.Abs(direction.x))
-        {
-            offset = direction.y > 0f ? verticalOffset : -verticalOffset;
-            swordCollider.size = verticalSize;
-            angle = direction.y > 0f ? 90f : -90f;
-        }
-        else
-        {
-            float sign = direction.x >= 0f ? 1f : -1f;
-            offset = new Vector2(horizontalOffset.x * sign, horizontalOffset.y);
-            swordCollider.size = horizontalSize;
-            angle = sign > 0f ? 0f : 180f;
-        }
+        Vector2 origin = GetAttackOriginPosition();
+        Vector2 direction = GetMouseAttackDirection(origin);
+        Vector2 offset = direction * attackOffsetDistance;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + hitboxAngleOffset;
 
         swordCollider.offset = Vector2.zero;
-        transform.position = playerMovement.transform.position + (Vector3)offset;
+        swordCollider.size = hitboxSize;
+        transform.position = origin + offset;
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
+
+    private Vector2 GetMouseAttackDirection(Vector2 origin)
+    {
+        Mouse mouse = Mouse.current;
+        Camera camera = GetWorldCamera();
+        if (mouse != null && camera != null)
+        {
+            Vector3 mouseScreenPosition = mouse.position.ReadValue();
+            mouseScreenPosition.z = transform.position.z - camera.transform.position.z;
+            Vector2 mouseWorldPosition = camera.ScreenToWorldPoint(mouseScreenPosition);
+            Vector2 direction = mouseWorldPosition - origin;
+
+            if (direction.sqrMagnitude > 0.0001f)
+            {
+                return direction.normalized;
+            }
+        }
+
+        Vector2 fallbackDirection = playerMovement.AttackDirection;
+        if (fallbackDirection.sqrMagnitude <= 0.0001f)
+        {
+            fallbackDirection = new Vector2(playerMovement.FacingDirection, 0f);
+        }
+
+        return fallbackDirection.normalized;
+    }
+
+    private Vector2 GetAttackOriginPosition()
+    {
+        if (attackOrigin != null)
+        {
+            return attackOrigin.position;
+        }
+
+        return playerMovement != null ? playerMovement.transform.position : transform.position;
+    }
+
+    private Camera GetWorldCamera()
+    {
+        if (worldCamera != null)
+        {
+            return worldCamera;
+        }
+
+        worldCamera = Camera.main;
+        return worldCamera;
     }
 
     private void DetectHits()
@@ -170,16 +201,23 @@ public class PlayerAttack : MonoBehaviour
         filter.useTriggers = true;
 
         int hitCount = swordCollider.Overlap(filter, hitBuffer);
+
         for (int i = 0; i < hitCount; i++)
         {
             BossHealth bossHealth = hitBuffer[i].GetComponentInParent<BossHealth>();
-            if (bossHealth == null || damagedTargets.Contains(bossHealth))
+            if (bossHealth == null)
+            {
+                continue;
+            }
+
+            if (damagedTargets.Contains(bossHealth))
             {
                 continue;
             }
 
             damagedTargets.Add(bossHealth);
             bossHealth.TakeDamage(damage);
+            Debug.Log($"[PlayerAttack] 보스={bossHealth.name}, 대미지={damage}, 보스Hp={bossHealth.CurrentHp}/{bossHealth.MaxHp}", bossHealth);
         }
     }
 
@@ -224,10 +262,9 @@ public class PlayerAttack : MonoBehaviour
         damage = Mathf.Max(0, damage);
         attackCooldown = Mathf.Max(0f, attackCooldown);
         activeDuration = Mathf.Max(0.01f, activeDuration);
-        horizontalSize.x = Mathf.Max(0.01f, horizontalSize.x);
-        horizontalSize.y = Mathf.Max(0.01f, horizontalSize.y);
-        verticalSize.x = Mathf.Max(0.01f, verticalSize.x);
-        verticalSize.y = Mathf.Max(0.01f, verticalSize.y);
+        attackOffsetDistance = Mathf.Max(0f, attackOffsetDistance);
+        hitboxSize.x = Mathf.Max(0.01f, hitboxSize.x);
+        hitboxSize.y = Mathf.Max(0.01f, hitboxSize.y);
 
         if (!Application.isPlaying)
         {
