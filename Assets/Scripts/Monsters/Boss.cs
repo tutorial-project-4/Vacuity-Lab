@@ -80,6 +80,9 @@ public class Boss : MonoBehaviour
     {
         Debug.Log($"[BossPhase] HP {_health.CurrentHp} — 전환 컷신 시작({cutsceneDuration}s)");
         _agent.End();          // 실행 중 개체 공격 취소 — 각 액션의 OnEnd가 중력·히트박스를 원복한다
+        // #13: 액션 Success 후 남은 빔 잔상은 agent.End()로 안 꺼진다 — 명시 제거(F-2 "빔 잔상 제거")
+        GameObject beam = Beam();
+        if (beam != null && beam.activeSelf) beam.SetActive(false);
         ElectricFloorScheduler floor = Electric();
         floor?.Stop();         // 필드 전기 예고·판정 제거
         // 페이즈 2엔 강화 전기만 — 바닥 전기는 구역 표시까지 숨김(F-2 "필드 전기 제거").
@@ -118,6 +121,12 @@ public class Boss : MonoBehaviour
         _agent.SetVariableValue("Phase", 2);
         _agent.SetVariableValue("LearningDone", true); // 학습 패턴은 전투 최초 1회만
         _agent.SetVariableValue("LastAttackIndex", -1);
+    }
+
+    /// 그래프 Blackboard의 Beam(씬 오브젝트) 재사용 — 씬 참조 중복 방지.
+    GameObject Beam()
+    {
+        return _agent.GetVariable("Beam", out BlackboardVariable<GameObject> v) ? v.Value : null;
     }
 
     /// 그래프 Blackboard의 ElectricFloor(씬 오브젝트)를 재사용 — 씬 참조 중복 방지.
