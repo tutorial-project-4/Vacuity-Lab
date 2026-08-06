@@ -1,3 +1,4 @@
+using System.Collections;
 using Unity.Behavior;
 using UnityEngine;
 
@@ -18,8 +19,19 @@ public class Boss : MonoBehaviour
     [Tooltip("추적 대상. feat/player 병합 전에는 빈 GameObject를 임시 타깃으로 사용")]
     [SerializeField] Transform target;
 
+    [Header("#10 페이즈 전환 (HP 500, 컷신)")]
+    [Tooltip("이 HP 이하 최초 1회에 페이즈 2 전환 (확정 500)")]
+    [SerializeField] int phase2HpThreshold = 500;
+    [Tooltip("전환 컷신 길이 (잠정 2s, 범위 1.5~3s)")]
+    [SerializeField] float cutsceneDuration = 2f;
+    [Tooltip("컷신 종료(조작권 반환) 후 2페이즈 스케줄러 시작까지 준비시간 (확정 1s)")]
+    [SerializeField] float prepDuration = 1f;
+    [Tooltip("전환 컷신에서 활성화되는 가시벽 루트 (기본 비활성, Tools/Boss/Setup Spike Walls)")]
+    [SerializeField] GameObject spikeWalls;
+
     BossHealth _health;
     BehaviorGraphAgent _agent;
+    bool _phase2Triggered;
 
     void Awake()
     {
@@ -27,8 +39,17 @@ public class Boss : MonoBehaviour
         _agent = GetComponent<BehaviorGraphAgent>();
     }
 
-    void OnEnable() => _health.OnDeath += HandleDeath;
-    void OnDisable() => _health.OnDeath -= HandleDeath;
+    void OnEnable()
+    {
+        _health.OnDeath += HandleDeath;
+        _health.OnDamaged += HandleDamaged;
+    }
+
+    void OnDisable()
+    {
+        _health.OnDeath -= HandleDeath;
+        _health.OnDamaged -= HandleDamaged;
+    }
 
     void Start()
     {
@@ -43,11 +64,70 @@ public class Boss : MonoBehaviour
         Debug.Log("[Boss] 사망 — 그래프 정지");
     }
 
+    void HandleDamaged(int hp)
+    {
+        // hp <= 0 제외: 한 방에 500 이하와 0에 동시 도달하면 사망 우선(기획 F-2)
+        if (_phase2Triggered || hp > phase2HpThreshold || hp <= 0) return;
+        _phase2Triggered = true;
+        StartCoroutine(PhaseTransition());
+    }
+
+    /// #10 전환 컷신: 공격 취소·전기 정지·입력 잠금·보스 무적·가시벽 활성 →
+    /// 컷신 종료 후 조작권 반환 → 1초 준비 → Phase=2로 그래프 재시작 + 필드 스케줄러 재개.
+    IEnumerator PhaseTransition()
+    {
+        Debug.Log($"[BossPhase] HP {_health.CurrentHp} — 전환 컷신 시작({cutsceneDuration}s)");
+        _agent.End();          // 실행 중 개체 공격 취소 — 각 액션의 OnEnd가 중력·히트박스를 원복한다
+        Electric()?.Stop();    // 필드 전기 예고·판정 제거
+        _health.Invulnerable = true;
+
+        var pc = target ? target.GetComponentInParent<PlayerController>() : null;
+        var ph = target ? target.GetComponentInParent<PlayerHealth>() : null;
+        if (pc) pc.SetCutsceneLock(true);
+        if (ph) ph.AddInvincibleOverride(this); // 가시벽 활성 순간 벽에 붙어 있어도 컷신 중 피해 없음
+        if (spikeWalls) spikeWalls.SetActive(true);
+
+        yield return new WaitForSeconds(cutsceneDuration);
+
+        if (pc) pc.SetCutsceneLock(false);
+        if (ph) ph.RemoveInvincibleOverride(this);
+        _health.Invulnerable = false;
+        Debug.Log($"[BossPhase] 컷신 종료 — 조작권 반환, {prepDuration}s 준비");
+
+        yield return new WaitForSeconds(prepDuration);
+
+        // Restart()의 Blackboard 초기화 여부 미확인(#15) — 앞뒤 양쪽에 세팅해 학습 재생을 막는다
+        SetPhase2Blackboard();
+        _agent.Restart();
+        SetPhase2Blackboard();
+        Electric()?.Begin(); // 잠정: #12 강화 전기 전까지 1페이즈 전기 스케줄러 재사용
+        Debug.Log("[BossPhase] 페이즈 2 시작 — Phase=2, 개체·필드 스케줄러 재개");
+    }
+
+    void SetPhase2Blackboard()
+    {
+        _agent.SetVariableValue("Phase", 2);
+        _agent.SetVariableValue("LearningDone", true); // 학습 패턴은 전투 최초 1회만
+        _agent.SetVariableValue("LastAttackIndex", -1);
+    }
+
+    /// 그래프 Blackboard의 ElectricFloor(씬 오브젝트)를 재사용 — 씬 참조 중복 방지.
+    ElectricFloorScheduler Electric()
+    {
+        return _agent.GetVariable("ElectricFloor", out BlackboardVariable<GameObject> v) && v.Value != null
+            ? v.Value.GetComponent<ElectricFloorScheduler>()
+            : null;
+    }
+
 #if UNITY_EDITOR
     // #5 검증용: 플레이 모드에서 컴포넌트 우클릭 → 사망 정지 / 리셋 재시작 확인.
     // 정식 리스폰 진입점(ResetForRetry)은 #15에서 승격.
     [ContextMenu("Test: Kill")]
     void TestKill() => _health.TakeDamage(int.MaxValue);
+
+    // #10 검증용: 1회 → 1000→500 전환 트리거, 이후 1회 더 → 사망(전환 없이 사망 우선 확인은 Kill로)
+    [ContextMenu("Test: Damage 500")]
+    void TestDamage500() => _health.TakeDamage(500);
 
     [ContextMenu("Test: Reset")]
     void TestReset()
