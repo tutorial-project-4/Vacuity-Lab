@@ -31,6 +31,12 @@ public class Boss : MonoBehaviour
     [Tooltip("#12 페이즈 2 강화 전기(세로 라인) 스케줄러 (Tools/Boss/Setup Enhanced Electric). 미할당 시 1페이즈 전기를 재사용")]
     [SerializeField] ElectricFloorScheduler enhancedElectric;
 
+    [Header("#14 보스 사망")]
+    [Tooltip("사망 연출 placeholder 길이(잠정). 실제 연출('선배가 기어 나옴')을 붙일 때 교체")]
+    [SerializeField] float deathSequenceDuration = 1.5f;
+    [Tooltip("사망 연출 종료 후 1회 호출 — 출구 개방·보상·풀 회복(플레이어 담당)·진행 저장을 여기 연결(기획 J-6)")]
+    [SerializeField] UnityEngine.Events.UnityEvent onDeathSequenceFinished;
+
     BossHealth _health;
     BehaviorGraphAgent _agent;
     bool _phase2Triggered;
@@ -60,10 +66,32 @@ public class Boss : MonoBehaviour
         _agent.SetVariableValue("Target", target ? target.gameObject : null);
     }
 
+    /// #14 사망 처리(기획 J-6): 행동 중단 → 모든 판정 제거 → 연출 placeholder → 외부 훅.
+    /// 피격 비활성은 BossHealth.IsDead가 담당(사망 후 TakeDamage 무시).
     void HandleDeath()
     {
-        _agent.End(); // 그래프 정지. 사망 연출, 보상 훅은 #14
-        Debug.Log("[Boss] 사망 — 그래프 정지");
+        // 전환 준비(prep) 중 사망하면 PhaseTransition 잔여(Restart+스케줄러 재개)를 끊는다.
+        // 컷신 중엔 Invulnerable이라 사망 불가 → 플레이어 잠금이 걸린 채 끊길 일은 없다.
+        StopAllCoroutines();
+        _agent.End(); // 실행 중 공격 취소 — 각 액션 OnEnd가 중력·히트박스 원복
+
+        Electric()?.Stop();
+        if (enhancedElectric) enhancedElectric.Stop();
+        GameObject beam = Beam();
+        if (beam != null && beam.activeSelf) beam.SetActive(false); // 빔 잔상 제거
+        if (spikeWalls) spikeWalls.SetActive(false);                // 필드 기믹 판정 제거
+        foreach (var src in GetComponentsInChildren<PlayerDamageSource>(true))
+            src.gameObject.SetActive(false);                        // 몸체·슬램 히트박스 제거
+
+        StartCoroutine(DeathSequence());
+    }
+
+    IEnumerator DeathSequence()
+    {
+        Debug.Log($"[Boss] 사망 — 판정 제거, 연출 placeholder {deathSequenceDuration}s");
+        yield return new WaitForSeconds(deathSequenceDuration);
+        Debug.Log("[Boss] 사망 연출 종료 — 출구·보상·회복 훅 호출");
+        onDeathSequenceFinished?.Invoke();
     }
 
     void HandleDamaged(int hp)
