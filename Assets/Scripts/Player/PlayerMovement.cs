@@ -351,7 +351,7 @@ public class PlayerMovement : MonoBehaviour
         for (int i = 0; i < overlapCount; i++)
         {
             Collider2D hit = collisionBuffer[i];
-            if (hit == null || hit == bodyCollider)
+            if (hit == null || hit == bodyCollider || hit.isTrigger)
             {
                 continue;
             }
