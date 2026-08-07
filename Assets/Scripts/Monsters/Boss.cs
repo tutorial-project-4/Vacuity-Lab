@@ -28,6 +28,8 @@ public class Boss : MonoBehaviour
     [SerializeField] float prepDuration = 1f;
     [Tooltip("전환 컷신에서 활성화되는 가시벽 루트 (기본 비활성, Tools/Boss/Setup Spike Walls)")]
     [SerializeField] GameObject spikeWalls;
+    [Tooltip("#12 페이즈 2 강화 전기(세로 라인) 스케줄러 (Tools/Boss/Setup Enhanced Electric). 미할당 시 1페이즈 전기를 재사용")]
+    [SerializeField] ElectricFloorScheduler enhancedElectric;
 
     BossHealth _health;
     BehaviorGraphAgent _agent;
@@ -78,7 +80,15 @@ public class Boss : MonoBehaviour
     {
         Debug.Log($"[BossPhase] HP {_health.CurrentHp} — 전환 컷신 시작({cutsceneDuration}s)");
         _agent.End();          // 실행 중 개체 공격 취소 — 각 액션의 OnEnd가 중력·히트박스를 원복한다
-        Electric()?.Stop();    // 필드 전기 예고·판정 제거
+        // #13: 액션 Success 후 남은 빔 잔상은 agent.End()로 안 꺼진다 — 명시 제거(F-2 "빔 잔상 제거")
+        GameObject beam = Beam();
+        if (beam != null && beam.activeSelf) beam.SetActive(false);
+        ElectricFloorScheduler floor = Electric();
+        floor?.Stop();         // 필드 전기 예고·판정 제거
+        // 페이즈 2엔 강화 전기만 — 바닥 전기는 구역 표시까지 숨김(F-2 "필드 전기 제거").
+        // 재도전 시 재활성은 #15에서. 강화 전기 미셋업 씬은 폴백으로 계속 쓰므로 숨기지 않는다.
+        if (floor != null && enhancedElectric != null)
+            floor.gameObject.SetActive(false);
         _health.Invulnerable = true;
 
         var pc = target ? target.GetComponentInParent<PlayerController>() : null;
@@ -100,7 +110,9 @@ public class Boss : MonoBehaviour
         SetPhase2Blackboard();
         _agent.Restart();
         SetPhase2Blackboard();
-        Electric()?.Begin(); // 잠정: #12 강화 전기 전까지 1페이즈 전기 스케줄러 재사용
+        // 페이즈 2 필드 공격 = 강화 전기(#12). 일반 전기는 컷신에서 정지된 채 유지(기획 G절)
+        if (enhancedElectric != null) enhancedElectric.Begin();
+        else Electric()?.Begin(); // 강화 전기 미셋업 씬 폴백 — 1페이즈 전기 재사용
         Debug.Log("[BossPhase] 페이즈 2 시작 — Phase=2, 개체·필드 스케줄러 재개");
     }
 
@@ -109,6 +121,12 @@ public class Boss : MonoBehaviour
         _agent.SetVariableValue("Phase", 2);
         _agent.SetVariableValue("LearningDone", true); // 학습 패턴은 전투 최초 1회만
         _agent.SetVariableValue("LastAttackIndex", -1);
+    }
+
+    /// 그래프 Blackboard의 Beam(씬 오브젝트) 재사용 — 씬 참조 중복 방지.
+    GameObject Beam()
+    {
+        return _agent.GetVariable("Beam", out BlackboardVariable<GameObject> v) ? v.Value : null;
     }
 
     /// 그래프 Blackboard의 ElectricFloor(씬 오브젝트)를 재사용 — 씬 참조 중복 방지.
