@@ -5360,6 +5360,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 450852029310653416, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 558051665498951391, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
       propertyPath: m_SortingOrder
       value: 1
@@ -7268,6 +7272,16 @@ Transform:
   - {fileID: 47743406}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1928214876 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4352529521608417223, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
+  m_PrefabInstance: {fileID: 1091700612}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1928214884 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7549675566413881513, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
+  m_PrefabInstance: {fileID: 1091700612}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1947831661
 GameObject:
   m_ObjectHideFlags: 0
@@ -7600,7 +7614,7 @@ PrefabInstance:
     - target: {fileID: 2633237456899992572, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: managedReferences[6043797081653248220].m_Value
       value: 
-      objectReference: {fileID: 1137568772}
+      objectReference: {fileID: 1928214876}
     - target: {fileID: 2633237456899992572, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: managedReferences[6043797323666161971].m_Value
       value: 
@@ -7632,7 +7646,7 @@ PrefabInstance:
     - target: {fileID: 7449935161492314678, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: target
       value: 
-      objectReference: {fileID: 1137568774}
+      objectReference: {fileID: 1928214884}
     - target: {fileID: 7449935161492314678, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: spikeWalls
       value: 
@@ -7641,6 +7655,14 @@ PrefabInstance:
       propertyPath: enhancedElectric
       value: 
       objectReference: {fileID: 572404695}
+    - target: {fileID: 7449935161492314678, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
+      propertyPath: onDeathSequenceFinished.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7449935161492314678, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
+      propertyPath: onDeathSequenceFinished.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 8019187508573528365, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_Name
       value: Boss
