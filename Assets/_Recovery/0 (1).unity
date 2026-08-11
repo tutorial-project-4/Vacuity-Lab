@@ -925,7 +925,7 @@ GameObject:
   m_Component:
   - component: {fileID: 680568905}
   m_Layer: 0
-  m_Name: Boss1 Intro Trigger
+  m_Name: Boss1 Event Root
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -943,7 +943,8 @@ Transform:
   m_LocalPosition: {x: 8.07608, y: 1.57157, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1640596788}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &695752591
@@ -12296,6 +12297,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5534670763056370214, guid: df1d782dc08e43948a3ac2b1cd3fe230, type: 3}
   m_PrefabInstance: {fileID: 7281494999626990217}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1640596787
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1640596788}
+  m_Layer: 0
+  m_Name: Intro Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1640596788
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1640596787}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 680568905}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1650045988
 GameObject:
   m_ObjectHideFlags: 0
@@ -56990,7 +57022,7 @@ PrefabInstance:
       objectReference: {fileID: 1023856012}
     - target: {fileID: 6494413092824680668, guid: 19392aaaca76bce41844ff8291d64b9d, type: 3}
       propertyPath: m_Name
-      value: Main Camera
+      value: 'Main Camera '
       objectReference: {fileID: 0}
     - target: {fileID: 7860037443175321698, guid: 19392aaaca76bce41844ff8291d64b9d, type: 3}
       propertyPath: m_LocalPosition.x

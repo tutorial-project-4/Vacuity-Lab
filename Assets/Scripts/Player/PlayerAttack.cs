@@ -10,6 +10,7 @@ public class PlayerAttack : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerMovement playerMovement;
     [SerializeField] private PlayerController playerController;
+    [Tooltip("Sword 콜라이더는 공격 중에만 활성화됩니다. 평소에는 이동/피격 판정과 겹치지 않도록 비활성 상태로 둡니다.")]
     [SerializeField] private BoxCollider2D swordCollider;
     [SerializeField] private Camera worldCamera;
     [SerializeField] private Transform attackOrigin;
@@ -230,6 +231,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (swordCollider != null)
         {
+            // Sword 콜라이더는 기본 비활성입니다. 공격 판정이 열리는 짧은 시간에만 켜서 상시 충돌과 중복 타격을 막습니다.
             swordCollider.isTrigger = true;
             swordCollider.enabled = isActive;
         }
