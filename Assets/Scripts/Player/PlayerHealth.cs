@@ -14,12 +14,15 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private int maxHearts = BaseMaxHearts;
     [SerializeField] private int currentHearts = BaseMaxHearts;
     [SerializeField] private float invincibleDuration = 0.8f;
+    [SerializeField] private LayerMask damageSourceLayer = Physics2D.AllLayers;
 
     private PlayerController playerController;
+    private BoxCollider2D bodyCollider;
     private Coroutine invincibleRoutine;
     private bool damageInvincible;
     private int anonymousInvincibleOverrideCount;
     private readonly HashSet<object> invincibleOverrideSources = new HashSet<object>();
+    private readonly Collider2D[] damageOverlapBuffer = new Collider2D[16];
 
     public int MaxHearts => maxHearts;
     public int CurrentHearts => currentHearts;
@@ -47,17 +50,35 @@ public class PlayerHealth : MonoBehaviour
         TryTakeDamageFrom(collision.collider);
     }
 
+    private void FixedUpdate()
+    {
+        if (IsDead || IsInvincible)
+        {
+            return;
+        }
+
+        PollOverlappingDamageSources();
+    }
+
     public bool TakeDamage(int damage, Vector2 damageSourcePosition)
     {
         CacheComponents();
 
-        if (damage <= 0 || IsDead || IsInvincible)
+        if (IsDead)
+        {
+            Debug.Log($"[PlayerHealth] 플레이어 사망으로 대미지 무시 damage={damage}", this);
+            return false;
+        }
+
+        if (IsInvincible)
         {
             return false;
         }
 
+        int previousHearts = currentHearts;
         currentHearts = Mathf.Max(currentHearts - damage, 0);
         HealthChanged?.Invoke(currentHearts, maxHearts);
+        Debug.Log($"[PlayerHealth] 받은 대미지={damage} 위치={damageSourcePosition}. 하트 {previousHearts}->{currentHearts}/{maxHearts}", this);
 
         RequestHitStop();
         playerController.ReceiveHit(damageSourcePosition, invincibleDuration);
@@ -99,8 +120,13 @@ public class PlayerHealth : MonoBehaviour
         ResetState(hearts < 0 ? maxHearts : hearts);
     }
 
-    private void TryTakeDamageFrom(Collider2D other)
+    private bool TryTakeDamageFrom(Collider2D other)
     {
+        if (other == null)
+        {
+            return false;
+        }
+
         PlayerDamageSource damageSource = other.GetComponent<PlayerDamageSource>();
         if (damageSource == null)
         {
@@ -109,10 +135,11 @@ public class PlayerHealth : MonoBehaviour
 
         if (damageSource == null)
         {
-            return;
+            return false;
         }
 
-        TakeDamage(damageSource.Damage, damageSource.transform.position);
+        Debug.Log($"[PlayerHealth] 공격 감지 : {damageSource.name}, 대미지={damageSource.Damage}", damageSource);
+        return TakeDamage(damageSource.Damage, damageSource.transform.position);
     }
 
     public void Heal(int hearts)
@@ -226,6 +253,35 @@ public class PlayerHealth : MonoBehaviour
         if (playerController == null)
         {
             playerController = GetComponent<PlayerController>();
+        }
+
+        if (bodyCollider == null)
+        {
+            bodyCollider = GetComponent<BoxCollider2D>();
+        }
+    }
+
+    private void PollOverlappingDamageSources()
+    {
+        CacheComponents();
+
+        if (bodyCollider == null)
+        {
+            return;
+        }
+
+        ContactFilter2D filter = new ContactFilter2D();
+        filter.SetLayerMask(damageSourceLayer);
+        filter.useLayerMask = true;
+        filter.useTriggers = true;
+
+        int hitCount = bodyCollider.Overlap(filter, damageOverlapBuffer);
+        for (int i = 0; i < hitCount; i++)
+        {
+            if (TryTakeDamageFrom(damageOverlapBuffer[i]) || IsDead || IsInvincible)
+            {
+                break;
+            }
         }
     }
 
