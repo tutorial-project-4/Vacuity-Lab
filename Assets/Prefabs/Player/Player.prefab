@@ -33,7 +33,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.09, y: 2.35, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -111,13 +111,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   moveSpeed: 10
   moveStep: 0.01
-  jumpSpeed: 10
+  jumpSpeed: 13
   gravity: 18
   fallGravityMultiplier: 1.5
   lowJumpGravityMultiplier: 2
   maxFallSpeed: 10
   coyoteTime: 0.1
   jumpBufferTime: 0.1
+  maxAirJumps: 1
   glideDuration: 2
   glideFallSpeed: 2
   dashSpeed: 16
@@ -161,33 +162,9 @@ MonoBehaviour:
   maxHearts: 4
   currentHearts: 4
   invincibleDuration: 0.8
---- !u!114 &7770000000000000001
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4352529521608417223}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6728a3d95154b6d8d0d9b33a6c8fb2c, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
-  movement: {fileID: 4489409896736880395}
-  health: {fileID: 3590667089837195823}
-  dashDistance: 4
-  dashDuration: 0.18
-  dashCooldown: 1.5
-  damage: 20
-  bossContactDamage: 1
-  targetLayer:
+  damageSourceLayer:
     serializedVersion: 2
-    m_Bits: 256
-  dashPassableLayer:
-    serializedVersion: 2
-    m_Bits: 2048
-  resolveStep: 0.05
-  maxExitResolveDistance: 2
+    m_Bits: 4294967295
 --- !u!50 &5340966766955015085
 Rigidbody2D:
   serializedVersion: 5
@@ -261,3 +238,30 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 0.9, y: 0.9}
   m_EdgeRadius: 0
+--- !u!114 &7770000000000000001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4352529521608417223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6728a3d95154b6d8d0d9b33a6c8fb2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movement: {fileID: 4489409896736880395}
+  health: {fileID: 3590667089837195823}
+  dashDistance: 4
+  dashDuration: 0.18
+  dashCooldown: 1.5
+  damage: 20
+  bossContactDamage: 1
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  dashPassableLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  resolveStep: 0.05
+  maxExitResolveDistance: 2
