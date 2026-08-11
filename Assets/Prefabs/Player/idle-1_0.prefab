@@ -16,8 +16,6 @@ GameObject:
   - component: {fileID: 2939724068974572123}
   - component: {fileID: 8662216509852807858}
   - component: {fileID: 6330683245484251440}
-  - component: {fileID: 1974403398210799058}
-  - component: {fileID: 445614279668136127}
   - component: {fileID: 2796850897868860239}
   m_Layer: 0
   m_Name: idle-1_0
@@ -205,6 +203,7 @@ MonoBehaviour:
   maxFallSpeed: 10
   coyoteTime: 0.1
   jumpBufferTime: 0.1
+  maxAirJumps: 1
   glideDuration: 2
   glideFallSpeed: 2
   dashSpeed: 16
@@ -259,45 +258,9 @@ MonoBehaviour:
   maxHearts: 6
   currentHearts: 6
   invincibleDuration: 0.8
---- !u!114 &1974403398210799058
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8640454921726000900}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9386d3e6d9b43b48b8aa66f68c3b137, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageSource
-  damage: 1
-  useTrigger: 1
---- !u!114 &445614279668136127
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8640454921726000900}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e9a797e7c374b30a7f92da02d6ccafd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
-  playerMovement: {fileID: 0}
-  playerController: {fileID: 0}
-  swordCollider: {fileID: 5170651896266855098}
-  damage: 1
-  attackCooldown: 0.35
-  activeDuration: 0.08
-  targetLayer:
+  damageSourceLayer:
     serializedVersion: 2
-    m_Bits: 0
-  horizontalOffset: {x: 1.6, y: 0}
-  horizontalSize: {x: 2.2, y: 3}
-  verticalOffset: {x: 0, y: 1.6}
-  verticalSize: {x: 2.2, y: 3}
+    m_Bits: 4294967295
 --- !u!114 &2796850897868860239
 MonoBehaviour:
   m_ObjectHideFlags: 0
