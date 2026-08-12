@@ -5,7 +5,7 @@ using UnityEngine;
 using Action = Unity.Behavior.Action;
 
 /// #6 직선 돌진(기획 변경 반영): 예고 0.7s → 예고 종료 시 플레이어 y·x방향 고정(이후 보정 없음)
-/// → 고정된 y로 수직 이동(중력 일시 0) → 체공 HoverSeconds(x축 예고 암시, 인스펙터 조정용)
+/// → 고정된 플레이어의 발 y로 수직 이동(중력 일시 0) → 체공 HoverSeconds(x축 예고 암시, 인스펙터 조정용)
 /// → 초당 10타일, 벽 또는 최대 6타일 x축 직선 이동
 /// (플레이어·플랫폼 통과) → 돌진 종료 시 중력 원복 → 후딜 0.5s.
 /// 피해는 보스 몸통 히트박스의 PlayerDamageSource(1하트)가 담당 — 이 노드는 이동만.
@@ -101,7 +101,15 @@ public partial class DashAction : Action
     {
         var target = Target.Value;
         _dir = (target != null && target.transform.position.x < self.transform.position.x) ? -1f : 1f;
-        _targetY = target != null ? target.transform.position.y : self.transform.position.y;
+        _targetY = self.transform.position.y;
+        if (target != null)
+        {
+            Collider2D selfCollider = self.GetComponent<Collider2D>();
+            Collider2D targetCollider = target.GetComponentInChildren<Collider2D>();
+            _targetY += targetCollider != null && selfCollider != null
+                ? targetCollider.bounds.min.y - selfCollider.bounds.min.y
+                : target.transform.position.y - self.transform.position.y;
+        }
         _phase = Phase.Align;
 
         _rb = self.GetComponent<Rigidbody2D>();
