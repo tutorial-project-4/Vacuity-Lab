@@ -105,6 +105,7 @@ GameObject:
   - component: {fileID: 7253745522982222745}
   - component: {fileID: 5473057999278591815}
   - component: {fileID: 998015264653420553}
+  - component: {fileID: 7824544201641742114}
   m_Layer: 9
   m_Name: ElectricFloor
   m_TagString: Untagged
@@ -210,7 +211,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5937177017679898922}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70c7ab1a9098913489f94a734aa0a34e, type: 3}
   m_Name: 
@@ -221,7 +222,7 @@ MonoBehaviour:
   damageObject: {fileID: 1738896598389219082}
   targetLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   stateVisual: {fileID: 7253745522982222745}
   inactiveColor: {r: 0.35, g: 0.3, b: 0.3, a: 1}
   warningColor: {r: 1, g: 0.85, b: 0.2, a: 1}
@@ -230,3 +231,27 @@ MonoBehaviour:
   startDelay: 1
   phaseOffset: 0
   loop: 1
+--- !u!114 &7824544201641742114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5937177017679898922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe3b52f0a90ba1b4f8a0cdc27c30cc3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HazardBase
+  warningDuration: 1
+  activeDuration: 2
+  cooldownDuration: 1
+  damageObject: {fileID: 1738896598389219082}
+  targetLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  stateVisual: {fileID: 0}
+  inactiveColor: {r: 0.35, g: 0.3, b: 0.3, a: 1}
+  warningColor: {r: 1, g: 0.85, b: 0.2, a: 1}
+  activeColor: {r: 1, g: 0.25, b: 0.2, a: 1}
+  cooldownColor: {r: 0.4, g: 0.45, b: 0.6, a: 1}
