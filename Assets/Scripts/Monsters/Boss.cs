@@ -40,7 +40,7 @@ public class Boss : MonoBehaviour
     [Header("#14 보스 사망")]
     [Tooltip("사망 연출 placeholder 길이(잠정). 실제 연출('선배가 기어 나옴')을 붙일 때 교체")]
     [SerializeField] float deathSequenceDuration = 1.5f;
-    [Tooltip("사망 연출 종료 후 1회 호출 — 출구 개방·보상·풀 회복(플레이어 담당)·진행 저장을 여기 연결(기획 J-6)")]
+    [Tooltip("사망 연출 종료 후 1회 호출 — 출구 개방·보상·진행 저장을 여기 연결(기획 J-6). 플레이어 풀 회복은 Boss가 처리")]
     [SerializeField] UnityEngine.Events.UnityEvent onDeathSequenceFinished;
 
     BossHealth _health;
@@ -184,6 +184,7 @@ public class Boss : MonoBehaviour
     {
         Debug.Log($"[Boss] 사망 — 판정 제거, 연출 placeholder {deathSequenceDuration}s");
         yield return new WaitForSeconds(deathSequenceDuration);
+        if (_playerHealth) _playerHealth.Heal(_playerHealth.MaxHearts);
         Debug.Log("[Boss] 사망 연출 종료 — 출구·보상·회복 훅 호출");
         onDeathSequenceFinished?.Invoke();
     }

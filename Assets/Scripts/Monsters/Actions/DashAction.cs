@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Unity.Behavior;
 using Unity.Properties;
 using UnityEngine;
@@ -36,6 +37,8 @@ public partial class DashAction : Action
     float _stopDistance; // 벽 레이캐스트로 잘라낸 실제 이동 한계
     Rigidbody2D _rb;
     float _prevGravity;
+    Collider2D _bodyCollider;
+    readonly List<Collider2D> _ignoredPlatforms = new();
 
     protected override Status OnStart()
     {
@@ -95,6 +98,7 @@ public partial class DashAction : Action
     protected override void OnEnd()
     {
         RestoreGravity(); // 사망 등으로 중단돼도 중력 원복
+        RestorePlatformCollision();
     }
 
     void LockDirection(GameObject self)
@@ -109,13 +113,44 @@ public partial class DashAction : Action
             _targetY += targetCollider != null && selfCollider != null
                 ? targetCollider.bounds.min.y - selfCollider.bounds.min.y
                 : target.transform.position.y - self.transform.position.y;
+            ClampTargetYInsideWalls(self, selfCollider);
         }
         _phase = Phase.Align;
 
         _rb = self.GetComponent<Rigidbody2D>();
         if (_rb != null) { _prevGravity = _rb.gravityScale; _rb.gravityScale = 0f; _rb.linearVelocity = Vector2.zero; } // 수직 정렬·돌진은 transform이 담당
 
+        _bodyCollider = self.GetComponent<Collider2D>();
+        if (_bodyCollider != null)
+        {
+            foreach (var effector in UnityEngine.Object.FindObjectsByType<PlatformEffector2D>(FindObjectsSortMode.None))
+                foreach (var platform in effector.GetComponents<Collider2D>())
+                    if (platform.enabled && platform.usedByEffector)
+                    {
+                        Physics2D.IgnoreCollision(_bodyCollider, platform, true);
+                        _ignoredPlatforms.Add(platform);
+                    }
+        }
+
         Debug.Log($"[BossDash] 방향 고정 {(_dir > 0 ? "→" : "←")}, 정렬 y={_targetY:F2} @ {Time.time:F2}s");
+    }
+
+    void ClampTargetYInsideWalls(GameObject self, Collider2D body)
+    {
+        if (body == null) return;
+
+        var origin = (Vector2)body.bounds.center;
+        int solid = LayerMask.GetMask("Solid");
+        var ceiling = Physics2D.Raycast(origin, Vector2.up, Mathf.Infinity, solid);
+        var floor = Physics2D.Raycast(origin, Vector2.down, Mathf.Infinity, solid);
+        float minY = floor.collider != null
+            ? floor.point.y + (self.transform.position.y - body.bounds.min.y)
+            : float.NegativeInfinity;
+        float maxY = ceiling.collider != null
+            ? ceiling.point.y - (body.bounds.max.y - self.transform.position.y)
+            : float.PositiveInfinity;
+
+        _targetY = Mathf.Clamp(_targetY, minY, maxY);
     }
 
     void BeginDash(GameObject self)
@@ -140,5 +175,14 @@ public partial class DashAction : Action
         _rb.gravityScale = _prevGravity;
         _rb.linearVelocity = Vector2.zero;
         _rb = null;
+    }
+
+    void RestorePlatformCollision()
+    {
+        if (_bodyCollider != null)
+            foreach (var platform in _ignoredPlatforms)
+                if (platform != null) Physics2D.IgnoreCollision(_bodyCollider, platform, false);
+        _ignoredPlatforms.Clear();
+        _bodyCollider = null;
     }
 }
