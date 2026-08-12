@@ -18,29 +18,18 @@ public class BarrierDeactivateAction : DialogueInteractionAction
             return;
         }
 
-        hasRun = true;
+        bool changedState = false;
 
         if (targetCollider != null)
         {
             targetCollider.enabled = false;
-        }
-        else if (targetTerrainDescriptor != null)
-        {
-            Collider2D fallbackCollider = targetTerrainDescriptor.GetComponent<Collider2D>();
-            if (fallbackCollider != null)
-            {
-                fallbackCollider.enabled = false;
-            }
+            changedState = true;
         }
 
         if (targetTerrainDescriptor != null)
         {
             targetTerrainDescriptor.enabled = false;
-        }
-
-        if (targetAnimator == null && targetTerrainDescriptor != null)
-        {
-            targetAnimator = targetTerrainDescriptor.GetComponent<Animator>();
+            changedState = true;
         }
 
         if (targetAnimator != null && !string.IsNullOrWhiteSpace(animationStateName))
@@ -51,6 +40,25 @@ public class BarrierDeactivateAction : DialogueInteractionAction
             }
 
             targetAnimator.Play(animationStateName, 0, 0f);
+            changedState = true;
+        }
+
+        if (changedState)
+        {
+            hasRun = true;
+        }
+    }
+
+    private void OnValidate()
+    {
+        if (targetCollider == null)
+        {
+            Debug.LogWarning("[BarrierDeactivateAction] Target Collider is not assigned.", this);
+        }
+
+        if (targetAnimator == null)
+        {
+            Debug.LogWarning("[BarrierDeactivateAction] Target Animator is not assigned.", this);
         }
     }
 }

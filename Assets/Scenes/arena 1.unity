@@ -1413,6 +1413,11 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
+--- !u!95 &578706770 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 3983161469589665478, guid: 5183505eb51c7484b994109ae9a4b5f2, type: 3}
+  m_PrefabInstance: {fileID: 578706766}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &578706771 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5881680170256467937, guid: 5183505eb51c7484b994109ae9a4b5f2, type: 3}
@@ -12860,6 +12865,7 @@ MonoBehaviour:
       \uC54A\uB294\uB2E4."
   promptLabel: F
   triggerOnce: 0
+  actionsOnInteract: []
 --- !u!1 &1545887974
 GameObject:
   m_ObjectHideFlags: 0
@@ -13024,6 +13030,8 @@ MonoBehaviour:
     text: "\uD0A4\uB97C \uAC00\uC838\uC640."
   promptLabel: F
   triggerOnce: 0
+  actionsOnInteract:
+  - {fileID: 1571733805}
 --- !u!114 &1571733805
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13038,7 +13046,7 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   targetCollider: {fileID: 578706769}
   targetTerrainDescriptor: {fileID: 578706768}
-  targetAnimator: {fileID: 0}
+  targetAnimator: {fileID: 578706770}
   deactivatedController: {fileID: 9100000, guid: 6180a1f35cba2f34cb0f4695a852c043, type: 2}
   animationStateName: barrier_deactivate
   runOnce: 1

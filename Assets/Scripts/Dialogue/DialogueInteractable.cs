@@ -17,15 +17,10 @@ public class DialogueInteractable : MonoBehaviour
     [Header("Interaction")]
     [SerializeField] private string promptLabel = "F";
     [SerializeField] private bool triggerOnce = true;
+    [SerializeField] private DialogueInteractionAction[] actionsOnInteract;
 
     private PlayerController currentPlayer;
-    private DialogueInteractionAction[] interactionActions;
     private bool hasPlayed;
-
-    private void Awake()
-    {
-        interactionActions = GetComponents<DialogueInteractionAction>();
-    }
 
     private void Update()
     {
@@ -86,14 +81,17 @@ public class DialogueInteractable : MonoBehaviour
 
     private void RunInteractionActions()
     {
-        if (interactionActions == null)
+        if (actionsOnInteract == null)
         {
-            interactionActions = GetComponents<DialogueInteractionAction>();
+            return;
         }
 
-        for (int i = 0; i < interactionActions.Length; i++)
+        for (int i = 0; i < actionsOnInteract.Length; i++)
         {
-            interactionActions[i].Run();
+            if (actionsOnInteract[i] != null)
+            {
+                actionsOnInteract[i].Run();
+            }
         }
     }
 
