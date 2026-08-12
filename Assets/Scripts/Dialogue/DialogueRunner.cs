@@ -16,13 +16,13 @@ public class DialogueRunner : MonoBehaviour
     [SerializeField] private CanvasGroup dialogueGroup;
     [SerializeField] private Text speakerText;
     [SerializeField] private Text dialogueText;
+    [SerializeField] private GameObject promptRoot;
     [SerializeField] private Text promptText;
 
     private static DialogueRunner instance;
     private Coroutine routine;
     private PlayerController lockedPlayer;
     private bool isTyping;
-    private bool skipTyping;
 
     public static DialogueRunner Instance
     {
@@ -94,37 +94,24 @@ public class DialogueRunner : MonoBehaviour
         lockedPlayer?.SetCutsceneLock(true);
         SetPromptVisible(false);
         SetDialogueVisible(true);
-
-        int index = 0;
-        yield return TypeLine(lines[index]);
         yield return null;
 
-        while (index < lines.Length)
+        for (int index = 0; index < lines.Length; index++)
         {
-            if (WasAdvancePressed())
-            {
-                if (isTyping)
-                {
-                    skipTyping = true;
-                }
-                else
-                {
-                    index++;
-
-                    if (index < lines.Length)
-                    {
-                        yield return TypeLine(lines[index]);
-                    }
-                }
-            }
-
-            yield return null;
+            yield return TypeLine(lines[index]);
+            yield return WaitForAdvance();
         }
 
+        FinishDialogue();
+    }
+
+    private void FinishDialogue()
+    {
         SetDialogueVisible(false);
         lockedPlayer?.SetCutsceneLock(false);
         lockedPlayer = null;
         routine = null;
+        isTyping = false;
     }
 
     private IEnumerator TypeLine(DialogueLine line)
@@ -134,14 +121,13 @@ public class DialogueRunner : MonoBehaviour
         dialogueText.text = string.Empty;
 
         isTyping = true;
-        skipTyping = false;
 
         string fullText = line.text ?? string.Empty;
         float interval = charactersPerSecond > 0f ? 1f / charactersPerSecond : 0f;
 
         for (int i = 0; i < fullText.Length; i++)
         {
-            if (skipTyping)
+            if (WasAdvancePressed())
             {
                 break;
             }
@@ -150,7 +136,19 @@ public class DialogueRunner : MonoBehaviour
 
             if (interval > 0f)
             {
-                yield return new WaitForSeconds(interval);
+                float elapsed = 0f;
+                while (elapsed < interval)
+                {
+                    if (WasAdvancePressed())
+                    {
+                        dialogueText.text = fullText;
+                        isTyping = false;
+                        yield break;
+                    }
+
+                    elapsed += Time.deltaTime;
+                    yield return null;
+                }
             }
             else
             {
@@ -160,7 +158,16 @@ public class DialogueRunner : MonoBehaviour
 
         dialogueText.text = fullText;
         isTyping = false;
-        skipTyping = false;
+    }
+
+    private IEnumerator WaitForAdvance()
+    {
+        yield return null;
+
+        while (!WasAdvancePressed())
+        {
+            yield return null;
+        }
     }
 
     private bool WasAdvancePressed()
@@ -196,7 +203,11 @@ public class DialogueRunner : MonoBehaviour
 
     private void SetPromptVisible(bool visible)
     {
-        if (promptText != null)
+        if (promptRoot != null)
+        {
+            promptRoot.SetActive(visible);
+        }
+        else if (promptText != null)
         {
             promptText.gameObject.SetActive(visible);
         }
@@ -225,7 +236,16 @@ public class DialogueRunner : MonoBehaviour
 
         speakerText ??= canvas.transform.Find("Dialogue Panel/Speaker Text")?.GetComponent<Text>();
         dialogueText ??= canvas.transform.Find("Dialogue Panel/Dialogue Text")?.GetComponent<Text>();
-        promptText ??= canvas.transform.Find("Interaction Prompt")?.GetComponent<Text>();
+
+        if (promptRoot == null)
+        {
+            promptRoot = canvas.transform.Find("Interaction Prompt")?.gameObject;
+        }
+
+        if (promptText == null && promptRoot != null)
+        {
+            promptText = promptRoot.GetComponent<Text>();
+        }
     }
 
     private void OnDisable()
@@ -236,7 +256,6 @@ public class DialogueRunner : MonoBehaviour
             routine = null;
         }
 
-        lockedPlayer?.SetCutsceneLock(false);
-        lockedPlayer = null;
+        FinishDialogue();
     }
 }

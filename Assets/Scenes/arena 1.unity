@@ -507,6 +507,7 @@ MonoBehaviour:
   dialogueGroup: {fileID: 300000014}
   speakerText: {fileID: 300000023}
   dialogueText: {fileID: 300000028}
+  promptRoot: {fileID: 300000030}
   promptText: {fileID: 300000033}
 --- !u!114 &225705402
 MonoBehaviour:

@@ -24,7 +24,7 @@ public class DialogueInteractable : MonoBehaviour
     private void Update()
     {
         DialogueRunner runner = DialogueRunner.Instance;
-        if (runner == null || currentPlayer == null || hasPlayed && triggerOnce || runner.IsRunning)
+        if (runner == null || currentPlayer == null || (hasPlayed && triggerOnce) || runner.IsRunning)
         {
             return;
         }
