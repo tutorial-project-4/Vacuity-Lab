@@ -17,6 +17,7 @@ public class DialogueInteractable : MonoBehaviour
     [Header("Interaction")]
     [SerializeField] private string promptLabel = "F";
     [SerializeField] private bool triggerOnce = true;
+    [SerializeField] private DialogueInteractionAction[] actionsOnInteract;
 
     private PlayerController currentPlayer;
     private bool hasPlayed;
@@ -32,6 +33,7 @@ public class DialogueInteractable : MonoBehaviour
         Keyboard keyboard = Keyboard.current;
         if (keyboard != null && keyboard.fKey.wasPressedThisFrame)
         {
+            RunInteractionActions();
             runner.StartDialogue(lines, currentPlayer);
             hasPlayed = true;
         }
@@ -75,6 +77,22 @@ public class DialogueInteractable : MonoBehaviour
         }
 
         runner.ShowPrompt(visible, promptLabel);
+    }
+
+    private void RunInteractionActions()
+    {
+        if (actionsOnInteract == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < actionsOnInteract.Length; i++)
+        {
+            if (actionsOnInteract[i] != null)
+            {
+                actionsOnInteract[i].Run();
+            }
+        }
     }
 
     private void OnValidate()
