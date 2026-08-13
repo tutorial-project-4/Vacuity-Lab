@@ -2004,6 +2004,7 @@ MonoBehaviour:
       \uC54A\uB294\uB2E4."
   promptLabel: F
   triggerOnce: 0
+  actionsOnInteract: []
 --- !u!58 &831807891
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -11627,11 +11628,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2510729065464148895, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -41.02
+      value: -32.42
       objectReference: {fileID: 0}
     - target: {fileID: 2510729065464148895, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 22.33
+      value: 21.8
       objectReference: {fileID: 0}
     - target: {fileID: 2510729065464148895, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -11729,8 +11730,38 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8019187508573528365, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1065037939}
   m_SourcePrefab: {fileID: 100100000, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
+--- !u!1 &1065037938 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8019187508573528365, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
+  m_PrefabInstance: {fileID: 1065037937}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &1065037939
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1065037938}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7e1c9063ed2065d4999632d81ac653fc, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &1066321082
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -15019,6 +15050,7 @@ MonoBehaviour:
       \uD0A4\uB97C \uAC00\uC9C0\uACE0 \uB3CC\uC544\uC624\uC790. "
   promptLabel: F
   triggerOnce: 1
+  actionsOnInteract: []
 --- !u!61 &1755997730
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -59047,11 +59079,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2132913203123064602, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.1
+      value: 10.92
       objectReference: {fileID: 0}
     - target: {fileID: 2132913203123064602, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.71
+      value: 17.04
       objectReference: {fileID: 0}
     - target: {fileID: 2132913203123064602, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_LocalPosition.z
