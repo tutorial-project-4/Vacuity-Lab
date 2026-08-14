@@ -19,6 +19,16 @@ public class Boss : MonoBehaviour
     [Tooltip("추적 대상. feat/player 병합 전에는 빈 GameObject를 임시 타깃으로 사용")]
     [SerializeField] Transform target;
 
+    [Header("빔")]
+    [Tooltip("보스 Transform 기준 입의 월드 Y 오프셋. 스프라이트 교체 시 조정")]
+    [SerializeField] float beamMouthYOffset = 0.5f;
+    [Tooltip("빔 예고 전 플레이어 높이로 수직 정렬하는 속도")]
+    [SerializeField] float beamAlignSpeed = 10f;
+
+    public Transform Target => target;
+    public float BeamMouthYOffset => beamMouthYOffset;
+    public float BeamAlignSpeed => beamAlignSpeed;
+
     [Header("#10 페이즈 전환 (HP 500, 컷신)")]
     [Tooltip("이 HP 이하 최초 1회에 페이즈 2 전환 (확정 500)")]
     [SerializeField] int phase2HpThreshold = 500;
@@ -250,6 +260,15 @@ public class Boss : MonoBehaviour
     GameObject Beam()
     {
         return _agent.GetVariable("Beam", out BlackboardVariable<GameObject> v) ? v.Value : null;
+    }
+
+    public Vector2 GetBeamMouthPosition(float direction)
+    {
+        Collider2D body = GetComponent<Collider2D>();
+        float x = body != null
+            ? (direction < 0f ? body.bounds.min.x : body.bounds.max.x)
+            : transform.position.x;
+        return new Vector2(x, transform.position.y + beamMouthYOffset);
     }
 
     /// 그래프 Blackboard의 ElectricFloor(씬 오브젝트)를 재사용 — 씬 참조 중복 방지.
