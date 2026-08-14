@@ -71,6 +71,13 @@ public class CinemachinePlatformerCamera : MonoBehaviour
         AssignTargetToVirtualCamera();
     }
 
+    public void SetOrthographicSize(float size)
+    {
+        orthographicSize = Mathf.Max(0.1f, size);
+        CacheLocalReferences();
+        ApplyStaticSettings();
+    }
+
     public void SetBounds(Collider2D bounds)
     {
         initialBounds = bounds;

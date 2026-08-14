@@ -6,6 +6,7 @@ public class BarrierDeactivateAction : DialogueInteractionAction
     [SerializeField] private TerrainDescriptor targetTerrainDescriptor;
     [SerializeField] private Animator targetAnimator;
     [SerializeField] private RuntimeAnimatorController deactivatedController;
+    [SerializeField] private string animatorBoolName = "Deactive";
     [SerializeField] private string animationStateName = "barrier_deactivate";
     [SerializeField] private bool runOnce = true;
 
@@ -32,14 +33,23 @@ public class BarrierDeactivateAction : DialogueInteractionAction
             changedState = true;
         }
 
-        if (targetAnimator != null && !string.IsNullOrWhiteSpace(animationStateName))
+        if (targetAnimator != null)
         {
+            if (!string.IsNullOrWhiteSpace(animatorBoolName))
+            {
+                targetAnimator.SetBool(animatorBoolName, true);
+            }
+
             if (deactivatedController != null)
             {
                 targetAnimator.runtimeAnimatorController = deactivatedController;
             }
 
-            targetAnimator.Play(animationStateName, 0, 0f);
+            if (!string.IsNullOrWhiteSpace(animationStateName))
+            {
+                targetAnimator.Play(animationStateName, 0, 0f);
+            }
+
             changedState = true;
         }
 
