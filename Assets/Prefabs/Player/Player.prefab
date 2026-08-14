@@ -143,9 +143,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3e9fd5bbf2840b4ba1450d580bf00c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  knockbackDuration: 0.2
-  knockbackSpeed: 5
-  knockbackUpwardSpeed: 1.5
+  knockbackDuration: 0.3
+  knockbackSpeed: 10
+  knockbackUpwardSpeed: 2
   blinkInterval: 0.08
 --- !u!114 &3590667089837195823
 MonoBehaviour:

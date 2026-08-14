@@ -10965,6 +10965,14 @@ PrefabInstance:
       propertyPath: m_SortingOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1232372875776751571, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
+      propertyPath: knockbackSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 1232372875776751571, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
+      propertyPath: knockbackDuration
+      value: 0.3
+      objectReference: {fileID: 0}
     - target: {fileID: 4352529521608417223, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
       propertyPath: m_Name
       value: Player
