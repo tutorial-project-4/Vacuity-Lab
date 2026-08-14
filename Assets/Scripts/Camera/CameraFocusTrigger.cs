@@ -5,6 +5,7 @@ public class CameraFocusTrigger : MonoBehaviour
 {
     [Header("Camera")]
     [SerializeField] private CinemachinePlatformerCamera cameraFollow;
+    [SerializeField] private bool allowSceneCameraFallback = true;
     [SerializeField] private Transform focusPoint;
     [SerializeField] private bool usePlayerAsTarget;
     [SerializeField] private bool snapOnEnter = true;
@@ -21,6 +22,7 @@ public class CameraFocusTrigger : MonoBehaviour
     [SerializeField] private bool triggerOnce = true;
 
     private bool hasTriggered;
+    private bool warnedMissingCamera;
 
     private void Reset()
     {
@@ -30,6 +32,7 @@ public class CameraFocusTrigger : MonoBehaviour
     private void Awake()
     {
         ConfigureTriggerCollider();
+        WarnIfCameraReferenceMissing();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -93,6 +96,11 @@ public class CameraFocusTrigger : MonoBehaviour
             return cameraFollow;
         }
 
+        if (!allowSceneCameraFallback)
+        {
+            return null;
+        }
+
 #if UNITY_2023_1_OR_NEWER
         cameraFollow = FindFirstObjectByType<CinemachinePlatformerCamera>();
 #else
@@ -114,5 +122,30 @@ public class CameraFocusTrigger : MonoBehaviour
     {
         orthographicSize = Mathf.Max(0.1f, orthographicSize);
         ConfigureTriggerCollider();
+
+        if (focusPoint == null && !usePlayerAsTarget)
+        {
+            Debug.LogWarning("[CameraFocusTrigger] Focus Point is not assigned.", this);
+        }
+
+        if (cameraFollow == null)
+        {
+            Debug.LogWarning("[CameraFocusTrigger] Camera Follow is not assigned. Assign it in the Inspector, or keep fallback enabled.", this);
+        }
+    }
+
+    private void WarnIfCameraReferenceMissing()
+    {
+        if (cameraFollow != null || warnedMissingCamera)
+        {
+            return;
+        }
+
+        string fallbackMessage = allowSceneCameraFallback
+            ? " Scene fallback will be used at runtime."
+            : " Scene fallback is disabled.";
+
+        Debug.LogWarning($"[CameraFocusTrigger] Camera Follow is not assigned.{fallbackMessage}", this);
+        warnedMissingCamera = true;
     }
 }

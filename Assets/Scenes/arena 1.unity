@@ -1547,6 +1547,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraFollow: {fileID: 0}
+  allowSceneCameraFallback: 1
   focusPoint: {fileID: 310000001}
   usePlayerAsTarget: 0
   snapOnEnter: 1
@@ -11432,6 +11433,13 @@ MonoBehaviour:
   cutsceneDuration: 2
   prepDuration: 1
   spikeWalls: {fileID: 0}
+  enhancedElectric: {fileID: 0}
+  freezeOnPlayerDeath: 1
+  retryPrepDuration: 3
+  deathSequenceDuration: 1.5
+  onDeathSequenceFinished:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!212 &1135676689
 SpriteRenderer:
   serializedVersion: 2
@@ -12894,7 +12902,7 @@ SpriteRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.04261304, g: 0.04392646, b: 0.05660379, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -12935,7 +12943,7 @@ BoxCollider2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_LayerOverridePriority: 0
+  m_LayerOverridePriority: 1
   m_ForceSendLayers:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -13171,6 +13179,7 @@ MonoBehaviour:
   targetTerrainDescriptor: {fileID: 578706768}
   targetAnimator: {fileID: 578706770}
   deactivatedController: {fileID: 9100000, guid: 6180a1f35cba2f34cb0f4695a852c043, type: 2}
+  animatorBoolName: Deactive
   animationStateName: barrier_deactivate
   runOnce: 1
 --- !u!4 &1588699648 stripped
@@ -56534,7 +56543,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1952389796
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -56798,6 +56807,13 @@ MonoBehaviour:
   cutsceneDuration: 2
   prepDuration: 1
   spikeWalls: {fileID: 0}
+  enhancedElectric: {fileID: 0}
+  freezeOnPlayerDeath: 1
+  retryPrepDuration: 3
+  deathSequenceDuration: 1.5
+  onDeathSequenceFinished:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &2141591309
 MonoBehaviour:
   m_ObjectHideFlags: 0

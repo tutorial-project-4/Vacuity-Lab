@@ -107,5 +107,10 @@ public class TriggeredLocalYMove : MonoBehaviour
     {
         moveDuration = Mathf.Max(0.01f, moveDuration);
         ConfigureTriggerCollider();
+
+        if (targets == null || targets.Length == 0)
+        {
+            Debug.LogWarning("[TriggeredLocalYMove] Move targets are not assigned.", this);
+        }
     }
 }
