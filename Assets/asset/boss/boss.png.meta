@@ -1,112 +1,205 @@
 fileFormatVersion: 2
-guid: 7cdaf284f4fb1fd44ae8e1bebde313af
+guid: d15bbfcee657a9449874a9261763caab
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 1324723476555527739
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_0"
+      213: 7884284792285079167
+    second: robot_sprite_sheet_ai_assisted_repaired_0
   - first:
-      213: 7714756590952137831
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_1"
+      213: 6204916832291218492
+    second: robot_sprite_sheet_ai_assisted_repaired_1
   - first:
-      213: -8211826058593286888
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_2"
+      213: 7820197427945793062
+    second: robot_sprite_sheet_ai_assisted_repaired_2
   - first:
-      213: -3109662705533064524
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_3"
+      213: -7240796089010005917
+    second: robot_sprite_sheet_ai_assisted_repaired_3
   - first:
-      213: 2999715564426929544
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_4"
+      213: -1434927604395300635
+    second: robot_sprite_sheet_ai_assisted_repaired_4
   - first:
-      213: -775452376656760200
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_5"
+      213: 5534935483301569065
+    second: robot_sprite_sheet_ai_assisted_repaired_5
   - first:
-      213: -8960757634637059644
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_6"
+      213: 5634035460279428948
+    second: robot_sprite_sheet_ai_assisted_repaired_6
   - first:
-      213: -3539272218311022472
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_7"
+      213: -1817137804265300739
+    second: robot_sprite_sheet_ai_assisted_repaired_7
   - first:
-      213: 919581579890103843
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_8"
+      213: 3310476011879863994
+    second: robot_sprite_sheet_ai_assisted_repaired_8
   - first:
-      213: -8813026754501845623
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_9"
+      213: 1952574557649592945
+    second: robot_sprite_sheet_ai_assisted_repaired_9
   - first:
-      213: 9128620965163358248
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_10"
+      213: -7698377346800431260
+    second: robot_sprite_sheet_ai_assisted_repaired_10
   - first:
-      213: 8912729551270792947
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_11"
+      213: -4406800037139198419
+    second: robot_sprite_sheet_ai_assisted_repaired_11
   - first:
-      213: 6978367647376074828
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_12"
+      213: 7693438434368138683
+    second: robot_sprite_sheet_ai_assisted_repaired_12
   - first:
-      213: 1855712567913614697
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_13"
+      213: -6509577670949475893
+    second: robot_sprite_sheet_ai_assisted_repaired_13
   - first:
-      213: 2377757112236909806
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_14"
+      213: 3662330981961218088
+    second: robot_sprite_sheet_ai_assisted_repaired_14
   - first:
-      213: -4486827334048523428
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_15"
+      213: 412017393022438228
+    second: robot_sprite_sheet_ai_assisted_repaired_15
   - first:
-      213: -4344363375940496141
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_16"
+      213: -2853361008494253597
+    second: robot_sprite_sheet_ai_assisted_repaired_16
   - first:
-      213: 7222791998083922447
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_17"
+      213: 4234836940280341827
+    second: robot_sprite_sheet_ai_assisted_repaired_17
   - first:
-      213: -1253703552521820420
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_18"
+      213: 8705871537345114875
+    second: robot_sprite_sheet_ai_assisted_repaired_18
   - first:
-      213: -3101635287367155969
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_19"
+      213: 6826004569974751523
+    second: robot_sprite_sheet_ai_assisted_repaired_19
   - first:
-      213: 7282968760223853811
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_20"
+      213: 887298945747832475
+    second: robot_sprite_sheet_ai_assisted_repaired_20
   - first:
-      213: 1894750751400593479
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_21"
+      213: 8043578707209573539
+    second: robot_sprite_sheet_ai_assisted_repaired_21
   - first:
-      213: -2876828530282251690
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_22"
+      213: -5999995782044652349
+    second: robot_sprite_sheet_ai_assisted_repaired_22
   - first:
-      213: 8228255291891759208
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_23"
+      213: -5451092400175217182
+    second: robot_sprite_sheet_ai_assisted_repaired_23
   - first:
-      213: -7288109774870090366
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_24"
+      213: -3576463555736924575
+    second: robot_sprite_sheet_ai_assisted_repaired_24
   - first:
-      213: -3474030608165526464
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_25"
+      213: 5583132115751755305
+    second: robot_sprite_sheet_ai_assisted_repaired_25
   - first:
-      213: 9055423076362313393
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_26"
+      213: -767708604167670883
+    second: robot_sprite_sheet_ai_assisted_repaired_26
   - first:
-      213: 3883569610073925169
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_27"
+      213: 1976299839525512118
+    second: robot_sprite_sheet_ai_assisted_repaired_27
   - first:
-      213: 5216657637640121725
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_28"
+      213: -3048671282492593089
+    second: robot_sprite_sheet_ai_assisted_repaired_28
   - first:
-      213: -3872293250501503027
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_29"
+      213: -4802030455123129018
+    second: robot_sprite_sheet_ai_assisted_repaired_29
   - first:
-      213: -2438981011030845065
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_30"
+      213: -5689371784871733478
+    second: robot_sprite_sheet_ai_assisted_repaired_30
   - first:
-      213: -6401516116632635241
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_31"
+      213: -3994184272604671302
+    second: robot_sprite_sheet_ai_assisted_repaired_31
   - first:
-      213: -7417406952945348969
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_32"
+      213: -3798363070079887146
+    second: robot_sprite_sheet_ai_assisted_repaired_32
   - first:
-      213: 797034390768599809
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_33"
+      213: -5766320504465980105
+    second: robot_sprite_sheet_ai_assisted_repaired_33
   - first:
-      213: 3171449698934391784
-    second: "ChatGPT Image 2026\uB144 8\uC6D4 13\uC77C \uC624\uC804 10_49_24_34"
+      213: 8924598417241505980
+    second: robot_sprite_sheet_ai_assisted_repaired_34
+  - first:
+      213: -1460952312541511850
+    second: robot_sprite_sheet_ai_assisted_repaired_35
+  - first:
+      213: -5511029237623658045
+    second: robot_sprite_sheet_ai_assisted_repaired_36
+  - first:
+      213: -1561647438179780858
+    second: robot_sprite_sheet_ai_assisted_repaired_37
+  - first:
+      213: 2712938615599434010
+    second: robot_sprite_sheet_ai_assisted_repaired_38
+  - first:
+      213: -6287058476706082867
+    second: robot_sprite_sheet_ai_assisted_repaired_39
+  - first:
+      213: -1468615755212891910
+    second: robot_sprite_sheet_ai_assisted_repaired_40
+  - first:
+      213: -8427196950599370719
+    second: robot_sprite_sheet_ai_assisted_repaired_41
+  - first:
+      213: -772415093496094552
+    second: robot_sprite_sheet_ai_assisted_repaired_42
+  - first:
+      213: 366323213570917521
+    second: robot_sprite_sheet_ai_assisted_repaired_43
+  - first:
+      213: 2925097159587573153
+    second: robot_sprite_sheet_ai_assisted_repaired_44
+  - first:
+      213: 4313916408802569619
+    second: robot_sprite_sheet_ai_assisted_repaired_45
+  - first:
+      213: -7132750042836165818
+    second: robot_sprite_sheet_ai_assisted_repaired_46
+  - first:
+      213: -7074929215778420289
+    second: robot_sprite_sheet_ai_assisted_repaired_47
+  - first:
+      213: -2150136606475555180
+    second: robot_sprite_sheet_ai_assisted_repaired_48
+  - first:
+      213: 1655557662902291525
+    second: robot_sprite_sheet_ai_assisted_repaired_49
+  - first:
+      213: 2849687820464735471
+    second: robot_sprite_sheet_ai_assisted_repaired_50
+  - first:
+      213: -624518453795431430
+    second: robot_sprite_sheet_ai_assisted_repaired_51
+  - first:
+      213: 1469345712705250128
+    second: robot_sprite_sheet_ai_assisted_repaired_52
+  - first:
+      213: -1150939476083497102
+    second: robot_sprite_sheet_ai_assisted_repaired_53
+  - first:
+      213: -7769911025539760145
+    second: robot_sprite_sheet_ai_assisted_repaired_54
+  - first:
+      213: 6507535620647135692
+    second: robot_sprite_sheet_ai_assisted_repaired_55
+  - first:
+      213: 2010296863391746857
+    second: robot_sprite_sheet_ai_assisted_repaired_56
+  - first:
+      213: 6727054453556945073
+    second: robot_sprite_sheet_ai_assisted_repaired_57
+  - first:
+      213: -8386588458735746563
+    second: robot_sprite_sheet_ai_assisted_repaired_58
+  - first:
+      213: 4959460536879636370
+    second: robot_sprite_sheet_ai_assisted_repaired_59
+  - first:
+      213: 2663961347896727599
+    second: robot_sprite_sheet_ai_assisted_repaired_60
+  - first:
+      213: -3640158478397397585
+    second: robot_sprite_sheet_ai_assisted_repaired_61
+  - first:
+      213: -3523460549817113567
+    second: robot_sprite_sheet_ai_assisted_repaired_62
+  - first:
+      213: -3230491590416324734
+    second: robot_sprite_sheet_ai_assisted_repaired_63
+  - first:
+      213: -2281101473174893418
+    second: robot_sprite_sheet_ai_assisted_repaired_64
+  - first:
+      213: -3364624947178860188
+    second: robot_sprite_sheet_ai_assisted_repaired_65
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -153,7 +246,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 128
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -205,10 +298,10 @@ TextureImporter:
       name: boss_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 854
-        width: 219
-        height: 170
+        x: 20
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -217,8 +310,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ca66dba2800a6de4998e8931951db3ce
-      internalID: 1404334400
+      spriteID: 8bc667e301500214dbf34dc12f8f177f
+      internalID: -923874205
       vertices: []
       indices: 
       edges: []
@@ -227,10 +320,10 @@ TextureImporter:
       name: boss_1
       rect:
         serializedVersion: 2
-        x: 219
-        y: 854
-        width: 219
-        height: 170
+        x: 197
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -239,8 +332,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bd52a27ce1ffc2246aac0e34fbe454c1
-      internalID: 563973264
+      spriteID: 2642ca34ffe0fb644a983a486fec94d8
+      internalID: -476969129
       vertices: []
       indices: 
       edges: []
@@ -249,10 +342,10 @@ TextureImporter:
       name: boss_2
       rect:
         serializedVersion: 2
-        x: 438
-        y: 854
-        width: 219
-        height: 170
+        x: 373
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -261,8 +354,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7166dd59ad613034bb803364269ed92e
-      internalID: -1230552916
+      spriteID: ae63621190e37da449d561ae29b8e906
+      internalID: -732595283
       vertices: []
       indices: 
       edges: []
@@ -271,10 +364,10 @@ TextureImporter:
       name: boss_3
       rect:
         serializedVersion: 2
-        x: 657
-        y: 854
-        width: 219
-        height: 170
+        x: 550
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -283,8 +376,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b2bba11fbceff174db50699fc5e5940f
-      internalID: -503215287
+      spriteID: 781566a93b6a70245a13f880f01241af
+      internalID: -1402442234
       vertices: []
       indices: 
       edges: []
@@ -293,10 +386,10 @@ TextureImporter:
       name: boss_4
       rect:
         serializedVersion: 2
-        x: 876
-        y: 854
-        width: 219
-        height: 170
+        x: 726
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -305,8 +398,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: faea082b8e3e4f44d82b0f874054105b
-      internalID: -834180322
+      spriteID: 0b376d965a98c0a479ae059582b0f040
+      internalID: -1758738266
       vertices: []
       indices: 
       edges: []
@@ -315,10 +408,10 @@ TextureImporter:
       name: boss_5
       rect:
         serializedVersion: 2
-        x: 1095
-        y: 854
-        width: 219
-        height: 170
+        x: 893
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -327,8 +420,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1638eb480107e7a49853f3711ffc30fa
-      internalID: 245285089
+      spriteID: 2a2e640678d1a2b49aa0ced27dee7ed2
+      internalID: 928654631
       vertices: []
       indices: 
       edges: []
@@ -337,10 +430,10 @@ TextureImporter:
       name: boss_6
       rect:
         serializedVersion: 2
-        x: 1314
-        y: 854
-        width: 219
-        height: 170
+        x: 1068
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -349,8 +442,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bdd04830ee2edba4bb9dcedbe1693893
-      internalID: -1621434928
+      spriteID: 83f3971f61e2fa648b95816fe9dab352
+      internalID: 2223080
       vertices: []
       indices: 
       edges: []
@@ -359,10 +452,10 @@ TextureImporter:
       name: boss_7
       rect:
         serializedVersion: 2
-        x: 0
-        y: 684
-        width: 219
-        height: 170
+        x: 1239
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -371,8 +464,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 30cbd10a5ceb62642bca605c106ca785
-      internalID: 1700985513
+      spriteID: 571ef111842fdb54590b2c732dc671d4
+      internalID: -1151598366
       vertices: []
       indices: 
       edges: []
@@ -381,10 +474,10 @@ TextureImporter:
       name: boss_8
       rect:
         serializedVersion: 2
-        x: 219
-        y: 684
-        width: 219
-        height: 170
+        x: 1411
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -393,8 +486,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8417c236cb9222f46b538015e2aea91d
-      internalID: 545853220
+      spriteID: e02d731baf776e84795b26777c3c3a0f
+      internalID: -1790984312
       vertices: []
       indices: 
       edges: []
@@ -403,10 +496,10 @@ TextureImporter:
       name: boss_9
       rect:
         serializedVersion: 2
-        x: 438
-        y: 684
-        width: 219
-        height: 170
+        x: 1579
+        y: 740
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -415,8 +508,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2009f776ea5a26f44b6e4d1826b4c257
-      internalID: -804684494
+      spriteID: bc51c803aa34b7d458f3f43ea4f94ed8
+      internalID: 798796190
       vertices: []
       indices: 
       edges: []
@@ -425,10 +518,10 @@ TextureImporter:
       name: boss_10
       rect:
         serializedVersion: 2
-        x: 657
-        y: 684
-        width: 219
-        height: 170
+        x: 12
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -437,8 +530,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 758694094b3b62c44b812569b7d1f88b
-      internalID: 1062885184
+      spriteID: 9071246a31bb9bd4eac9ff0b443a8331
+      internalID: -275543996
       vertices: []
       indices: 
       edges: []
@@ -447,10 +540,10 @@ TextureImporter:
       name: boss_11
       rect:
         serializedVersion: 2
-        x: 876
-        y: 684
-        width: 219
-        height: 170
+        x: 192
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -459,8 +552,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63d17cd1cd891cf48b3114e51d4476fc
-      internalID: 2130987659
+      spriteID: 18d94885c1a0d674aa32c2b29eee135b
+      internalID: -2050445342
       vertices: []
       indices: 
       edges: []
@@ -469,10 +562,10 @@ TextureImporter:
       name: boss_12
       rect:
         serializedVersion: 2
-        x: 1095
-        y: 684
-        width: 219
-        height: 170
+        x: 369
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -481,8 +574,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d9bc522eaab1a424d9ea5e4f9e486502
-      internalID: -863140533
+      spriteID: 39b94aef17b555240b5ae925c4c48968
+      internalID: -155612118
       vertices: []
       indices: 
       edges: []
@@ -491,10 +584,10 @@ TextureImporter:
       name: boss_13
       rect:
         serializedVersion: 2
-        x: 1314
-        y: 684
-        width: 219
-        height: 170
+        x: 546
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -503,8 +596,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9d7c94279fe8cee4e9e5874f022bdd0f
-      internalID: 1124354698
+      spriteID: 7b405a14c3cfdd448b40e9dfd93c9209
+      internalID: -908903414
       vertices: []
       indices: 
       edges: []
@@ -513,10 +606,10 @@ TextureImporter:
       name: boss_14
       rect:
         serializedVersion: 2
-        x: 0
-        y: 514
-        width: 219
-        height: 170
+        x: 717
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -525,8 +618,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e3949a861a7294f4e854e69681df64d6
-      internalID: 1205710153
+      spriteID: 029f03ae1ca5b0444acacab36cfc492f
+      internalID: -1863388557
       vertices: []
       indices: 
       edges: []
@@ -535,10 +628,10 @@ TextureImporter:
       name: boss_15
       rect:
         serializedVersion: 2
-        x: 219
-        y: 514
-        width: 219
-        height: 170
+        x: 885
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -547,8 +640,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 63d157e494957994a9c7183ebbde2251
-      internalID: -849039002
+      spriteID: c29868d375ca66e4f8b23dfa118bcf43
+      internalID: 1405564401
       vertices: []
       indices: 
       edges: []
@@ -557,10 +650,10 @@ TextureImporter:
       name: boss_16
       rect:
         serializedVersion: 2
-        x: 438
-        y: 514
-        width: 219
-        height: 170
+        x: 1055
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -569,8 +662,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: df4ba1d26322c8d4eb3cab8f35198a70
-      internalID: 755806506
+      spriteID: ef466c85a366a284387a750dc5657c63
+      internalID: -1507168193
       vertices: []
       indices: 
       edges: []
@@ -579,10 +672,10 @@ TextureImporter:
       name: boss_17
       rect:
         serializedVersion: 2
-        x: 657
-        y: 514
-        width: 219
-        height: 170
+        x: 1232
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -591,8 +684,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0907c4633e1a4ed458fba0170a51ded2
-      internalID: 1575078474
+      spriteID: 1cb1669ff14adf746ab4f1c723dc7e3f
+      internalID: 921670190
       vertices: []
       indices: 
       edges: []
@@ -601,10 +694,10 @@ TextureImporter:
       name: boss_18
       rect:
         serializedVersion: 2
-        x: 876
-        y: 514
-        width: 219
-        height: 170
+        x: 1410
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -613,8 +706,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 94a224f8fee165b438a50ed7fcbb1887
-      internalID: 1095710226
+      spriteID: 39cfdb919973d9b4b9a35c423c7500ac
+      internalID: 1221123050
       vertices: []
       indices: 
       edges: []
@@ -623,10 +716,10 @@ TextureImporter:
       name: boss_19
       rect:
         serializedVersion: 2
-        x: 1095
-        y: 514
-        width: 219
-        height: 170
+        x: 1581
+        y: 593
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -635,8 +728,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e5b2c1d4de7c72409bc05c1c8d0acd4
-      internalID: -1676559903
+      spriteID: dcd2a20d8584dde44a9ed84133b7dce1
+      internalID: -635943242
       vertices: []
       indices: 
       edges: []
@@ -645,10 +738,10 @@ TextureImporter:
       name: boss_20
       rect:
         serializedVersion: 2
-        x: 1314
-        y: 514
-        width: 219
-        height: 170
+        x: 0
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -657,8 +750,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d729a3174b25f3049b5e65fe3d55c097
-      internalID: -448894429
+      spriteID: 4990fc84857188948822c4976c76a72a
+      internalID: 1663962514
       vertices: []
       indices: 
       edges: []
@@ -667,10 +760,10 @@ TextureImporter:
       name: boss_21
       rect:
         serializedVersion: 2
-        x: 0
-        y: 344
-        width: 219
-        height: 170
+        x: 177
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -679,8 +772,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: caf8d3711a09f27408c869091f41ff63
-      internalID: -963705772
+      spriteID: 3e8fc4a270fcbe44887c85feb1555fe0
+      internalID: 1230879731
       vertices: []
       indices: 
       edges: []
@@ -689,10 +782,10 @@ TextureImporter:
       name: boss_22
       rect:
         serializedVersion: 2
-        x: 219
-        y: 344
-        width: 219
-        height: 170
+        x: 351
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -701,8 +794,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6c492d6ffbecd6949be156cf3b42999e
-      internalID: -852598713
+      spriteID: b43f75b292614c0429de8d8564e998e7
+      internalID: 1042975690
       vertices: []
       indices: 
       edges: []
@@ -711,10 +804,10 @@ TextureImporter:
       name: boss_23
       rect:
         serializedVersion: 2
-        x: 438
-        y: 344
-        width: 219
-        height: 170
+        x: 528
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -723,8 +816,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0ba89871578d29f4aba3e093200f827c
-      internalID: -1169139907
+      spriteID: 4b0abd1f1e7a0e340befccfcc408aeb5
+      internalID: 1535360689
       vertices: []
       indices: 
       edges: []
@@ -733,10 +826,10 @@ TextureImporter:
       name: boss_24
       rect:
         serializedVersion: 2
-        x: 657
-        y: 344
-        width: 219
-        height: 170
+        x: 708
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -745,8 +838,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: f8aff86639c9c1b46933c1d2651b77e0
-      internalID: -21152104
+      spriteID: 704958de68341344eb546025e91a5adf
+      internalID: -1331331899
       vertices: []
       indices: 
       edges: []
@@ -755,10 +848,10 @@ TextureImporter:
       name: boss_25
       rect:
         serializedVersion: 2
-        x: 876
-        y: 344
-        width: 219
-        height: 170
+        x: 885
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -767,8 +860,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 36f90a27e20873f4da741cb782f918de
-      internalID: 1001439600
+      spriteID: d2003bcecd5765d4b8dad61df55fdca1
+      internalID: -925027315
       vertices: []
       indices: 
       edges: []
@@ -777,10 +870,10 @@ TextureImporter:
       name: boss_26
       rect:
         serializedVersion: 2
-        x: 1095
-        y: 344
-        width: 219
-        height: 170
+        x: 1062
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -789,8 +882,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8ef0737d6ca804a46beef1cb120c4177
-      internalID: 593288993
+      spriteID: 9ca92f18eeac8954c80ecebe44e4c4d9
+      internalID: 715106739
       vertices: []
       indices: 
       edges: []
@@ -799,10 +892,10 @@ TextureImporter:
       name: boss_27
       rect:
         serializedVersion: 2
-        x: 1314
-        y: 344
-        width: 219
-        height: 170
+        x: 1239
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -811,8 +904,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c13653331ba4c5648aca56e4806edaf5
-      internalID: -1154117035
+      spriteID: 46f92964029660b4da569d7d188c772e
+      internalID: -1758327948
       vertices: []
       indices: 
       edges: []
@@ -821,10 +914,10 @@ TextureImporter:
       name: boss_28
       rect:
         serializedVersion: 2
-        x: 0
-        y: 174
-        width: 219
-        height: 170
+        x: 1416
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -833,8 +926,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bf386e790084eae45938900a25036e09
-      internalID: 605358268
+      spriteID: 62c1c0dc3736db449a85c9bd59154a29
+      internalID: 813248261
       vertices: []
       indices: 
       edges: []
@@ -843,10 +936,10 @@ TextureImporter:
       name: boss_29
       rect:
         serializedVersion: 2
-        x: 219
-        y: 174
-        width: 219
-        height: 170
+        x: 1593
+        y: 446
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -855,8 +948,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 855c0880310f74c4d9a54a0c2620ba23
-      internalID: 1893728936
+      spriteID: 4a7320a7e1577b842b3362f82e9a6c38
+      internalID: 1903738706
       vertices: []
       indices: 
       edges: []
@@ -865,10 +958,10 @@ TextureImporter:
       name: boss_30
       rect:
         serializedVersion: 2
-        x: 438
-        y: 174
-        width: 219
-        height: 170
+        x: 5
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -877,8 +970,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 46465922896a72443a993ea9decbbbdc
-      internalID: 1884663774
+      spriteID: 87a23dbcbbe9f7e448aecc0f1b0eca0b
+      internalID: -2064313514
       vertices: []
       indices: 
       edges: []
@@ -887,10 +980,10 @@ TextureImporter:
       name: boss_31
       rect:
         serializedVersion: 2
-        x: 657
-        y: 174
-        width: 219
-        height: 170
+        x: 186
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -899,8 +992,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 260b34927861f3d43b7afee5d7962170
-      internalID: -1539153889
+      spriteID: 84d8d35959f9d9444b6e6a238db1e845
+      internalID: -2019720431
       vertices: []
       indices: 
       edges: []
@@ -909,10 +1002,10 @@ TextureImporter:
       name: boss_32
       rect:
         serializedVersion: 2
-        x: 876
-        y: 174
-        width: 219
-        height: 170
+        x: 363
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -921,8 +1014,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c7dd0b5a64b374245bcb03237274bb1f
-      internalID: -132914836
+      spriteID: 32b29236dad14dc4d8f1254caf9d12d3
+      internalID: 667778265
       vertices: []
       indices: 
       edges: []
@@ -931,10 +1024,10 @@ TextureImporter:
       name: boss_33
       rect:
         serializedVersion: 2
-        x: 1095
-        y: 174
-        width: 219
-        height: 170
+        x: 538
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -943,8 +1036,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 84700faa2dda9784aa81164fdc8b46fe
-      internalID: 1869476725
+      spriteID: 289f50a5cff347d4abe609c5733bf61c
+      internalID: -1204714061
       vertices: []
       indices: 
       edges: []
@@ -953,10 +1046,10 @@ TextureImporter:
       name: boss_34
       rect:
         serializedVersion: 2
-        x: 1314
-        y: 174
-        width: 219
-        height: 170
+        x: 712
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -965,8 +1058,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5788ec80a185c2445b46ed8f90c4920d
-      internalID: 1369876891
+      spriteID: d155c030d051bdc438dda1260132df75
+      internalID: 267377195
       vertices: []
       indices: 
       edges: []
@@ -975,10 +1068,10 @@ TextureImporter:
       name: boss_35
       rect:
         serializedVersion: 2
-        x: 0
-        y: 4
-        width: 219
-        height: 170
+        x: 882
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -987,8 +1080,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8ee79367f700b6741aea72e25b90fe71
-      internalID: -79605801
+      spriteID: b7a922f1543a2b7408d0d2937a15a6e3
+      internalID: 1986930989
       vertices: []
       indices: 
       edges: []
@@ -997,10 +1090,10 @@ TextureImporter:
       name: boss_36
       rect:
         serializedVersion: 2
-        x: 219
-        y: 4
-        width: 219
-        height: 170
+        x: 1062
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1009,8 +1102,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e2a74a392630a204e9db202a1743294d
-      internalID: -333825917
+      spriteID: bb35fdce2e5b86146bcb8bbe6d9dec74
+      internalID: 1546860117
       vertices: []
       indices: 
       edges: []
@@ -1019,10 +1112,10 @@ TextureImporter:
       name: boss_37
       rect:
         serializedVersion: 2
-        x: 438
-        y: 4
-        width: 219
-        height: 170
+        x: 1239
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1031,8 +1124,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 682a82a9d4bf44140a094abe63ae845b
-      internalID: 175372397
+      spriteID: 392f32514bafe9845a3e72dbdc8dcbb1
+      internalID: -1640383593
       vertices: []
       indices: 
       edges: []
@@ -1041,10 +1134,10 @@ TextureImporter:
       name: boss_38
       rect:
         serializedVersion: 2
-        x: 657
-        y: 4
-        width: 219
-        height: 170
+        x: 1416
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1053,8 +1146,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: df4c4ed057623e449abd1e3b3eb7a7b3
-      internalID: -1346933774
+      spriteID: 4b4071e5b97fe614a834a341dfea16fe
+      internalID: 142837528
       vertices: []
       indices: 
       edges: []
@@ -1063,10 +1156,10 @@ TextureImporter:
       name: boss_39
       rect:
         serializedVersion: 2
-        x: 876
-        y: 4
-        width: 219
-        height: 170
+        x: 1593
+        y: 299
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1075,8 +1168,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b6a163c3b83c0d940b0323b3173595ac
-      internalID: 1508381221
+      spriteID: 61c7a4a30b0bdc840801ddd6de08f138
+      internalID: 367717555
       vertices: []
       indices: 
       edges: []
@@ -1085,10 +1178,10 @@ TextureImporter:
       name: boss_40
       rect:
         serializedVersion: 2
-        x: 1095
-        y: 4
-        width: 219
-        height: 170
+        x: 12
+        y: 152
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1097,8 +1190,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 980f36ad943a7834e9eef83091caf234
-      internalID: -1498706829
+      spriteID: 2043d2052af8c354daa77a30b52f9b23
+      internalID: -1865007958
       vertices: []
       indices: 
       edges: []
@@ -1107,10 +1200,10 @@ TextureImporter:
       name: boss_41
       rect:
         serializedVersion: 2
-        x: 1314
-        y: 4
-        width: 219
-        height: 170
+        x: 187
+        y: 152
+        width: 177
+        height: 147
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -1119,8 +1212,404 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 01e724a13c030a343b1fc7c294fda221
-      internalID: -1554024771
+      spriteID: 28609b09239798544a590c4ed7b82dc1
+      internalID: 655232065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_42
+      rect:
+        serializedVersion: 2
+        x: 365
+        y: 152
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e4cd890b17945a0469ea7818b36559ed
+      internalID: -402917422
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_43
+      rect:
+        serializedVersion: 2
+        x: 536
+        y: 152
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96fd2bbd5da24fb488d39e419634a249
+      internalID: 168242049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_44
+      rect:
+        serializedVersion: 2
+        x: 714
+        y: 152
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 52e67c6a57206374bb8365e0904cd901
+      internalID: 1932483642
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_45
+      rect:
+        serializedVersion: 2
+        x: 885
+        y: 152
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3bc44ec6686350340ae16c51aca94aac
+      internalID: 220409235
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_46
+      rect:
+        serializedVersion: 2
+        x: 1062
+        y: 152
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8e493534c31c3c342b86868a8dc1f3a6
+      internalID: -2124107002
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_47
+      rect:
+        serializedVersion: 2
+        x: 1239
+        y: 152
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: abddb026a6bbc14498032e183ff92534
+      internalID: -1862047090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_48
+      rect:
+        serializedVersion: 2
+        x: 1416
+        y: 152
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8af959a3b640ece47810a73fc020ec63
+      internalID: 2117412492
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_49
+      rect:
+        serializedVersion: 2
+        x: 1593
+        y: 152
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 29fe09008af561f46a453f9131f34da6
+      internalID: 943988063
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_50
+      rect:
+        serializedVersion: 2
+        x: 11
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f76eebe2934fb2846ab01dc7be818105
+      internalID: 1143727487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_51
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 91b6491e904e6a549b73903cc25e0043
+      internalID: -996197363
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_52
+      rect:
+        serializedVersion: 2
+        x: 355
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ebfd8284a5c6e3c4f95938863bd9aef3
+      internalID: 1044645636
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_53
+      rect:
+        serializedVersion: 2
+        x: 531
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fffe835eda4306f4b89b1165a5278410
+      internalID: -112539981
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_54
+      rect:
+        serializedVersion: 2
+        x: 708
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: ec5616df1062603439517dd366d9c3ff
+      internalID: -1371291298
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_55
+      rect:
+        serializedVersion: 2
+        x: 885
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 701be865f26a0bc4eb4af9eacdb1e81f
+      internalID: -1875713330
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_56
+      rect:
+        serializedVersion: 2
+        x: 1062
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 214d80246746e2d479094d4a0c51790a
+      internalID: -1275688065
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_57
+      rect:
+        serializedVersion: 2
+        x: 1239
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 79251d944beaf8a43ace52698781f621
+      internalID: -1873943032
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_58
+      rect:
+        serializedVersion: 2
+        x: 1416
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dca56b0e4f3c32348bc6e261659fe43a
+      internalID: -914538085
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: boss_59
+      rect:
+        serializedVersion: 2
+        x: 1593
+        y: 5
+        width: 177
+        height: 147
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: bfdadab53853dc54eb095298254fe806
+      internalID: -826711080
       vertices: []
       indices: 
       edges: []
@@ -1129,7 +1618,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: cf65065dfab0b0740b282ad45827693e
+    spriteID: 8ec23fcc9561d274b80f46e369e9b8bf
     internalID: 0
     vertices: []
     indices: 
@@ -1139,50 +1628,68 @@ TextureImporter:
     spriteCustomMetadata:
       entries:
       - key: SpriteEditor.SliceSettings
-        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":219.0,"y":170.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":177.0,"y":147.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
-      boss_0: 1404334400
-      boss_1: 563973264
-      boss_10: 1062885184
-      boss_11: 2130987659
-      boss_12: -863140533
-      boss_13: 1124354698
-      boss_14: 1205710153
-      boss_15: -849039002
-      boss_16: 755806506
-      boss_17: 1575078474
-      boss_18: 1095710226
-      boss_19: -1676559903
-      boss_2: -1230552916
-      boss_20: -448894429
-      boss_21: -963705772
-      boss_22: -852598713
-      boss_23: -1169139907
-      boss_24: -21152104
-      boss_25: 1001439600
-      boss_26: 593288993
-      boss_27: -1154117035
-      boss_28: 605358268
-      boss_29: 1893728936
-      boss_3: -503215287
-      boss_30: 1884663774
-      boss_31: -1539153889
-      boss_32: -132914836
-      boss_33: 1869476725
-      boss_34: 1369876891
-      boss_35: -79605801
-      boss_36: -333825917
-      boss_37: 175372397
-      boss_38: -1346933774
-      boss_39: 1508381221
-      boss_4: -834180322
-      boss_40: -1498706829
-      boss_41: -1554024771
-      boss_5: 245285089
-      boss_6: -1621434928
-      boss_7: 1700985513
-      boss_8: 545853220
-      boss_9: -804684494
+      boss_0: -923874205
+      boss_1: -476969129
+      boss_10: -275543996
+      boss_11: -2050445342
+      boss_12: -155612118
+      boss_13: -908903414
+      boss_14: -1863388557
+      boss_15: 1405564401
+      boss_16: -1507168193
+      boss_17: 921670190
+      boss_18: 1221123050
+      boss_19: -635943242
+      boss_2: -732595283
+      boss_20: 1663962514
+      boss_21: 1230879731
+      boss_22: 1042975690
+      boss_23: 1535360689
+      boss_24: -1331331899
+      boss_25: -925027315
+      boss_26: 715106739
+      boss_27: -1758327948
+      boss_28: 813248261
+      boss_29: 1903738706
+      boss_3: -1402442234
+      boss_30: -2064313514
+      boss_31: -2019720431
+      boss_32: 667778265
+      boss_33: -1204714061
+      boss_34: 267377195
+      boss_35: 1986930989
+      boss_36: 1546860117
+      boss_37: -1640383593
+      boss_38: 142837528
+      boss_39: 367717555
+      boss_4: -1758738266
+      boss_40: -1865007958
+      boss_41: 655232065
+      boss_42: -402917422
+      boss_43: 168242049
+      boss_44: 1932483642
+      boss_45: 220409235
+      boss_46: -2124107002
+      boss_47: -1862047090
+      boss_48: 2117412492
+      boss_49: 943988063
+      boss_5: 928654631
+      boss_50: 1143727487
+      boss_51: -996197363
+      boss_52: 1044645636
+      boss_53: -112539981
+      boss_54: -1371291298
+      boss_55: -1875713330
+      boss_56: -1275688065
+      boss_57: -1873943032
+      boss_58: -914538085
+      boss_59: -826711080
+      boss_6: 2223080
+      boss_7: -1151598366
+      boss_8: -1790984312
+      boss_9: 798796190
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
