@@ -1409,6 +1409,7 @@ MonoBehaviour:
   - {fileID: 1941013946}
   - {fileID: 2119774230}
   restDuration: 2
+  maxActiveZones: 3
   autoStart: 0
 --- !u!1001 &655493608
 PrefabInstance:
@@ -2104,7 +2105,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -1, z: 0}
-  m_LocalScale: {x: 17.8618, y: 1, z: 1}
+  m_LocalScale: {x: 17.8618, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
