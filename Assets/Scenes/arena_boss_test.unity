@@ -1331,6 +1331,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1039405121213818449, guid: 5183505eb51c7484b994109ae9a4b5f2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 578706768}
+    - targetCorrespondingSourceObject: {fileID: 1039405121213818449, guid: 5183505eb51c7484b994109ae9a4b5f2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 578706770}
+    - targetCorrespondingSourceObject: {fileID: 1039405121213818449, guid: 5183505eb51c7484b994109ae9a4b5f2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 578706769}
   m_SourcePrefab: {fileID: 100100000, guid: 5183505eb51c7484b994109ae9a4b5f2, type: 3}
 --- !u!1 &578706767 stripped
 GameObject:
@@ -1353,6 +1359,65 @@ MonoBehaviour:
   targetMask: -1
   blocksProjectile: 1
   playerPlatformPolicy: 0
+--- !u!114 &578706769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 578706767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62d00d4fd3fa4b0e9b2ac55163d3ee49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossBattleStartTrigger
+  boss: {fileID: 1065037938}
+--- !u!61 &578706770
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 578706767}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 2}
+    newSize: {x: 1, y: 2}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 1, y: 2}
+  m_EdgeRadius: 0
 --- !u!1 &612174363
 GameObject:
   m_ObjectHideFlags: 0
@@ -11390,6 +11455,10 @@ PrefabInstance:
       propertyPath: enhancedElectric
       value: 
       objectReference: {fileID: 52038656}
+    - target: {fileID: 7449935161492314678, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
+      propertyPath: waitForBattleTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8019187508573528365, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_Name
       value: Boss
@@ -11399,6 +11468,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
+--- !u!114 &1065037938 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7449935161492314678, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
+  m_PrefabInstance: {fileID: 1065037937}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f613290fa34eadc498696d4017441fd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Boss
 --- !u!1001 &1066321082
 PrefabInstance:
   m_ObjectHideFlags: 0

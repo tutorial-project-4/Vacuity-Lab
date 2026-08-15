@@ -33,6 +33,11 @@ public class BossHealthGauge : MonoBehaviour
 
     void HandleDamaged(int _) => Refresh();
 
+    public void SetVisible(bool visible)
+    {
+        if (fill != null) fill.transform.parent.gameObject.SetActive(visible);
+    }
+
     void Refresh()
     {
         if (boss == null || fill == null) return;

@@ -19,6 +19,10 @@ public class Boss : MonoBehaviour
     [Tooltip("추적 대상. feat/player 병합 전에는 빈 GameObject를 임시 타깃으로 사용")]
     [SerializeField] Transform target;
 
+    [Header("전투 시작")]
+    [Tooltip("활성화하면 BeginBattle() 호출 전까지 행동·피격·공격 판정을 중지한다")]
+    [SerializeField] bool waitForBattleTrigger;
+
     [Header("빔")]
     [Tooltip("보스 Transform 기준 입의 월드 Y 오프셋. 스프라이트 교체 시 조정")]
     [SerializeField] float beamMouthYOffset = 0.5f;
@@ -57,6 +61,7 @@ public class Boss : MonoBehaviour
     BehaviorGraphAgent _agent;
     PlayerHealth _playerHealth;
     bool _phase2Triggered;
+    bool _battleStarted;
 
     Vector3 _startPos;
     GameObject[] _hitboxes;   // 몸체·슬램 등 자식 판정
@@ -96,6 +101,32 @@ public class Boss : MonoBehaviour
         if (target == null)
             Debug.LogWarning("[Boss] target 미할당 — 추적이 동작하지 않음", this);
         _agent.SetVariableValue("Target", target ? target.gameObject : null);
+
+        _battleStarted = !waitForBattleTrigger;
+        if (!_battleStarted)
+        {
+            _agent.End();
+            _health.Invulnerable = true;
+            Electric()?.Stop();
+            if (enhancedElectric) enhancedElectric.Stop();
+            foreach (var hitbox in _hitboxes) hitbox.SetActive(false);
+            GetComponent<BossHealthGauge>()?.SetVisible(false);
+            Debug.Log("[Boss] 전투 시작 트리거 대기");
+        }
+    }
+
+    public void BeginBattle()
+    {
+        if (_battleStarted || _health.IsDead) return;
+
+        _battleStarted = true;
+        _health.Invulnerable = false;
+        GetComponent<BossHealthGauge>()?.SetVisible(true);
+        for (int i = 0; i < _hitboxes.Length; i++) _hitboxes[i].SetActive(_hitboxRest[i]);
+        _agent.SetVariableValue("Target", target ? target.gameObject : null);
+        _agent.Restart();
+        _agent.SetVariableValue("Target", target ? target.gameObject : null);
+        Debug.Log("[Boss] 진입 장벽 접촉 — 보스전 시작");
     }
 
     /// #14 사망 처리(기획 J-6): 행동 중단 → 모든 판정 제거 → 연출 placeholder → 외부 훅.
