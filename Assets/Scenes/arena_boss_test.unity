@@ -446,6 +446,7 @@ MonoBehaviour:
   - {fileID: 1148614245}
   - {fileID: 1753502362}
   restDuration: 2
+  maxActiveZones: 2
   autoStart: 0
 --- !u!1 &81788442
 GameObject:
