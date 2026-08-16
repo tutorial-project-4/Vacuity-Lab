@@ -51,6 +51,7 @@ public static class EnhancedElectricSceneSetup
             arr.GetArrayElementAtIndex(i).objectReferenceValue = lines[i];
         }
         so.FindProperty("restDuration").floatValue = 2f;
+        so.FindProperty("maxActiveZones").intValue = 2;
         so.ApplyModifiedPropertiesWithoutUndo();
 
         // 페이즈 2 시작 시 Boss가 Begin()을 호출하도록 연결 (프리팹 인스턴스 오버라이드)
