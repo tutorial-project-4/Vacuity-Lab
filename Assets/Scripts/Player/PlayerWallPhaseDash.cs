@@ -42,6 +42,7 @@ public class PlayerWallPhaseDash : MonoBehaviour
     private bool warnedResolveDistanceExceeded;
 
     public bool IsWallPhaseDashing { get; private set; }
+    public float CooldownRatio => dashCooldown > 0f ? Mathf.Clamp01(cooldownTimer / dashCooldown) : 0f;
 
     private void Awake()
     {

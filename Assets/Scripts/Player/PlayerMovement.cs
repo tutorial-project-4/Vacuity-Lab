@@ -70,6 +70,7 @@ public class PlayerMovement : MonoBehaviour
     public bool IsGliding { get; private set; }
     public bool IsDashing { get; private set; }
     public LayerMask SolidLayer => solidLayer;
+    public float DashCooldownRatio => dashCooldown > 0f ? Mathf.Clamp01(dashCooldownTimer / dashCooldown) : 0f;
 
     private void Awake()
     {
