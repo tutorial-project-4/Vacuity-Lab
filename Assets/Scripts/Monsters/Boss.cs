@@ -145,6 +145,7 @@ public class Boss : MonoBehaviour
         if (beam != null && beam.activeSelf) beam.SetActive(false); // 빔 잔상 제거
         if (spikeWalls) spikeWalls.SetActive(false);                // 필드 기믹 판정 제거
         foreach (var hitbox in _hitboxes) hitbox.SetActive(false);  // 몸체·슬램 히트박스 제거
+        GetComponent<BossHealthGauge>()?.SetVisible(false);
 
         StartCoroutine(DeathSequence());
     }

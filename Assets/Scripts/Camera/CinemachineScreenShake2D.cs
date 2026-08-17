@@ -23,6 +23,12 @@ public class CinemachineScreenShake2D : CinemachineExtension
         ref CameraState state,
         float deltaTime)
     {
+        if (!Enabled)
+        {
+            shakeTimer = 0f;
+            return;
+        }
+
         if (stage != CinemachineCore.Stage.Finalize || shakeTimer <= 0f)
         {
             return;

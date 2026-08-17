@@ -43,6 +43,7 @@ public class PlayerWallPhaseDash : MonoBehaviour
 
     public bool IsWallPhaseDashing { get; private set; }
     public float CooldownRatio => dashCooldown > 0f ? Mathf.Clamp01(cooldownTimer / dashCooldown) : 0f;
+    public bool IsAvailable => CanStartDash();
 
     private void Awake()
     {
@@ -94,6 +95,20 @@ public class PlayerWallPhaseDash : MonoBehaviour
         }
 
         CleanupDashState();
+    }
+
+    public void ResetState()
+    {
+        if (dashRoutine != null)
+        {
+            StopCoroutine(dashRoutine);
+            dashRoutine = null;
+        }
+
+        CleanupDashState();
+        cooldownTimer = 0f;
+        canAirWallPhaseDash = true;
+        damagedTargets.Clear();
     }
 
     private bool CanStartDash()

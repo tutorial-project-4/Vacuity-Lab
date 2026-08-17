@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -13,6 +14,9 @@ public sealed class GameplayUI : MonoBehaviour
     const string StartModeKey = "game.startMode";
     const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
+    [SerializeField] string titleScene = "TitleScene";
+    [SerializeField] string bossDisplayName = "WARDEN-01";
+
     PlayerHealth health;
     PlayerMovement movement;
     PlayerWallPhaseDash wallDash;
@@ -24,6 +28,7 @@ public sealed class GameplayUI : MonoBehaviour
     Text memoryText;
     GameObject optionsPanel;
     GameObject deathPanel;
+    GameObject optionsFirstSelection;
     float previousTimeScale = 1f;
     bool paused;
 
@@ -42,10 +47,7 @@ public sealed class GameplayUI : MonoBehaviour
     {
         if (PlayerPrefs.GetInt(StartModeKey, 0) != 1 || !health) return;
 
-        var entrance = FindFirstObjectByType<BossBattleStartTrigger>();
-        var trigger = entrance ? entrance.GetComponent<Collider2D>() : null;
-        if (trigger)
-            health.Respawn(new Vector2(trigger.bounds.max.x + 1f, trigger.bounds.center.y), health.MaxHearts);
+        health.Respawn(BossEntrancePosition(), health.MaxHearts);
     }
 
     void OnEnable()
@@ -70,11 +72,13 @@ public sealed class GameplayUI : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current?.escapeKey.wasPressedThisFrame == true && !deathPanel.activeSelf)
+        if (Keyboard.current?.escapeKey.wasPressedThisFrame == true
+            && !deathPanel.activeSelf
+            && !(DialogueRunner.Instance?.IsRunning ?? false))
             SetOptions(!optionsPanel.activeSelf);
 
-        if (dashCooldown) dashCooldown.fillAmount = movement ? movement.DashCooldownRatio : 0f;
-        if (wallDashCooldown) wallDashCooldown.fillAmount = wallDash ? wallDash.CooldownRatio : 0f;
+        if (dashCooldown && movement) RefreshSkill(dashCooldown, movement.DashCooldownRatio, movement.IsDashAvailable);
+        if (wallDashCooldown && wallDash) RefreshSkill(wallDashCooldown, wallDash.CooldownRatio, wallDash.IsAvailable);
     }
 
     void Build()
@@ -143,8 +147,8 @@ public sealed class GameplayUI : MonoBehaviour
         if (!gauge) return;
         gauge.anchoredPosition = new Vector2(0, -76);
         gauge.sizeDelta = new Vector2(760, 28);
-        var name = Label("Boss Name", existing.transform, "WARDEN-01", 30, TextAnchor.MiddleCenter);
-        Place(name.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, -30), new Vector2(760, 38), new Vector2(.5f, 1));
+        var name = Label("Boss Name", gauge, bossDisplayName, 30, TextAnchor.MiddleCenter);
+        Place(name.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, 58), new Vector2(760, 38), new Vector2(.5f, 1));
     }
 
     void BuildOptions()
@@ -154,6 +158,7 @@ public sealed class GameplayUI : MonoBehaviour
         AddHeading(optionsPanel.transform, "OPTION", -44);
 
         var volume = SliderControl(optionsPanel.transform, "마스터 볼륨", -135);
+        optionsFirstSelection = volume.gameObject;
         volume.value = PlayerPrefs.GetFloat(VolumeKey, 1f);
         volume.onValueChanged.AddListener(SetVolume);
 
@@ -167,7 +172,8 @@ public sealed class GameplayUI : MonoBehaviour
 
         var controls = Label("Controls", optionsPanel.transform, "이동  A / D     점프  SPACE     공격  F\n대시  SHIFT     벽 관통  E     옵션  ESC", 20, TextAnchor.MiddleCenter);
         Place(controls.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, -395), new Vector2(560, 90), new Vector2(.5f, 1));
-        ButtonControl(optionsPanel.transform, "계속", new Vector2(0, -530), () => SetOptions(false));
+        ButtonControl(optionsPanel.transform, "계속", new Vector2(-175, -530), () => SetOptions(false));
+        ButtonControl(optionsPanel.transform, "타이틀 화면", new Vector2(175, -530), GoToTitle);
         optionsPanel.SetActive(false);
     }
 
@@ -191,6 +197,12 @@ public sealed class GameplayUI : MonoBehaviour
         }
     }
 
+    static void RefreshSkill(Image overlay, float cooldown, bool available)
+    {
+        overlay.fillAmount = cooldown > 0f ? cooldown : available ? 0f : 1f;
+        overlay.color = new Color(0, 0, 0, cooldown > 0f ? .72f : .45f);
+    }
+
     void ShowDeath()
     {
         if (boss && boss.IsBattleStarted && bossHealth && !bossHealth.IsDead)
@@ -202,12 +214,22 @@ public sealed class GameplayUI : MonoBehaviour
         if (optionsPanel.activeSelf) SetOptions(false);
         deathPanel.SetActive(true);
         Pause();
+        EventSystem.current?.SetSelectedGameObject(deathPanel.GetComponentInChildren<Button>().gameObject);
     }
 
     void SetOptions(bool visible)
     {
         optionsPanel.SetActive(visible);
-        if (visible) Pause(); else RestoreTime();
+        if (visible)
+        {
+            Pause();
+            EventSystem.current?.SetSelectedGameObject(optionsFirstSelection);
+        }
+        else
+        {
+            RestoreTime();
+            EventSystem.current?.SetSelectedGameObject(null);
+        }
     }
 
     void Pause()
@@ -229,15 +251,34 @@ public sealed class GameplayUI : MonoBehaviour
     {
         Time.timeScale = 1f;
         paused = false;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+        if (!boss || !boss.IsBattleStarted)
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            return;
+        }
+
+        deathPanel.SetActive(false);
+        boss.ResetForRetry();
+        wallDash?.ResetState();
+        health?.Respawn(BossEntrancePosition(), health.MaxHearts);
     }
 
     void GoToTitle()
     {
         Time.timeScale = 1f;
         paused = false;
-        if (Application.CanStreamedLevelBeLoaded("TitleScene")) SceneManager.LoadScene("TitleScene");
+        if (Application.CanStreamedLevelBeLoaded(titleScene)) SceneManager.LoadScene(titleScene);
         else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    Vector2 BossEntrancePosition()
+    {
+        var entrance = FindFirstObjectByType<BossBattleStartTrigger>();
+        var trigger = entrance ? entrance.GetComponent<Collider2D>() : null;
+        return trigger
+            ? new Vector2(trigger.bounds.max.x + 1f, trigger.bounds.center.y)
+            : health ? (Vector2)health.transform.position : Vector2.zero;
     }
 
     void ApplySavedOptions()

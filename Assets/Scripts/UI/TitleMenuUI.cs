@@ -7,7 +7,7 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public sealed class TitleMenuUI : MonoBehaviour
 {
-    const string GameScene = "boss-semi-complete-arena";
+    [SerializeField] string gameScene = "boss-semi-complete-arena";
     const string StartModeKey = "game.startMode";
     const string VolumeKey = "ui.masterVolume";
     const string ShakeKey = "ui.screenShake";
@@ -113,7 +113,7 @@ public sealed class TitleMenuUI : MonoBehaviour
     {
         PlayerPrefs.SetInt(StartModeKey, mode);
         PlayerPrefs.Save();
-        SceneManager.LoadScene(GameScene);
+        SceneManager.LoadScene(gameScene);
     }
 
     void OpenOptions() { mainPanel.SetActive(false); optionsPanel.SetActive(true); EventSystem.current?.SetSelectedGameObject(optionsPanel.GetComponentInChildren<Button>().gameObject); }
