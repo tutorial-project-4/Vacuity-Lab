@@ -32,6 +32,7 @@ public class Boss : MonoBehaviour
     public Transform Target => target;
     public float BeamMouthYOffset => beamMouthYOffset;
     public float BeamAlignSpeed => beamAlignSpeed;
+    public bool IsBattleStarted => _battleStarted;
 
     [Header("#10 페이즈 전환 (HP 500, 컷신)")]
     [Tooltip("이 HP 이하 최초 1회에 페이즈 2 전환 (확정 500)")]

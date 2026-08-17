@@ -12,10 +12,12 @@ public sealed class TitleMenuUI : MonoBehaviour
     const string VolumeKey = "ui.masterVolume";
     const string ShakeKey = "ui.screenShake";
     const string FullscreenKey = "ui.fullscreen";
+    const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
     GameObject mainPanel;
     GameObject optionsPanel;
     Button firstButton;
+    Button quickStartButton;
 
     void Awake()
     {
@@ -53,7 +55,10 @@ public sealed class TitleMenuUI : MonoBehaviour
         Stretch((RectTransform)mainPanel.transform, 0);
         BuildLogo(mainPanel.transform);
         firstButton = MenuButton(mainPanel.transform, "게임 시작", -455, () => StartGame(0));
-        MenuButton(mainPanel.transform, "빠른 시작", -525, () => StartGame(1));
+        quickStartButton = MenuButton(mainPanel.transform, "빠른 시작", -525, () => StartGame(1));
+        quickStartButton.interactable = PlayerPrefs.GetInt(QuickStartUnlockedKey, 0) != 0;
+        if (!quickStartButton.interactable)
+            quickStartButton.GetComponentInChildren<Text>().text = "빠른 시작  ·  잠김";
         MenuButton(mainPanel.transform, "OPTIONS", -595, OpenOptions);
         MenuButton(mainPanel.transform, "END", -665, Quit);
 
@@ -196,4 +201,12 @@ public sealed class TitleMenuUI : MonoBehaviour
     static Text Label(string name, Transform parent, string value, int size, TextAnchor alignment) { var text = Rect(name, parent).AddComponent<Text>(); text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf"); text.text = value; text.fontSize = size; text.color = new Color(.9f, .95f, .97f); text.alignment = alignment; return text; }
     static void Place(GameObject go, Vector2 min, Vector2 max, Vector2 position, Vector2 size, Vector2 pivot) { var rt = (RectTransform)go.transform; rt.anchorMin = min; rt.anchorMax = max; rt.pivot = pivot; rt.anchoredPosition = position; rt.sizeDelta = size; }
     static void Stretch(RectTransform rt, float margin) { rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = Vector2.one * margin; rt.offsetMax = Vector2.one * -margin; }
+
+#if UNITY_EDITOR
+    [ContextMenu("Test: Unlock Quick Start")]
+    void UnlockQuickStart() { PlayerPrefs.SetInt(QuickStartUnlockedKey, 1); PlayerPrefs.Save(); }
+
+    [ContextMenu("Test: Lock Quick Start")]
+    void LockQuickStart() { PlayerPrefs.DeleteKey(QuickStartUnlockedKey); PlayerPrefs.Save(); }
+#endif
 }

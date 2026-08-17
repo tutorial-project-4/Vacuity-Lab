@@ -10,6 +10,8 @@ public sealed class GameplayUI : MonoBehaviour
     const string VolumeKey = "ui.masterVolume";
     const string ShakeKey = "ui.screenShake";
     const string FullscreenKey = "ui.fullscreen";
+    const string StartModeKey = "game.startMode";
+    const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
     PlayerHealth health;
     PlayerMovement movement;
@@ -34,6 +36,16 @@ public sealed class GameplayUI : MonoBehaviour
         boss = bossHealth ? bossHealth.GetComponent<Boss>() : null;
         Build();
         ApplySavedOptions();
+    }
+
+    void Start()
+    {
+        if (PlayerPrefs.GetInt(StartModeKey, 0) != 1 || !health) return;
+
+        var entrance = FindFirstObjectByType<BossBattleStartTrigger>();
+        var trigger = entrance ? entrance.GetComponent<Collider2D>() : null;
+        if (trigger)
+            health.Respawn(new Vector2(trigger.bounds.max.x + 1f, trigger.bounds.center.y), health.MaxHearts);
     }
 
     void OnEnable()
@@ -181,6 +193,12 @@ public sealed class GameplayUI : MonoBehaviour
 
     void ShowDeath()
     {
+        if (boss && boss.IsBattleStarted && bossHealth && !bossHealth.IsDead)
+        {
+            PlayerPrefs.SetInt(QuickStartUnlockedKey, 1);
+            PlayerPrefs.Save();
+        }
+
         if (optionsPanel.activeSelf) SetOptions(false);
         deathPanel.SetActive(true);
         Pause();
