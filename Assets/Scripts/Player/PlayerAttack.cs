@@ -32,6 +32,8 @@ public class PlayerAttack : MonoBehaviour
     private Coroutine attackRoutine;
     private bool isAttacking;
 
+    public bool IsAttacking => isAttacking;
+
     private void Awake()
     {
         CacheComponents();
