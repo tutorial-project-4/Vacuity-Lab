@@ -1,0 +1,151 @@
+using UnityEngine;
+
+[RequireComponent(typeof(Collider2D))]
+public class CameraFocusTrigger : MonoBehaviour
+{
+    [Header("Camera")]
+    [SerializeField] private CinemachinePlatformerCamera cameraFollow;
+    [SerializeField] private bool allowSceneCameraFallback = true;
+    [SerializeField] private Transform focusPoint;
+    [SerializeField] private bool usePlayerAsTarget;
+    [SerializeField] private bool snapOnEnter = true;
+
+    [Header("Lens")]
+    [SerializeField] private bool overrideOrthographicSize = true;
+    [SerializeField] private float orthographicSize = 8f;
+
+    [Header("Bounds")]
+    [SerializeField] private Collider2D cameraBounds;
+    [SerializeField] private bool clearBounds;
+
+    [Header("Trigger")]
+    [SerializeField] private bool triggerOnce = true;
+
+    private bool hasTriggered;
+    private bool warnedMissingCamera;
+
+    private void Reset()
+    {
+        ConfigureTriggerCollider();
+    }
+
+    private void Awake()
+    {
+        ConfigureTriggerCollider();
+        WarnIfCameraReferenceMissing();
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (triggerOnce && hasTriggered)
+        {
+            return;
+        }
+
+        PlayerMovement playerMovement = other.GetComponentInParent<PlayerMovement>();
+        if (playerMovement == null)
+        {
+            return;
+        }
+
+        ApplyCameraFocus(playerMovement.transform);
+        hasTriggered = true;
+    }
+
+    private void ApplyCameraFocus(Transform playerTransform)
+    {
+        CinemachinePlatformerCamera targetCamera = GetCameraFollow();
+        if (targetCamera == null)
+        {
+            Debug.LogWarning("[CameraFocusTrigger] CinemachinePlatformerCamera reference was not found.", this);
+            return;
+        }
+
+        Transform target = usePlayerAsTarget ? playerTransform : focusPoint;
+        if (target == null)
+        {
+            Debug.LogWarning("[CameraFocusTrigger] Focus Point is not assigned.", this);
+            return;
+        }
+
+        if (overrideOrthographicSize)
+        {
+            targetCamera.SetOrthographicSize(orthographicSize);
+        }
+
+        if (clearBounds)
+        {
+            targetCamera.ClearBounds();
+        }
+        else if (cameraBounds != null)
+        {
+            targetCamera.SetBounds(cameraBounds);
+        }
+
+        targetCamera.SetTarget(target);
+        if (snapOnEnter)
+        {
+            targetCamera.SnapToTarget();
+        }
+    }
+
+    private CinemachinePlatformerCamera GetCameraFollow()
+    {
+        if (cameraFollow != null)
+        {
+            return cameraFollow;
+        }
+
+        if (!allowSceneCameraFallback)
+        {
+            return null;
+        }
+
+#if UNITY_2023_1_OR_NEWER
+        cameraFollow = FindFirstObjectByType<CinemachinePlatformerCamera>();
+#else
+        cameraFollow = FindObjectOfType<CinemachinePlatformerCamera>();
+#endif
+        return cameraFollow;
+    }
+
+    private void ConfigureTriggerCollider()
+    {
+        Collider2D triggerCollider = GetComponent<Collider2D>();
+        if (triggerCollider != null)
+        {
+            triggerCollider.isTrigger = true;
+        }
+    }
+
+    private void OnValidate()
+    {
+        orthographicSize = Mathf.Max(0.1f, orthographicSize);
+        ConfigureTriggerCollider();
+
+        if (focusPoint == null && !usePlayerAsTarget)
+        {
+            Debug.LogWarning("[CameraFocusTrigger] Focus Point is not assigned.", this);
+        }
+
+        if (cameraFollow == null)
+        {
+            Debug.LogWarning("[CameraFocusTrigger] Camera Follow is not assigned. Assign it in the Inspector, or keep fallback enabled.", this);
+        }
+    }
+
+    private void WarnIfCameraReferenceMissing()
+    {
+        if (cameraFollow != null || warnedMissingCamera)
+        {
+            return;
+        }
+
+        string fallbackMessage = allowSceneCameraFallback
+            ? " Scene fallback will be used at runtime."
+            : " Scene fallback is disabled.";
+
+        Debug.LogWarning($"[CameraFocusTrigger] Camera Follow is not assigned.{fallbackMessage}", this);
+        warnedMissingCamera = true;
+    }
+}
