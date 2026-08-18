@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 [RequireComponent(typeof(Collider2D))]
 public class DialogueInteractable : MonoBehaviour
@@ -21,6 +22,7 @@ public class DialogueInteractable : MonoBehaviour
 
     private PlayerController currentPlayer;
     private bool hasPlayed;
+    private Coroutine interactionRoutine;
 
     private void Update()
     {
@@ -33,10 +35,23 @@ public class DialogueInteractable : MonoBehaviour
         Keyboard keyboard = Keyboard.current;
         if (keyboard != null && keyboard.fKey.wasPressedThisFrame)
         {
-            RunInteractionActions();
-            runner.StartDialogue(lines, currentPlayer);
-            hasPlayed = true;
+            interactionRoutine = StartCoroutine(InteractionRoutine(runner, currentPlayer));
         }
+    }
+
+    private IEnumerator InteractionRoutine(DialogueRunner runner, PlayerController player)
+    {
+        hasPlayed = true;
+        runner.StartDialogue(lines, player);
+
+        yield return null;
+        while (runner != null && runner.IsRunning)
+        {
+            yield return null;
+        }
+
+        RunInteractionActions();
+        interactionRoutine = null;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -101,6 +116,15 @@ public class DialogueInteractable : MonoBehaviour
         if (trigger != null)
         {
             trigger.isTrigger = true;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (interactionRoutine != null)
+        {
+            StopCoroutine(interactionRoutine);
+            interactionRoutine = null;
         }
     }
 }
