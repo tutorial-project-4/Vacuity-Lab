@@ -8,83 +8,32 @@ using UnityEngine.UI;
 public sealed class TitleMenuUI : MonoBehaviour
 {
     [SerializeField] string gameScene = "boss-semi-complete-arena";
+    [SerializeField] Button newGameButton;
+    [SerializeField] Button quickStartButton;
+    [SerializeField] Button optionButton;
+    [SerializeField] Button quitButton;
     const string StartModeKey = "game.startMode";
     const string VolumeKey = "ui.masterVolume";
     const string ShakeKey = "ui.screenShake";
     const string FullscreenKey = "ui.fullscreen";
     const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
-    GameObject mainPanel;
     GameObject optionsPanel;
-    Button firstButton;
-    Button quickStartButton;
 
     void Awake()
     {
         Time.timeScale = 1f;
         EnsureEventSystem();
-        Build();
+        newGameButton.onClick.AddListener(() => StartGame(0));
+        quickStartButton.onClick.AddListener(() => StartGame(1));
+        optionButton.onClick.AddListener(OpenOptions);
+        quitButton.onClick.AddListener(Quit);
+        quickStartButton.interactable = PlayerPrefs.GetInt(QuickStartUnlockedKey, 0) != 0;
+        BuildOptions();
         ApplySavedOptions();
     }
 
-    void Start() => EventSystem.current?.SetSelectedGameObject(firstButton.gameObject);
-
-    void Build()
-    {
-        var canvas = gameObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        var scaler = gameObject.AddComponent<CanvasScaler>();
-        scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-        scaler.referenceResolution = new Vector2(1920, 1080);
-        scaler.matchWidthOrHeight = .5f;
-        gameObject.AddComponent<GraphicRaycaster>();
-
-        var background = Rect("Background", transform).AddComponent<RawImage>();
-        background.texture = Resources.Load<Texture2D>("UI/title-background");
-        background.color = Color.white;
-        Stretch(background.rectTransform, 0);
-        var fitter = background.gameObject.AddComponent<AspectRatioFitter>();
-        fitter.aspectMode = AspectRatioFitter.AspectMode.EnvelopeParent;
-        fitter.aspectRatio = 16f / 9f;
-
-        var shade = Rect("Shade", transform).AddComponent<Image>();
-        shade.color = new Color(0, 0, 0, .18f);
-        Stretch(shade.rectTransform, 0);
-
-        mainPanel = Rect("Main Menu", transform);
-        Stretch((RectTransform)mainPanel.transform, 0);
-        BuildLogo(mainPanel.transform);
-        firstButton = MenuButton(mainPanel.transform, "게임 시작", -455, () => StartGame(0));
-        quickStartButton = MenuButton(mainPanel.transform, "빠른 시작", -525, () => StartGame(1));
-        quickStartButton.interactable = PlayerPrefs.GetInt(QuickStartUnlockedKey, 0) != 0;
-        if (!quickStartButton.interactable)
-            quickStartButton.GetComponentInChildren<Text>().text = "빠른 시작  ·  잠김";
-        MenuButton(mainPanel.transform, "OPTIONS", -595, OpenOptions);
-        MenuButton(mainPanel.transform, "END", -665, Quit);
-
-        BuildOptions();
-    }
-
-    void BuildLogo(Transform parent)
-    {
-        var title = Label("Logo", parent, "VACUITY LAB", 92, TextAnchor.MiddleCenter);
-        title.fontStyle = FontStyle.Normal;
-        title.resizeTextForBestFit = true;
-        title.resizeTextMinSize = 48;
-        title.resizeTextMaxSize = 92;
-        Place(title.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, -170), new Vector2(920, 130), new Vector2(.5f, 1));
-
-        var subtitle = Label("Subtitle", parent, "DESCEND  ·  REMEMBER  ·  ESCAPE", 18, TextAnchor.MiddleCenter);
-        subtitle.color = new Color(.66f, .79f, .83f);
-        Place(subtitle.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, -300), new Vector2(700, 32), new Vector2(.5f, 1));
-
-        Line(parent, new Vector2(-280, -330));
-        Line(parent, new Vector2(280, -330));
-        var diamond = Rect("Mark", parent).AddComponent<Image>();
-        diamond.color = new Color(.72f, .88f, .91f, .8f);
-        Place(diamond.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, -330), new Vector2(12, 12), new Vector2(.5f, .5f));
-        diamond.rectTransform.localRotation = Quaternion.Euler(0, 0, 45);
-    }
+    void Start() => EventSystem.current?.SetSelectedGameObject(newGameButton.gameObject);
 
     void BuildOptions()
     {
@@ -116,8 +65,8 @@ public sealed class TitleMenuUI : MonoBehaviour
         SceneManager.LoadScene(gameScene);
     }
 
-    void OpenOptions() { mainPanel.SetActive(false); optionsPanel.SetActive(true); EventSystem.current?.SetSelectedGameObject(optionsPanel.GetComponentInChildren<Button>().gameObject); }
-    void CloseOptions() { optionsPanel.SetActive(false); mainPanel.SetActive(true); EventSystem.current?.SetSelectedGameObject(firstButton.gameObject); }
+    void OpenOptions() { optionsPanel.SetActive(true); EventSystem.current?.SetSelectedGameObject(optionsPanel.GetComponentInChildren<Button>().gameObject); }
+    void CloseOptions() { optionsPanel.SetActive(false); EventSystem.current?.SetSelectedGameObject(newGameButton.gameObject); }
     void Quit() { PlayerPrefs.Save();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
@@ -188,13 +137,6 @@ public sealed class TitleMenuUI : MonoBehaviour
         var text = Label("Label", root.transform, label, 24, TextAnchor.MiddleLeft); Place(text.gameObject, Vector2.zero, Vector2.zero, new Vector2(62, 0), new Vector2(480, 42), Vector2.zero);
         var toggle = root.AddComponent<Toggle>(); toggle.targetGraphic = bg; toggle.graphic = check;
         return toggle;
-    }
-
-    static void Line(Transform parent, Vector2 position)
-    {
-        var line = Rect("Line", parent).AddComponent<Image>();
-        line.color = new Color(.55f, .75f, .79f, .45f);
-        Place(line.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), position, new Vector2(240, 2), new Vector2(.5f, .5f));
     }
 
     static GameObject Rect(string name, Transform parent) { var go = new GameObject(name, typeof(RectTransform)); go.transform.SetParent(parent, false); return go; }
