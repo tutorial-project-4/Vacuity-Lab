@@ -34,6 +34,15 @@ public class Boss : MonoBehaviour
     public float BeamAlignSpeed => beamAlignSpeed;
     public bool IsBattleStarted => _battleStarted;
 
+    [Header("애니메이션")]
+    [SerializeField] RuntimeAnimatorController idleAnimation;
+    [SerializeField] RuntimeAnimatorController walkAnimation;
+    [SerializeField] RuntimeAnimatorController dashAnimation;
+    [SerializeField] RuntimeAnimatorController slamAnimation;
+    [SerializeField] RuntimeAnimatorController beamAnimation;
+    [SerializeField] RuntimeAnimatorController phaseAnimation;
+    [SerializeField] RuntimeAnimatorController destroyAnimation;
+
     [Header("#10 페이즈 전환 (HP 500, 컷신)")]
     [Tooltip("이 HP 이하 최초 1회에 페이즈 2 전환 (확정 500)")]
     [SerializeField] int phase2HpThreshold = 500;
@@ -63,6 +72,9 @@ public class Boss : MonoBehaviour
     PlayerHealth _playerHealth;
     bool _phase2Triggered;
     bool _battleStarted;
+    Animator _animator;
+    SpriteRenderer _spriteRenderer;
+    float _lastX;
 
     Vector3 _startPos;
     GameObject[] _hitboxes;   // 몸체·슬램 등 자식 판정
@@ -72,6 +84,9 @@ public class Boss : MonoBehaviour
     {
         _health = GetComponent<BossHealth>();
         _agent = GetComponent<BehaviorGraphAgent>();
+        _animator = GetComponent<Animator>();
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _lastX = transform.position.x;
         _playerHealth = target ? target.GetComponentInParent<PlayerHealth>() : null;
 
         _startPos = transform.position;
@@ -81,6 +96,14 @@ public class Boss : MonoBehaviour
             if (src.gameObject != gameObject) list.Add(src.gameObject); // 루트를 끄면 보스가 통째로 사라진다
         _hitboxes = list.ToArray();
         _hitboxRest = System.Array.ConvertAll(_hitboxes, go => go.activeSelf);
+    }
+
+    void LateUpdate()
+    {
+        float x = transform.position.x;
+        if (_spriteRenderer != null && !Mathf.Approximately(x, _lastX))
+            _spriteRenderer.flipX = x < _lastX;
+        _lastX = x;
     }
 
     void OnEnable()
@@ -130,6 +153,18 @@ public class Boss : MonoBehaviour
         Debug.Log("[Boss] 진입 장벽 접촉 — 보스전 시작");
     }
 
+    public void PlayAnimation(RuntimeAnimatorController controller)
+    {
+        if (_animator != null && controller != null && _animator.runtimeAnimatorController != controller)
+            _animator.runtimeAnimatorController = controller;
+    }
+
+    public void PlayIdle() => PlayAnimation(idleAnimation);
+    public void PlayWalk() => PlayAnimation(walkAnimation);
+    public void PlayDash() => PlayAnimation(dashAnimation);
+    public void PlaySlam() => PlayAnimation(slamAnimation);
+    public void PlayBeam() => PlayAnimation(beamAnimation);
+
     /// #14 사망 처리(기획 J-6): 행동 중단 → 모든 판정 제거 → 연출 placeholder → 외부 훅.
     /// 피격 비활성은 BossHealth.IsDead가 담당(사망 후 TakeDamage 무시).
     void HandleDeath()
@@ -146,6 +181,7 @@ public class Boss : MonoBehaviour
         if (spikeWalls) spikeWalls.SetActive(false);                // 필드 기믹 판정 제거
         foreach (var hitbox in _hitboxes) hitbox.SetActive(false);  // 몸체·슬램 히트박스 제거
         GetComponent<BossHealthGauge>()?.SetVisible(false);
+        PlayAnimation(destroyAnimation);
 
         StartCoroutine(DeathSequence());
     }
@@ -180,6 +216,7 @@ public class Boss : MonoBehaviour
         _health.Invulnerable = false;
         _health.ResetHealth();     // HP 1000 (게이지는 OnDamaged로 갱신)
         transform.position = _startPos;
+        PlayIdle();
 
         // 컷신 도중 초기화되더라도 플레이어 잠금이 남지 않게 (없으면 no-op)
         var pc = target ? target.GetComponentInParent<PlayerController>() : null;
@@ -256,6 +293,7 @@ public class Boss : MonoBehaviour
         if (floor != null && enhancedElectric != null)
             floor.gameObject.SetActive(false);
         _health.Invulnerable = true;
+        PlayAnimation(phaseAnimation);
 
         var pc = target ? target.GetComponentInParent<PlayerController>() : null;
         var ph = target ? target.GetComponentInParent<PlayerHealth>() : null;

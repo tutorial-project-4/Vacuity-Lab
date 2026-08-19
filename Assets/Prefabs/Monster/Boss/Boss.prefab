@@ -299,6 +299,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Boss
   target: {fileID: 0}
+  idleAnimation: {fileID: 9100000, guid: 537fefe3338c4bb43895c29e4609100b, type: 2}
+  walkAnimation: {fileID: 9100000, guid: 2801efa562eedd34b8d9c0c04e38aba8, type: 2}
+  dashAnimation: {fileID: 9100000, guid: b7106f42ab3821147a68f3206ea5368f, type: 2}
+  slamAnimation: {fileID: 9100000, guid: b712735eaa913e1468ba5a9e814f788f, type: 2}
+  beamAnimation: {fileID: 9100000, guid: 155698ca1d269b74bb59efcaca8bce4d, type: 2}
+  phaseAnimation: {fileID: 9100000, guid: 7b21180589c6f3e489a328c1c803f916, type: 2}
+  destroyAnimation: {fileID: 9100000, guid: 42473d55119477747b1e0cdc4ace8382, type: 2}
   phase2HpThreshold: 500
   cutsceneDuration: 2
   prepDuration: 1
@@ -478,7 +485,7 @@ Animator:
   m_GameObject: {fileID: 8019187508573528365}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 7e1c9063ed2065d4999632d81ac653fc, type: 2}
+  m_Controller: {fileID: 9100000, guid: 537fefe3338c4bb43895c29e4609100b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
