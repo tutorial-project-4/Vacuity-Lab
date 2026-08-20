@@ -4,12 +4,14 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class CinemachineScreenShake2D : CinemachineExtension
 {
+    public static bool Enabled { get; set; } = true;
     private float shakeTimer;
     private float shakeDuration;
     private float shakeStrength;
 
     public void Shake(float duration, float strength)
     {
+        if (!Enabled) return;
         shakeDuration = Mathf.Max(0f, duration);
         shakeTimer = shakeDuration;
         shakeStrength = Mathf.Max(0f, strength);
@@ -21,6 +23,12 @@ public class CinemachineScreenShake2D : CinemachineExtension
         ref CameraState state,
         float deltaTime)
     {
+        if (!Enabled)
+        {
+            shakeTimer = 0f;
+            return;
+        }
+
         if (stage != CinemachineCore.Stage.Finalize || shakeTimer <= 0f)
         {
             return;

@@ -19,6 +19,21 @@ public class Boss : MonoBehaviour
     [Tooltip("추적 대상. feat/player 병합 전에는 빈 GameObject를 임시 타깃으로 사용")]
     [SerializeField] Transform target;
 
+    [Header("전투 시작")]
+    [Tooltip("활성화하면 BeginBattle() 호출 전까지 행동·피격·공격 판정을 중지한다")]
+    [SerializeField] bool waitForBattleTrigger;
+
+    [Header("빔")]
+    [Tooltip("보스 Transform 기준 입의 월드 Y 오프셋. 스프라이트 교체 시 조정")]
+    [SerializeField] float beamMouthYOffset = 0.5f;
+    [Tooltip("빔 예고 전 플레이어 높이로 수직 정렬하는 속도")]
+    [SerializeField] float beamAlignSpeed = 10f;
+
+    public Transform Target => target;
+    public float BeamMouthYOffset => beamMouthYOffset;
+    public float BeamAlignSpeed => beamAlignSpeed;
+    public bool IsBattleStarted => _battleStarted;
+
     [Header("#10 페이즈 전환 (HP 500, 컷신)")]
     [Tooltip("이 HP 이하 최초 1회에 페이즈 2 전환 (확정 500)")]
     [SerializeField] int phase2HpThreshold = 500;
@@ -40,13 +55,14 @@ public class Boss : MonoBehaviour
     [Header("#14 보스 사망")]
     [Tooltip("사망 연출 placeholder 길이(잠정). 실제 연출('선배가 기어 나옴')을 붙일 때 교체")]
     [SerializeField] float deathSequenceDuration = 1.5f;
-    [Tooltip("사망 연출 종료 후 1회 호출 — 출구 개방·보상·풀 회복(플레이어 담당)·진행 저장을 여기 연결(기획 J-6)")]
+    [Tooltip("사망 연출 종료 후 1회 호출 — 출구 개방·보상·진행 저장을 여기 연결(기획 J-6). 플레이어 풀 회복은 Boss가 처리")]
     [SerializeField] UnityEngine.Events.UnityEvent onDeathSequenceFinished;
 
     BossHealth _health;
     BehaviorGraphAgent _agent;
     PlayerHealth _playerHealth;
     bool _phase2Triggered;
+    bool _battleStarted;
 
     Vector3 _startPos;
     GameObject[] _hitboxes;   // 몸체·슬램 등 자식 판정
@@ -86,6 +102,32 @@ public class Boss : MonoBehaviour
         if (target == null)
             Debug.LogWarning("[Boss] target 미할당 — 추적이 동작하지 않음", this);
         _agent.SetVariableValue("Target", target ? target.gameObject : null);
+
+        _battleStarted = !waitForBattleTrigger;
+        if (!_battleStarted)
+        {
+            _agent.End();
+            _health.Invulnerable = true;
+            Electric()?.Stop();
+            if (enhancedElectric) enhancedElectric.Stop();
+            foreach (var hitbox in _hitboxes) hitbox.SetActive(false);
+            GetComponent<BossHealthGauge>()?.SetVisible(false);
+            Debug.Log("[Boss] 전투 시작 트리거 대기");
+        }
+    }
+
+    public void BeginBattle()
+    {
+        if (_battleStarted || _health.IsDead) return;
+
+        _battleStarted = true;
+        _health.Invulnerable = false;
+        GetComponent<BossHealthGauge>()?.SetVisible(true);
+        for (int i = 0; i < _hitboxes.Length; i++) _hitboxes[i].SetActive(_hitboxRest[i]);
+        _agent.SetVariableValue("Target", target ? target.gameObject : null);
+        _agent.Restart();
+        _agent.SetVariableValue("Target", target ? target.gameObject : null);
+        Debug.Log("[Boss] 진입 장벽 접촉 — 보스전 시작");
     }
 
     /// #14 사망 처리(기획 J-6): 행동 중단 → 모든 판정 제거 → 연출 placeholder → 외부 훅.
@@ -103,6 +145,7 @@ public class Boss : MonoBehaviour
         if (beam != null && beam.activeSelf) beam.SetActive(false); // 빔 잔상 제거
         if (spikeWalls) spikeWalls.SetActive(false);                // 필드 기믹 판정 제거
         foreach (var hitbox in _hitboxes) hitbox.SetActive(false);  // 몸체·슬램 히트박스 제거
+        GetComponent<BossHealthGauge>()?.SetVisible(false);
 
         StartCoroutine(DeathSequence());
     }
@@ -184,6 +227,7 @@ public class Boss : MonoBehaviour
     {
         Debug.Log($"[Boss] 사망 — 판정 제거, 연출 placeholder {deathSequenceDuration}s");
         yield return new WaitForSeconds(deathSequenceDuration);
+        if (_playerHealth) _playerHealth.Heal(_playerHealth.MaxHearts);
         Debug.Log("[Boss] 사망 연출 종료 — 출구·보상·회복 훅 호출");
         onDeathSequenceFinished?.Invoke();
     }
@@ -249,6 +293,15 @@ public class Boss : MonoBehaviour
     GameObject Beam()
     {
         return _agent.GetVariable("Beam", out BlackboardVariable<GameObject> v) ? v.Value : null;
+    }
+
+    public Vector2 GetBeamMouthPosition(float direction)
+    {
+        Collider2D body = GetComponent<Collider2D>();
+        float x = body != null
+            ? (direction < 0f ? body.bounds.min.x : body.bounds.max.x)
+            : transform.position.x;
+        return new Vector2(x, transform.position.y + beamMouthYOffset);
     }
 
     /// 그래프 Blackboard의 ElectricFloor(씬 오브젝트)를 재사용 — 씬 참조 중복 방지.

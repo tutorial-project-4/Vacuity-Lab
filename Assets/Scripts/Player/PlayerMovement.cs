@@ -73,6 +73,8 @@ public class PlayerMovement : MonoBehaviour
     public float HorizontalSpeed { get; private set; }
     public float VerticalSpeed => ySpeed;
     public LayerMask SolidLayer => solidLayer;
+    public float DashCooldownRatio => dashCooldown > 0f ? Mathf.Clamp01(dashCooldownTimer / dashCooldown) : 0f;
+    public bool IsDashAvailable => !IsControlLocked && !IsDashing && dashCooldownTimer <= 0f && (IsGrounded || canAirDash);
 
     private void Awake()
     {

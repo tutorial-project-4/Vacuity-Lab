@@ -11,7 +11,7 @@ public static class BeamSceneSetup
     private const string ScenePath = "Assets/Scenes/Boss_test_Scene.unity";
     private const string SpritePath = "Assets/Art/WhiteSquare.png";
     private const float InnerX = 8.9309f;   // 내벽 면(±) — SpikeWallSceneSetup과 동일 실측
-    private const float Thickness = 1f;     // 잠정: 빔 두께
+    private const float Thickness = 2f;     // 잠정: 빔 두께
 
     [MenuItem("Tools/Boss/Setup Beam (Boss_test_Scene)")]
     public static void Build()

@@ -4,8 +4,8 @@ using UnityEngine;
 
 /// #8 전기 바닥 필드 스케줄러 (세부기획 D-3, E-1).
 /// 보스 Behavior Graph와 완전 독립으로 반복한다:
-/// 1~3구역 무작위 선택 → 존 사이클(예고 1s → 활성 2s, HazardBase 담당) → 대기 2s → 반복.
-/// 5구역 중 최대 3구역 선택이 곧 "최소 안전 2구역" 보장이다 — 개체 공격까지 포함한
+/// 설정된 최대 개수 이내에서 구역 무작위 선택 → 존 사이클(예고 1s → 활성 2s, HazardBase 담당) → 대기 2s → 반복.
+/// 5구역 중 일반 전기는 최대 3구역 선택이 곧 "최소 안전 2구역" 보장이다 — 개체 공격까지 포함한
 /// 안전 공간 검사(DETAIL I절)는 #9에서 연결한다.
 public sealed class ElectricFloorScheduler : MonoBehaviour
 {
@@ -14,6 +14,9 @@ public sealed class ElectricFloorScheduler : MonoBehaviour
 
     [Tooltip("전기 종료 후 다음 배치까지 대기 (잠정 2s, 플레이테스트 범위 1.5~3s)")]
     [SerializeField, Min(0f)] private float restDuration = 2f;
+
+    [Tooltip("한 배치에서 동시에 활성화할 최대 구역 수")]
+    [SerializeField, Min(1)] private int maxActiveZones = 3;
 
     [Tooltip("단독 테스트용 자동 시작. 실전 흐름(#9)은 그래프가 학습 패턴 종료 후 Begin()을 호출한다.")]
     [SerializeField] private bool autoStart = false;
@@ -79,7 +82,7 @@ public sealed class ElectricFloorScheduler : MonoBehaviour
         var picked = new List<HazardBase>();
         while (true)
         {
-            int count = Random.Range(1, 4); // 1~3구역 (최대 3 → 안전 2구역 자동 보장)
+            int count = Random.Range(1, maxActiveZones + 1);
             picked.Clear();
             picked.AddRange(zones);
             picked.RemoveAll(z => z == null);
