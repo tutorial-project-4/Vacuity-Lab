@@ -113,7 +113,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   moveSpeed: 10
   moveStep: 0.01
-  jumpSpeed: 13
+  jumpSpeed: 15
   gravity: 18
   fallGravityMultiplier: 1.5
   lowJumpGravityMultiplier: 2
@@ -123,12 +123,12 @@ MonoBehaviour:
   maxAirJumps: 1
   glideDuration: 2
   glideFallSpeed: 2
-  dashSpeed: 16
-  dashDuration: 0.15
+  dashSpeed: 30
+  dashDuration: 0.2
   dashCooldown: 0.6
   solidLayer:
     serializedVersion: 2
-    m_Bits: 3080
+    m_Bits: 2056
   maxCollisionChecksPerMove: 200
   platformDropThroughDuration: 0.2
   platformDropSpeed: 2
@@ -238,7 +238,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 0.9, y: 0.9}
+  m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
 --- !u!114 &7770000000000000001
 MonoBehaviour:
@@ -314,8 +314,8 @@ Transform:
   m_GameObject: {fileID: 7770000000000000100}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.08, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.1, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7549675566413881513}
