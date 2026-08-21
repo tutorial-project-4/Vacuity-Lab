@@ -30,8 +30,11 @@ public partial class ChasePlayerAction : Action
     protected override Status OnStart()
     {
         _elapsed = 0f;
+        Agent?.Value?.GetComponent<Boss>()?.PlayWalk();
         return Status.Running;
     }
+
+    protected override void OnEnd() => Agent?.Value?.GetComponent<Boss>()?.PlayIdle();
 
     protected override Status OnUpdate()
     {

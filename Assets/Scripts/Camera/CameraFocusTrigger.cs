@@ -9,6 +9,7 @@ public class CameraFocusTrigger : MonoBehaviour
     [SerializeField] private Transform focusPoint;
     [SerializeField] private bool usePlayerAsTarget;
     [SerializeField] private bool snapOnEnter = true;
+    [SerializeField] private bool focusOnTriggerEnter = true;
 
     [Header("Lens")]
     [SerializeField] private bool overrideOrthographicSize = true;
@@ -37,6 +38,11 @@ public class CameraFocusTrigger : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!focusOnTriggerEnter)
+        {
+            return;
+        }
+
         if (triggerOnce && hasTriggered)
         {
             return;
@@ -52,20 +58,25 @@ public class CameraFocusTrigger : MonoBehaviour
         hasTriggered = true;
     }
 
-    private void ApplyCameraFocus(Transform playerTransform)
+    public bool Focus(Transform playerTransform = null)
     {
         CinemachinePlatformerCamera targetCamera = GetCameraFollow();
         if (targetCamera == null)
         {
             Debug.LogWarning("[CameraFocusTrigger] CinemachinePlatformerCamera reference was not found.", this);
-            return;
+            return false;
         }
 
         Transform target = usePlayerAsTarget ? playerTransform : focusPoint;
+        if (target == null && usePlayerAsTarget)
+        {
+            target = FindPlayerTransform();
+        }
+
         if (target == null)
         {
             Debug.LogWarning("[CameraFocusTrigger] Focus Point is not assigned.", this);
-            return;
+            return false;
         }
 
         if (overrideOrthographicSize)
@@ -87,6 +98,13 @@ public class CameraFocusTrigger : MonoBehaviour
         {
             targetCamera.SnapToTarget();
         }
+
+        return true;
+    }
+
+    private void ApplyCameraFocus(Transform playerTransform)
+    {
+        Focus(playerTransform);
     }
 
     private CinemachinePlatformerCamera GetCameraFollow()
@@ -107,6 +125,16 @@ public class CameraFocusTrigger : MonoBehaviour
         cameraFollow = FindObjectOfType<CinemachinePlatformerCamera>();
 #endif
         return cameraFollow;
+    }
+
+    private Transform FindPlayerTransform()
+    {
+#if UNITY_2023_1_OR_NEWER
+        PlayerMovement playerMovement = FindFirstObjectByType<PlayerMovement>();
+#else
+        PlayerMovement playerMovement = FindObjectOfType<PlayerMovement>();
+#endif
+        return playerMovement != null ? playerMovement.transform : null;
     }
 
     private void ConfigureTriggerCollider()
