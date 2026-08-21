@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1614928053416048087}
   - component: {fileID: 1047045524506200206}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: level_tileset_6 (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4810980807225845731}
   - component: {fileID: 2279242493926873180}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: level_tileset_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -191,7 +191,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6406308054786849919}
-  m_Layer: 0
+  - component: {fileID: 4652289979936224188}
+  - component: {fileID: 8875646424785764417}
+  - component: {fileID: 3389015949909117570}
+  m_Layer: 3
   m_Name: platform
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,6 +221,87 @@ Transform:
   - {fileID: 4810980807225845731}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4652289979936224188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6376871791340299732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7dc4500123f2a241ba20b36b2915a02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainDescriptor
+  terrainKind: 5
+  targetMask: -1
+  blocksProjectile: 0
+  playerPlatformPolicy: 1
+--- !u!61 &8875646424785764417
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6376871791340299732}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 1
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 5, y: 1}
+  m_EdgeRadius: 0
+--- !u!251 &3389015949909117570
+PlatformEffector2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6376871791340299732}
+  m_Enabled: 1
+  m_UseColliderMask: 1
+  m_ColliderMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_RotationalOffset: 0
+  m_UseOneWay: 1
+  m_UseOneWayGrouping: 0
+  m_SurfaceArc: 160
+  m_UseSideFriction: 0
+  m_UseSideBounce: 0
+  m_SideArc: 1
 --- !u!1 &7849179663174332248
 GameObject:
   m_ObjectHideFlags: 0
@@ -228,7 +312,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6543100869365146783}
   - component: {fileID: 7780994905103815852}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: level_tileset_6 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -319,7 +403,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8697035990941661324}
   - component: {fileID: 8408774495029353672}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: level_tileset_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -410,7 +494,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6691035743302529710}
   - component: {fileID: 5601471391198526207}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: level_tileset_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
