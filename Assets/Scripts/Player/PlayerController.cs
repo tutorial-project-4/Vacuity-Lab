@@ -182,28 +182,8 @@ public class PlayerController : MonoBehaviour
 
         if (spriteRenderer == null)
         {
-            spriteRenderer = FindVisualSpriteRenderer();
+            spriteRenderer = PlayerVisualResolver.FindSpriteRenderer(this);
         }
-    }
-
-    private SpriteRenderer FindVisualSpriteRenderer()
-    {
-        Transform visual = transform.Find("PlayerVisual");
-        if (visual != null && visual.TryGetComponent(out SpriteRenderer visualRenderer))
-        {
-            return visualRenderer;
-        }
-
-        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>();
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            if (renderers[i].transform != transform)
-            {
-                return renderers[i];
-            }
-        }
-
-        return GetComponent<SpriteRenderer>();
     }
 
     private void OnValidate()

@@ -10,21 +10,42 @@ public enum GameOverMenuAction
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Text))]
-public class GameOverMenuButton : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
+[RequireComponent(typeof(Button))]
+public class GameOverMenuButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private BossArenaRespawnController respawnController;
     [SerializeField] private GameOverMenuAction action;
     [SerializeField] private Text label;
+    [SerializeField] private Button button;
     [SerializeField] private Color normalColor = Color.white;
     [SerializeField] private Color hoverColor = new Color(0.75f, 0.75f, 0.75f, 1f);
 
     private void Awake()
     {
+        CacheButton();
         CacheLabel();
+
+        if (button != null)
+        {
+            button.onClick.AddListener(InvokeAction);
+        }
+        else
+        {
+            Debug.LogWarning("[GameOverMenuButton] Button component is missing.", this);
+        }
+
         ApplyColor(normalColor);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    private void OnDestroy()
+    {
+        if (button != null)
+        {
+            button.onClick.RemoveListener(InvokeAction);
+        }
+    }
+
+    private void InvokeAction()
     {
         if (respawnController == null)
         {
@@ -60,6 +81,14 @@ public class GameOverMenuButton : MonoBehaviour, IPointerClickHandler, IPointerE
         }
     }
 
+    private void CacheButton()
+    {
+        if (button == null)
+        {
+            button = GetComponent<Button>();
+        }
+    }
+
     private void ApplyColor(Color color)
     {
         CacheLabel();
@@ -68,5 +97,11 @@ public class GameOverMenuButton : MonoBehaviour, IPointerClickHandler, IPointerE
         {
             label.color = color;
         }
+    }
+
+    private void OnValidate()
+    {
+        CacheButton();
+        CacheLabel();
     }
 }

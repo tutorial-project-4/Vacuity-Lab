@@ -15,13 +15,13 @@ public class BossArenaRespawnController : MonoBehaviour
 
     private void Awake()
     {
-        CachePlayerHealth();
+        ResolvePlayerHealth();
         HideGameOver();
     }
 
     private void OnEnable()
     {
-        CachePlayerHealth();
+        ResolvePlayerHealth();
 
         if (playerHealth != null)
         {
@@ -52,7 +52,7 @@ public class BossArenaRespawnController : MonoBehaviour
     {
         Time.timeScale = 1f;
         HideGameOver();
-        CachePlayerHealth();
+        ResolvePlayerHealth();
 
         if (activeCheckpoint == null)
         {
@@ -107,7 +107,7 @@ public class BossArenaRespawnController : MonoBehaviour
         }
     }
 
-    private void CachePlayerHealth()
+    private void ResolvePlayerHealth()
     {
         if (playerHealth != null)
         {
@@ -115,9 +115,40 @@ public class BossArenaRespawnController : MonoBehaviour
         }
 
 #if UNITY_2023_1_OR_NEWER
-        playerHealth = FindFirstObjectByType<PlayerHealth>();
+        PlayerHealth[] candidates = FindObjectsByType<PlayerHealth>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 #else
-        playerHealth = FindObjectOfType<PlayerHealth>();
+        PlayerHealth[] candidates = Resources.FindObjectsOfTypeAll<PlayerHealth>();
 #endif
+        if (candidates == null || candidates.Length == 0)
+        {
+            Debug.LogError("[BossArenaRespawnController] PlayerHealth reference is missing and no PlayerHealth was found in the scene.", this);
+            return;
+        }
+
+        if (candidates.Length > 1)
+        {
+            Debug.LogError("[BossArenaRespawnController] PlayerHealth reference is missing and multiple PlayerHealth components were found. Assign the intended PlayerHealth in the Inspector.", this);
+            return;
+        }
+
+        playerHealth = candidates[0];
+    }
+
+    private void OnValidate()
+    {
+        if (gameOverRoot == null)
+        {
+            Debug.LogWarning("[BossArenaRespawnController] Game Over Root is not assigned.", this);
+        }
+
+        if (gameOverGroup == null)
+        {
+            Debug.LogWarning("[BossArenaRespawnController] Game Over Group is not assigned.", this);
+        }
+
+        if (playerHealth == null)
+        {
+            Debug.LogWarning("[BossArenaRespawnController] PlayerHealth is not assigned. Assign it in the Inspector when possible.", this);
+        }
     }
 }

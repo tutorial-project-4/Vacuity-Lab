@@ -41,8 +41,11 @@ public class DialogueInteractable : MonoBehaviour
 
     private IEnumerator InteractionRoutine(DialogueRunner runner, PlayerController player)
     {
-        hasPlayed = true;
-        runner.StartDialogue(lines, player);
+        if (!runner.StartDialogue(lines, player))
+        {
+            interactionRoutine = null;
+            yield break;
+        }
 
         yield return null;
         while (runner != null && runner.IsRunning)
@@ -50,7 +53,12 @@ public class DialogueInteractable : MonoBehaviour
             yield return null;
         }
 
-        RunInteractionActions();
+        if (runner != null && runner.LastDialogueCompleted)
+        {
+            hasPlayed = true;
+            RunInteractionActions();
+        }
+
         interactionRoutine = null;
     }
 

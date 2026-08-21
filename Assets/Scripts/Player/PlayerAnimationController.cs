@@ -136,7 +136,7 @@ public class PlayerAnimationController : MonoBehaviour
     {
         if (animator == null)
         {
-            animator = FindVisualAnimator();
+            animator = PlayerVisualResolver.FindAnimator(this, GetVisualRoot());
         }
 
         if (movement == null)
@@ -156,7 +156,7 @@ public class PlayerAnimationController : MonoBehaviour
 
         if (spriteRenderer == null)
         {
-            spriteRenderer = FindVisualSpriteRenderer();
+            spriteRenderer = PlayerVisualResolver.FindSpriteRenderer(this, GetVisualRoot());
         }
 
         if (attack == null)
@@ -169,44 +169,9 @@ public class PlayerAnimationController : MonoBehaviour
         }
     }
 
-    private Animator FindVisualAnimator()
-    {
-        Transform visual = GetVisualRoot();
-        if (visual != null && visual.TryGetComponent(out Animator visualAnimator))
-        {
-            return visualAnimator;
-        }
-
-        return GetComponent<Animator>();
-    }
-
-    private SpriteRenderer FindVisualSpriteRenderer()
-    {
-        Transform visual = GetVisualRoot();
-        if (visual != null && visual.TryGetComponent(out SpriteRenderer visualRenderer))
-        {
-            return visualRenderer;
-        }
-
-        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>();
-        for (int i = 0; i < renderers.Length; i++)
-        {
-            if (renderers[i].transform != transform)
-            {
-                return renderers[i];
-            }
-        }
-
-        return GetComponent<SpriteRenderer>();
-    }
-
     private Transform GetVisualRoot()
     {
-        if (visualRoot == null)
-        {
-            visualRoot = transform.Find("PlayerVisual");
-        }
-
+        visualRoot = PlayerVisualResolver.FindVisualRoot(transform, visualRoot);
         return visualRoot;
     }
 
