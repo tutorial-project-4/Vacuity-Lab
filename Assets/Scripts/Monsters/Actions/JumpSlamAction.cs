@@ -43,6 +43,7 @@ public partial class JumpSlamAction : Action
 
         _phase = Phase.Telegraph;
         _timer = 0f;
+        self.GetComponent<Boss>()?.PlaySlam();
         _landX = target.transform.position.x;
         _landY = FindLandingY(self, target);
         _hitbox = self.transform.Find("SlamHitbox")?.gameObject;
@@ -87,6 +88,7 @@ public partial class JumpSlamAction : Action
         // 사망 등으로 중단돼도 중력·히트박스 원복
         if (_rb != null) { _rb.gravityScale = _prevGravity; _rb = null; }
         if (_hitbox != null && _hitbox.activeSelf) _hitbox.SetActive(false);
+        Agent?.Value?.GetComponent<Boss>()?.PlayIdle();
     }
 
     void BeginJump(GameObject self)
