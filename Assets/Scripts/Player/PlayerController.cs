@@ -2,7 +2,6 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement))]
-[RequireComponent(typeof(SpriteRenderer))]
 public class PlayerController : MonoBehaviour
 {
     [Header("Hit Reaction")]
@@ -183,7 +182,7 @@ public class PlayerController : MonoBehaviour
 
         if (spriteRenderer == null)
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
+            spriteRenderer = PlayerVisualResolver.FindSpriteRenderer(this);
         }
     }
 
