@@ -71,6 +71,7 @@ public partial class BeamAction : Action
             Debug.LogWarning("[BossBeam] Boss 또는 Target 참조 없음 — 빔 생략");
             return Status.Failure;
         }
+        _boss.PlayBeam();
 
         Collider2D targetCollider = _boss.Target.GetComponentInChildren<Collider2D>();
         Vector2 targetPosition = targetCollider != null ? targetCollider.bounds.center : _boss.Target.position;
@@ -132,6 +133,7 @@ public partial class BeamAction : Action
         RestorePlatformCollision();
         // 정상 종료면 잔상을 남긴다(TimedDeactivate가 소멸 담당). 중단(사망·컷신)일 때만 즉시 제거.
         if (!_completed && _beam != null && _beam.activeSelf) _beam.SetActive(false);
+        _boss?.PlayIdle();
     }
 
     void IgnorePlatformCollision()

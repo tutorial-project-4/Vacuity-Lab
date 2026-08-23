@@ -45,6 +45,7 @@ public partial class DashAction : Action
         if (Agent?.Value == null || Target?.Value == null) return Status.Failure;
         _phase = Phase.Telegraph;
         _timer = 0f;
+        Agent.Value.GetComponent<Boss>()?.PlayDash();
         Debug.Log($"[BossDash] 예고 시작 @ {Time.time:F2}s"); // 예고 연출은 추후 — 지금은 로그로 검증
         return Status.Running;
     }
@@ -99,6 +100,7 @@ public partial class DashAction : Action
     {
         RestoreGravity(); // 사망 등으로 중단돼도 중력 원복
         RestorePlatformCollision();
+        Agent?.Value?.GetComponent<Boss>()?.PlayIdle();
     }
 
     void LockDirection(GameObject self)

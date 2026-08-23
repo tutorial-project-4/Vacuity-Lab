@@ -42,6 +42,7 @@ public class DialogueRunner : MonoBehaviour
     }
 
     public bool IsRunning => routine != null;
+    public bool LastDialogueCompleted { get; private set; }
 
     private void Awake()
     {
@@ -70,14 +71,16 @@ public class DialogueRunner : MonoBehaviour
         SetPromptVisible(visible);
     }
 
-    public void StartDialogue(DialogueLine[] lines, PlayerController player)
+    public bool StartDialogue(DialogueLine[] lines, PlayerController player)
     {
         if (lines == null || lines.Length == 0 || IsRunning)
         {
-            return;
+            return false;
         }
 
+        LastDialogueCompleted = false;
         routine = StartCoroutine(DialogueRoutine(lines, player));
+        return true;
     }
 
     private IEnumerator DialogueRoutine(DialogueLine[] lines, PlayerController player)
@@ -102,16 +105,17 @@ public class DialogueRunner : MonoBehaviour
             yield return WaitForAdvance();
         }
 
-        FinishDialogue();
+        FinishDialogue(true);
     }
 
-    private void FinishDialogue()
+    private void FinishDialogue(bool completed)
     {
         SetDialogueVisible(false);
         lockedPlayer?.SetCutsceneLock(false);
         lockedPlayer = null;
         routine = null;
         isTyping = false;
+        LastDialogueCompleted = completed;
     }
 
     private IEnumerator TypeLine(DialogueLine line)
@@ -256,6 +260,6 @@ public class DialogueRunner : MonoBehaviour
             routine = null;
         }
 
-        FinishDialogue();
+        FinishDialogue(false);
     }
 }
