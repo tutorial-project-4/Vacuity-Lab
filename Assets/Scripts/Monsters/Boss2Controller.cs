@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,6 +37,7 @@ public sealed class Boss2Controller : MonoBehaviour
     readonly List<GameObject> spawned = new();
     BossHealth health;
     Transform player;
+    float attackStartTime;
 
     void Awake()
     {
@@ -45,11 +45,10 @@ public sealed class Boss2Controller : MonoBehaviour
         health.OnDeath += HandleDeath;
     }
 
-    void OnEnable() => StartCoroutine(AttackLoop());
+    void OnEnable() => attackStartTime = Time.time + .5f;
 
     void OnDisable()
     {
-        StopAllCoroutines();
         ClearSpawned();
     }
 
@@ -58,28 +57,43 @@ public sealed class Boss2Controller : MonoBehaviour
         if (health != null) health.OnDeath -= HandleDeath;
     }
 
-    IEnumerator AttackLoop()
+    internal bool TryFireSpread()
     {
-        while (player == null)
+        if (!CanAttack()) return false;
+        FireSpread();
+        return true;
+    }
+
+    internal bool TryBeginAimed(out Vector2 direction, out GameObject warning)
+    {
+        direction = default;
+        warning = null;
+        if (!CanAttack()) return false;
+        direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
+        warning = CreateWarning(direction);
+        return true;
+    }
+
+    internal void FireAimed(Vector2 direction, GameObject warning)
+    {
+        RemoveSpawned(warning);
+        FireProjectile(direction, aimedSpeed, aimedRange, aimedProjectileSize);
+    }
+
+    internal void CancelWarning(GameObject warning) => RemoveSpawned(warning);
+    internal float SpreadRecovery => spreadRecovery;
+    internal float AimedWarning => aimedWarning;
+    internal float AimedRecovery => aimedRecovery;
+
+    bool CanAttack()
+    {
+        if (health.IsDead || Time.time < attackStartTime) return false;
+        if (player == null)
         {
             PlayerMovement found = FindAnyObjectByType<PlayerMovement>();
             if (found != null) player = found.transform;
-            yield return null;
         }
-
-        yield return new WaitForSeconds(.5f);
-        while (!health.IsDead)
-        {
-            FireSpread();
-            yield return new WaitForSeconds(spreadRecovery);
-
-            Vector2 direction = ((Vector2)player.position - (Vector2)transform.position).normalized;
-            GameObject warning = CreateWarning(direction);
-            yield return new WaitForSeconds(aimedWarning);
-            Destroy(warning);
-            FireProjectile(direction, aimedSpeed, aimedRange, aimedProjectileSize);
-            yield return new WaitForSeconds(aimedRecovery);
-        }
+        return player != null;
     }
 
     void FireSpread()
@@ -130,9 +144,17 @@ public sealed class Boss2Controller : MonoBehaviour
 
     void HandleDeath()
     {
-        StopAllCoroutines();
         ClearSpawned();
         gameObject.SetActive(false);
+    }
+
+    void RemoveSpawned(GameObject item)
+    {
+        if (item == null) return;
+        spawned.Remove(item);
+        LineRenderer line = item.GetComponent<LineRenderer>();
+        if (line != null && line.material != null) Destroy(line.material);
+        Destroy(item);
     }
 
     void ClearSpawned()

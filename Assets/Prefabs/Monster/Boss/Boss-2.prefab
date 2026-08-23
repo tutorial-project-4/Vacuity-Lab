@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7000000000000000001}
   - component: {fileID: 7000000000000000002}
   - component: {fileID: 7000000000000000003}
+  - component: {fileID: 616070830821725876}
   m_Layer: 8
   m_Name: Boss-2
   m_TagString: Untagged
@@ -150,8 +151,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 524e93ccb7a9b19478c6a9f8691daa73, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   maxHp: 1500
   invulnDuration: 0.1
 --- !u!114 &7000000000000000003
@@ -164,8 +165,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9d4703560ce84f09a3a8ce086a65ee23, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   spreadSpeed: 4.25
   spreadRange: 12
   spreadRecovery: 0.65
@@ -177,3 +178,32 @@ MonoBehaviour:
   aimedProjectileSize: 0.5
   projectileOrderInLayer: 4
   warningLineWidth: 0.06
+--- !u!114 &616070830821725876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2947302094895602139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphAgent
+  m_Graph: {fileID: -7444681606230687969, guid: 8272ac75decdb354f833d840812b972d, type: 2}
+  m_BlackboardVariableOverridesList:
+  - rid: 8727337795276505245
+  m_OriginalGraph: {fileID: -7444681606230687969, guid: 8272ac75decdb354f833d840812b972d, type: 2}
+  m_IsInitialised: 0
+  m_IsStarted: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 8727337795276505245
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Self
+        m_Value: {fileID: 2947302094895602139}

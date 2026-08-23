@@ -41,6 +41,18 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: BG
+    uniqueID: 6305019
+    locked: 0
+  - name: Player
+    uniqueID: 3790240817
+    locked: 0
+  - name: Boss
+    uniqueID: 3380420915
+    locked: 0
+  - name: object
+    uniqueID: 800813135
+    locked: 0
   m_RenderingLayers:
   - Default
   m_MigratedRenderPipelines: []

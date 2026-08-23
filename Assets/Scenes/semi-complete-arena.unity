@@ -1572,6 +1572,7 @@ MonoBehaviour:
   focusPoint: {fileID: 1497057089}
   usePlayerAsTarget: 0
   snapOnEnter: 1
+  focusOnTriggerEnter: 1
   overrideOrthographicSize: 1
   orthographicSize: 11.5
   cameraBounds: {fileID: 0}
@@ -60008,7 +60009,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8261951830135410530, guid: 72aeed449c0902b4a994b9dc6b93d1bf, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 33.4
+      value: 25.04
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 0}
