@@ -169,6 +169,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spreadSpeed: 4.25
   spreadRange: 12
+  spreadWindup: 0.15
   spreadRecovery: 0.65
   aimedWarning: 0.65
   aimedSpeed: 12

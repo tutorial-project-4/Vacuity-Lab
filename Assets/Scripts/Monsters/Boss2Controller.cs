@@ -10,6 +10,8 @@ public sealed class Boss2Controller : MonoBehaviour
     [SerializeField] float spreadSpeed = 4.25f;
     [Tooltip("확산탄이 생성 위치부터 이동할 수 있는 최대 거리입니다. 이 거리를 이동하면 자동으로 제거됩니다. 단위: position 값 1.")]
     [SerializeField] float spreadRange = 12f;
+    [Tooltip("확산탄 발사 전에 기다리는 시간입니다. 별도 경고선은 표시하지 않습니다. 단위: 초.")]
+    [SerializeField] float spreadWindup = .15f;
     [Tooltip("확산탄 5발을 발사한 뒤 조준탄 준비를 시작하기까지 기다리는 시간입니다. 단위: 초.")]
     [SerializeField] float spreadRecovery = .65f;
 
@@ -81,6 +83,7 @@ public sealed class Boss2Controller : MonoBehaviour
     }
 
     internal void CancelWarning(GameObject warning) => RemoveSpawned(warning);
+    internal float SpreadWindup => spreadWindup;
     internal float SpreadRecovery => spreadRecovery;
     internal float AimedWarning => aimedWarning;
     internal float AimedRecovery => aimedRecovery;
@@ -98,10 +101,12 @@ public sealed class Boss2Controller : MonoBehaviour
 
     void FireSpread()
     {
-        float facing = player.position.x >= transform.position.x ? 0f : 180f;
+        float center = player.position.x >= transform.position.x
+            ? Random.Range(-60f, 60f)
+            : Random.Range(120f, 240f);
         for (int i = -2; i <= 2; i++)
         {
-            float angle = (facing + i * 15f) * Mathf.Deg2Rad;
+            float angle = (center + i * 15f) * Mathf.Deg2Rad;
             FireProjectile(new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)), spreadSpeed, spreadRange, spreadProjectileSize);
         }
     }
@@ -173,7 +178,7 @@ public sealed class Boss2Controller : MonoBehaviour
     [ContextMenu("Self Test")]
     void SelfTest()
     {
-        Debug.Assert(spreadSpeed > 0f && spreadRange > 0f && spreadRecovery >= 0f);
+        Debug.Assert(spreadSpeed > 0f && spreadRange > 0f && spreadWindup >= 0f && spreadRecovery >= 0f);
         Debug.Assert(aimedWarning >= 0f && aimedSpeed > spreadSpeed && aimedRange > 0f && aimedRecovery >= 0f);
         Debug.Assert(spreadProjectileSize > 0f && aimedProjectileSize > 0f && warningLineWidth > 0f);
         Debug.Log("Boss2Controller Self Test PASS", this);

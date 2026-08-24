@@ -24,8 +24,11 @@ public partial class Boss2SpreadShotAction : Action
     {
         if (!fired)
         {
+            timer += Time.deltaTime;
+            if (timer < controller.SpreadWindup) return Status.Running;
             if (!controller.TryFireSpread()) return Status.Running;
             fired = true;
+            timer = 0f;
         }
         timer += Time.deltaTime;
         return timer < controller.SpreadRecovery ? Status.Running : Status.Success;
