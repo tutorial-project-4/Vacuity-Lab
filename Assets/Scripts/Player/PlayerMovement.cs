@@ -411,6 +411,15 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnVerticalCollide()
     {
+        if (collisionYSign < 0)
+        {
+            IsGrounded = true;
+            coyoteTimer = coyoteTime;
+            canAirDash = true;
+            ResetAirJumps();
+            ResetGlide();
+        }
+
         ySpeed = 0f;
         IsJumping = false;
         IsGliding = false;

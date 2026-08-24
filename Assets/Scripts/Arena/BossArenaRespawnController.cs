@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,12 +7,18 @@ public class BossArenaRespawnController : MonoBehaviour
 {
     [Header("Player")]
     [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private Animator playerAnimator;
 
     [Header("Game Over UI")]
     [SerializeField] private GameObject gameOverRoot;
     [SerializeField] private CanvasGroup gameOverGroup;
 
+    [Header("Death Animation")]
+    [SerializeField] private string deathStateName = "Death";
+    [SerializeField] private float deathAnimationFallbackDelay = 1f;
+
     private BossRetryCheckpoint activeCheckpoint;
+    private Coroutine showGameOverRoutine;
 
     private void Awake()
     {
@@ -25,7 +32,7 @@ public class BossArenaRespawnController : MonoBehaviour
 
         if (playerHealth != null)
         {
-            playerHealth.Died += ShowGameOver;
+            playerHealth.Died += HandlePlayerDied;
         }
     }
 
@@ -33,7 +40,13 @@ public class BossArenaRespawnController : MonoBehaviour
     {
         if (playerHealth != null)
         {
-            playerHealth.Died -= ShowGameOver;
+            playerHealth.Died -= HandlePlayerDied;
+        }
+
+        if (showGameOverRoutine != null)
+        {
+            StopCoroutine(showGameOverRoutine);
+            showGameOverRoutine = null;
         }
     }
 
@@ -77,6 +90,33 @@ public class BossArenaRespawnController : MonoBehaviour
         }
     }
 
+    private void HandlePlayerDied()
+    {
+        if (showGameOverRoutine != null)
+        {
+            StopCoroutine(showGameOverRoutine);
+        }
+
+        showGameOverRoutine = StartCoroutine(ShowGameOverAfterDeathAnimation());
+    }
+
+    private IEnumerator ShowGameOverAfterDeathAnimation()
+    {
+        ResolvePlayerAnimator();
+
+        yield return null;
+        yield return null;
+
+        float waitTime = GetDeathAnimationWaitTime();
+        if (waitTime > 0f)
+        {
+            yield return new WaitForSecondsRealtime(waitTime);
+        }
+
+        showGameOverRoutine = null;
+        ShowGameOver();
+    }
+
     private void ShowGameOver()
     {
         if (gameOverRoot != null)
@@ -90,6 +130,28 @@ public class BossArenaRespawnController : MonoBehaviour
             gameOverGroup.interactable = true;
             gameOverGroup.blocksRaycasts = true;
         }
+    }
+
+    private float GetDeathAnimationWaitTime()
+    {
+        float waitTime = deathAnimationFallbackDelay;
+        if (playerAnimator == null)
+        {
+            return waitTime;
+        }
+
+        AnimatorStateInfo stateInfo = playerAnimator.GetCurrentAnimatorStateInfo(0);
+        AnimatorClipInfo[] clipInfos = playerAnimator.GetCurrentAnimatorClipInfo(0);
+        if (stateInfo.IsName(deathStateName) && clipInfos.Length > 0 && clipInfos[0].clip != null)
+        {
+            float speed = Mathf.Abs(stateInfo.speed * playerAnimator.speed);
+            if (speed > 0f)
+            {
+                waitTime = Mathf.Max(waitTime, clipInfos[0].clip.length / speed);
+            }
+        }
+
+        return waitTime;
     }
 
     private void HideGameOver()
@@ -134,8 +196,26 @@ public class BossArenaRespawnController : MonoBehaviour
         playerHealth = candidates[0];
     }
 
+    private void ResolvePlayerAnimator()
+    {
+        if (playerAnimator != null)
+        {
+            return;
+        }
+
+        ResolvePlayerHealth();
+        if (playerHealth == null)
+        {
+            return;
+        }
+
+        playerAnimator = PlayerVisualResolver.FindAnimator(playerHealth, null);
+    }
+
     private void OnValidate()
     {
+        deathAnimationFallbackDelay = Mathf.Max(0f, deathAnimationFallbackDelay);
+
         if (gameOverRoot == null)
         {
             Debug.LogWarning("[BossArenaRespawnController] Game Over Root is not assigned.", this);

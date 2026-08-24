@@ -15,6 +15,8 @@ public class PlayerAnimationController : MonoBehaviour
     private static readonly int IsDeadHash = Animator.StringToHash("IsDead");
     private static readonly int AttackHash = Animator.StringToHash("Attack");
     private static readonly int HitHash = Animator.StringToHash("Hit");
+    private static readonly int IdleStateHash = Animator.StringToHash("idle");
+    private static readonly int DeathStateHash = Animator.StringToHash("Death");
 
     [Header("References")]
     [SerializeField] private Animator animator;
@@ -33,12 +35,20 @@ public class PlayerAnimationController : MonoBehaviour
     [SerializeField] private float fallingThreshold = -0.1f;
     [SerializeField] private float jumpStartHoldTime = 0.08f;
     [SerializeField] private float jumpStartVelocity = 1f;
+    [SerializeField] private float groundedAnimationGraceTime = 0.08f;
+    [SerializeField] private float attackAnimationLockTime = 0.35f;
 
     private bool wasAttacking;
     private bool wasKnockbacking;
     private bool wasGrounded;
     private float jumpStartTimer;
+    private float groundedAnimationGraceTimer;
+    private float attackAnimationLockTimer;
     private float animationVelocityY;
+    private bool animationGrounded;
+    private AnimatorUpdateMode originalAnimatorUpdateMode;
+    private bool hasOriginalAnimatorUpdateMode;
+    private bool wasDead;
 
     private void Awake()
     {
@@ -54,27 +64,135 @@ public class PlayerAnimationController : MonoBehaviour
             return;
         }
 
+        bool isAttacking = attack != null && attack.IsAttacking;
+        bool isDead = health != null && health.IsDead;
+        UpdateAnimatorTimeMode(isDead);
+
+        if (!wasDead && isDead)
+        {
+            PlayDeathAnimation();
+        }
+
+        if (wasDead && !isDead)
+        {
+            ResetToIdleAnimation();
+        }
+
+        UpdateAttackLock(isAttacking);
+        UpdateAnimationGrounded();
         UpdateAnimationVelocityY();
+
+        bool holdAttackAnimation = attackAnimationLockTimer > 0f;
 
         animator.SetFloat(SpeedXHash, Mathf.Abs(movement.HorizontalSpeed));
         animator.SetFloat(VelocityYHash, animationVelocityY);
-        animator.SetBool(IsGroundHash, movement.IsGrounded);
-        animator.SetBool(IsJumpHash, movement.IsJumping);
+        animator.SetBool(IsGroundHash, animationGrounded);
+        animator.SetBool(IsJumpHash, !holdAttackAnimation && !animationGrounded && movement.IsJumping);
         animator.SetBool(IsGlideHash, movement.IsGliding);
         animator.SetBool(IsDashHash, movement.IsDashing);
-        animator.SetBool(IsDeadHash, health != null && health.IsDead);
+        animator.SetBool(IsDeadHash, isDead);
 
-        UpdateAttackTrigger();
+        UpdateAttackTrigger(isAttacking);
         UpdateHitTrigger();
         UpdateFacing();
         wasGrounded = movement.IsGrounded;
+        wasDead = isDead;
+    }
+
+    private void UpdateAnimatorTimeMode(bool isDead)
+    {
+        if (animator == null)
+        {
+            return;
+        }
+
+        if (!hasOriginalAnimatorUpdateMode)
+        {
+            originalAnimatorUpdateMode = animator.updateMode;
+            hasOriginalAnimatorUpdateMode = true;
+        }
+
+        animator.updateMode = isDead ? AnimatorUpdateMode.UnscaledTime : originalAnimatorUpdateMode;
+    }
+
+    private void PlayDeathAnimation()
+    {
+        if (animator == null)
+        {
+            return;
+        }
+
+        animator.ResetTrigger(AttackHash);
+        animator.ResetTrigger(HitHash);
+        animator.SetBool(IsDeadHash, true);
+        animator.SetBool(IsDashHash, false);
+        animator.SetBool(IsJumpHash, false);
+        animator.SetBool(IsGlideHash, false);
+        animator.Play(DeathStateHash, 0, 0f);
+        animator.Update(0f);
+    }
+
+    private void ResetToIdleAnimation()
+    {
+        if (animator == null)
+        {
+            return;
+        }
+
+        animator.ResetTrigger(AttackHash);
+        animator.ResetTrigger(HitHash);
+        animator.SetBool(IsDeadHash, false);
+        animator.SetBool(IsDashHash, false);
+        animator.SetBool(IsJumpHash, false);
+        animator.SetBool(IsGlideHash, false);
+        animator.Play(IdleStateHash, 0, 0f);
+        animator.Update(0f);
+    }
+
+    private void UpdateAttackLock(bool isAttacking)
+    {
+        if (isAttacking && !wasAttacking)
+        {
+            attackAnimationLockTimer = attackAnimationLockTime;
+        }
+        else if (attackAnimationLockTimer > 0f)
+        {
+            attackAnimationLockTimer -= Time.deltaTime;
+        }
+    }
+
+    private void UpdateAnimationGrounded()
+    {
+        bool shouldSkipGroundGrace = movement.IsJumping && movement.VerticalSpeed > risingThreshold;
+        if (movement.IsGrounded)
+        {
+            groundedAnimationGraceTimer = groundedAnimationGraceTime;
+            animationGrounded = true;
+            return;
+        }
+
+        if (shouldSkipGroundGrace)
+        {
+            groundedAnimationGraceTimer = 0f;
+            animationGrounded = false;
+            return;
+        }
+
+        if (groundedAnimationGraceTimer > 0f)
+        {
+            groundedAnimationGraceTimer -= Time.deltaTime;
+            animationGrounded = true;
+            return;
+        }
+
+        animationGrounded = false;
     }
 
     private void UpdateAnimationVelocityY()
     {
         float rawVelocityY = movement.VerticalSpeed;
 
-        if (movement.IsGrounded || movement.IsDashing)
+        if (animationGrounded || movement.IsDashing || attackAnimationLockTimer > 0f)
         {
             jumpStartTimer = 0f;
             animationVelocityY = 0f;
@@ -100,9 +218,8 @@ public class PlayerAnimationController : MonoBehaviour
         }
     }
 
-    private void UpdateAttackTrigger()
+    private void UpdateAttackTrigger(bool isAttacking)
     {
-        bool isAttacking = attack != null && attack.IsAttacking;
         if (isAttacking && !wasAttacking)
         {
             animator.SetTrigger(AttackHash);
@@ -137,6 +254,7 @@ public class PlayerAnimationController : MonoBehaviour
         if (animator == null)
         {
             animator = PlayerVisualResolver.FindAnimator(this, GetVisualRoot());
+            hasOriginalAnimatorUpdateMode = false;
         }
 
         if (movement == null)
@@ -181,5 +299,7 @@ public class PlayerAnimationController : MonoBehaviour
         fallingThreshold = Mathf.Min(0f, fallingThreshold);
         jumpStartHoldTime = Mathf.Max(0f, jumpStartHoldTime);
         jumpStartVelocity = Mathf.Max(risingThreshold, jumpStartVelocity);
+        groundedAnimationGraceTime = Mathf.Max(0f, groundedAnimationGraceTime);
+        attackAnimationLockTime = Mathf.Max(0f, attackAnimationLockTime);
     }
 }
