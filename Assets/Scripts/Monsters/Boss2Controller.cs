@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -25,6 +26,26 @@ public sealed class Boss2Controller : MonoBehaviour
     [Tooltip("조준탄을 발사한 뒤 다음 확산탄 공격까지 기다리는 시간입니다. 단위: 초.")]
     [SerializeField] float aimedRecovery = .8f;
 
+    [Header("벽 러시")]
+    [Tooltip("한 번의 벽 러시에서 무작위로 생성할 벽 프리팩 목록입니다.")]
+    [SerializeField] GameObject[] wallPrefabs;
+    [Tooltip("보스전 시작 후 벽 러시가 시작되는 주기입니다. 단위: 초.")]
+    [SerializeField] float wallRushInterval = 15f;
+    [Tooltip("첫 벽 이후 다음 벽을 생성하는 간격입니다. 단위: 초.")]
+    [SerializeField] float wallSpawnInterval = 1.5f;
+    [Tooltip("한 번의 벽 러시에서 생성할 벽 개수입니다.")]
+    [SerializeField] int wallsPerRush = 3;
+    [Tooltip("이동 벽이 1초 동안 왼쪽으로 이동하는 거리입니다. 단위: position 값 1/초.")]
+    [SerializeField] float wallSpeed = 3f;
+    [Tooltip("이동 벽을 생성할 월드 위치입니다. 임시 아레나가 바뀌면 조정하세요.")]
+    [SerializeField] Vector2 wallSpawnPosition = new(105f, 28.96f);
+    [Tooltip("벽이 아레나에 진입했다고 판정할 오른쪽 경계 X입니다.")]
+    [SerializeField] float arenaRightX = 104f;
+    [Tooltip("벽을 제거할 왼쪽 경계 X입니다.")]
+    [SerializeField] float wallDespawnX = 76f;
+    [Tooltip("벽 러시 중에만 활성화할 왼쪽 가시 벽의 씬 오브젝트 이름입니다.")]
+    [SerializeField] string spikeWallName = "spikeWall L";
+
     [Header("발사체 및 경고선 표시")]
     [Tooltip("확산탄의 가로·세로 크기 배율입니다. 1이면 기본 스프라이트 크기이며 충돌 범위도 함께 변합니다.")]
     [SerializeField] float spreadProjectileSize = .5f;
@@ -40,6 +61,9 @@ public sealed class Boss2Controller : MonoBehaviour
     BossHealth health;
     Transform player;
     float attackStartTime;
+    Coroutine wallRushRoutine;
+    GameObject spikeWall;
+    int remainingRushWalls;
 
     void Awake()
     {
@@ -47,10 +71,20 @@ public sealed class Boss2Controller : MonoBehaviour
         health.OnDeath += HandleDeath;
     }
 
-    void OnEnable() => attackStartTime = Time.time + .5f;
+    void OnEnable()
+    {
+        attackStartTime = Time.time + .5f;
+        spikeWall = FindInactiveObject(spikeWallName);
+        SetSpikeWall(false);
+        wallRushRoutine = StartCoroutine(WallRushLoop());
+    }
 
     void OnDisable()
     {
+        if (wallRushRoutine != null) StopCoroutine(wallRushRoutine);
+        wallRushRoutine = null;
+        remainingRushWalls = 0;
+        SetSpikeWall(false);
         ClearSpawned();
     }
 
@@ -110,6 +144,78 @@ public sealed class Boss2Controller : MonoBehaviour
             FireProjectile(new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)), spreadSpeed, spreadRange, spreadProjectileSize);
         }
     }
+
+    IEnumerator WallRushLoop()
+    {
+        float nextRush = Time.time + wallRushInterval;
+        while (!health.IsDead)
+        {
+            yield return new WaitForSeconds(Mathf.Max(0f, nextRush - Time.time));
+            nextRush += wallRushInterval;
+            yield return SpawnRush();
+        }
+    }
+
+    IEnumerator SpawnRush()
+    {
+        if (wallPrefabs == null || wallPrefabs.Length == 0)
+        {
+            Debug.LogWarning("[Boss2] 벽 러시 프리팩이 연결되지 않았습니다.", this);
+            yield break;
+        }
+
+        Debug.Log($"[Boss2] 벽 러시 시작: {wallsPerRush}개, {wallSpawnInterval:0.##}초 간격", this);
+        remainingRushWalls += wallsPerRush;
+        for (int i = 0; i < wallsPerRush; i++)
+        {
+            SpawnWall();
+            if (i < wallsPerRush - 1) yield return new WaitForSeconds(wallSpawnInterval);
+        }
+    }
+
+    void SpawnWall()
+    {
+        GameObject prefab = wallPrefabs[Random.Range(0, wallPrefabs.Length)];
+        if (prefab == null)
+        {
+            OnWallExited(null);
+            return;
+        }
+        GameObject wall = Instantiate(prefab, wallSpawnPosition, Quaternion.identity);
+        wall.name = "Boss2 Moving Wall";
+        wall.AddComponent<Boss2MovingWall>().Initialize(wallSpeed, arenaRightX, wallDespawnX, OnWallEntered, OnWallExited);
+        spawned.Add(wall);
+    }
+
+    void OnWallEntered() => SetSpikeWall(true);
+
+    void OnWallExited(GameObject wall)
+    {
+        spawned.Remove(wall);
+        remainingRushWalls--;
+        if (remainingRushWalls <= 0) SetSpikeWall(false);
+    }
+
+    void SetSpikeWall(bool active)
+    {
+        if (spikeWall != null) spikeWall.SetActive(active);
+    }
+
+    static GameObject FindInactiveObject(string objectName)
+    {
+        foreach (Transform item in FindObjectsByType<Transform>(FindObjectsInactive.Include))
+            if (item.name == objectName) return item.gameObject;
+        return null;
+    }
+
+#if UNITY_EDITOR
+    [ContextMenu("벽 러시 즉시 테스트")]
+    void TestWallRushNow()
+    {
+        if (Application.isPlaying && isActiveAndEnabled) StartCoroutine(SpawnRush());
+        else Debug.LogWarning("플레이 모드에서 활성화된 Boss-2로 실행하세요.", this);
+    }
+#endif
 
     void FireProjectile(Vector2 direction, float speed, float range, float size)
     {
@@ -181,6 +287,9 @@ public sealed class Boss2Controller : MonoBehaviour
         Debug.Assert(spreadSpeed > 0f && spreadRange > 0f && spreadWindup >= 0f && spreadRecovery >= 0f);
         Debug.Assert(aimedWarning >= 0f && aimedSpeed > spreadSpeed && aimedRange > 0f && aimedRecovery >= 0f);
         Debug.Assert(spreadProjectileSize > 0f && aimedProjectileSize > 0f && warningLineWidth > 0f);
+        Debug.Assert(wallsPerRush > 0 && wallRushInterval >= wallSpawnInterval * (wallsPerRush - 1) && wallSpawnInterval >= 0f && wallSpeed > 0f);
+        Debug.Assert(arenaRightX < wallSpawnPosition.x && wallDespawnX < arenaRightX);
+        Debug.Assert(wallPrefabs != null && wallPrefabs.Length > 0);
         Debug.Log("Boss2Controller Self Test PASS", this);
     }
 #endif

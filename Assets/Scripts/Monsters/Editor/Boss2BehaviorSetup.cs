@@ -10,7 +10,7 @@ public static class Boss2BehaviorSetup
 {
     const string GraphPath = "Assets/Behavior/Boss2Brain.asset";
     const string PrefabPath = "Assets/Prefabs/Monster/Boss/Boss-2.prefab";
-    const string ScenePath = "Assets/Scenes/semi-complete-arena.unity";
+    const string ScenePath = "Assets/Scenes/boss-semi-complete-arena.unity";
 
     [MenuItem("Tools/Boss 2/Build and Verify")]
     public static void BuildAndVerify()
