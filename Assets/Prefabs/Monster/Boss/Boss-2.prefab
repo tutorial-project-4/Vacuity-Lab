@@ -182,6 +182,16 @@ MonoBehaviour:
   frenzyDuration: 10
   frenzyShotInterval: 0.12
   sniperShotInterval: 0.2
+  phaseTwoHp: 800
+  phaseTransitionDuration: 3
+  droneSummonInterval: 30
+  dronePrefab: {fileID: 189685705224975232, guid: fb2d0ceed506ebe4486c499862131d1f, type: 3}
+  droneHp: 60
+  droneSpeed: 2
+  droneStopDistance: 1
+  droneSlowRadius: 3
+  droneKnockbackDistance: 1
+  droneKnockbackDuration: 0.2
   wallPrefabs:
   - {fileID: 7903640175299597750, guid: ee31b9ffd98475245aefebfae90786b1, type: 3}
   - {fileID: 5487274689742196484, guid: fdd30bf65363c7f42a13560adb4fc500, type: 3}

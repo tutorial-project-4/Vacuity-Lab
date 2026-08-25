@@ -24,7 +24,7 @@ public partial class Boss2SpreadShotAction : Action
 
     protected override Status OnUpdate()
     {
-        if (pattern == Boss2Controller.AttackPattern.Sniper) return Status.Success;
+        if (pattern == Boss2Controller.AttackPattern.Sniper || pattern == Boss2Controller.AttackPattern.Drone) return Status.Success;
 
         timer += Time.deltaTime;
         if (shotsFired == 0)
@@ -74,7 +74,7 @@ public partial class Boss2AimedShotAction : Action
 
     protected override Status OnUpdate()
     {
-        if (controller.CurrentAttackPattern == Boss2Controller.AttackPattern.Frenzy) return Status.Success;
+        if (controller.CurrentAttackPattern is Boss2Controller.AttackPattern.Frenzy or Boss2Controller.AttackPattern.Drone) return Status.Success;
 
         if (!warningStarted)
         {

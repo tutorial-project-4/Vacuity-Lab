@@ -11,6 +11,7 @@ public static class Boss2BehaviorSetup
     const string GraphPath = "Assets/Behavior/Boss2Brain.asset";
     const string PrefabPath = "Assets/Prefabs/Monster/Boss/Boss-2.prefab";
     const string ScenePath = "Assets/Scenes/boss-semi-complete-arena.unity";
+    const string DronePath = "Assets/Prefabs/Monster/Drone.prefab";
 
     [MenuItem("Tools/Boss 2/Build and Verify")]
     public static void BuildAndVerify()
@@ -78,6 +79,9 @@ public static class Boss2BehaviorSetup
         {
             BehaviorGraphAgent agent = root.GetComponent<BehaviorGraphAgent>() ?? root.AddComponent<BehaviorGraphAgent>();
             agent.Graph = graph;
+            SerializedObject controller = new(root.GetComponent<Boss2Controller>());
+            controller.FindProperty("dronePrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(DronePath);
+            controller.ApplyModifiedPropertiesWithoutUndo();
             if (root.GetComponent<Boss>() != null || root.GetComponents<Component>().Any(c => c != null && c.GetType().Name == "BossArenaController"))
                 throw new InvalidOperationException("Boss 1 component found on Boss-2 prefab");
             PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -94,6 +98,8 @@ public static class Boss2BehaviorSetup
         if (!boss2.gameObject.activeSelf) throw new InvalidOperationException("Boss-2 must stay active while waiting for BeginBattle");
         if (!new SerializedObject(boss2).FindProperty("waitForBattleTrigger").boolValue)
             throw new InvalidOperationException("Boss-2 must wait for the battle trigger");
+        if (new SerializedObject(boss2).FindProperty("dronePrefab").objectReferenceValue == null)
+            throw new InvalidOperationException("Boss-2 drone prefab is not assigned");
         if (roots.SelectMany(r => r.GetComponentsInChildren<Transform>(true))
                  .Sum(t => GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject)) != 0)
             throw new InvalidOperationException("Scene contains Missing Script");

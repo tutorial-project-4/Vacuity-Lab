@@ -85,6 +85,8 @@ public sealed class Boss2MovingWall : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public void SuppressExitCallback() => exiting = true;
+
     void OnDestroy()
     {
         if (!exiting) exited?.Invoke(gameObject);
