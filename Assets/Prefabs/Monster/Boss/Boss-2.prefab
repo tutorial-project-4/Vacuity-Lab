@@ -178,6 +178,10 @@ MonoBehaviour:
   aimedSpeed: 12
   aimedRange: 40
   aimedRecovery: 0.8
+  frenzyRange: 5
+  frenzyDuration: 10
+  frenzyShotInterval: 0.12
+  sniperShotInterval: 0.2
   wallPrefabs:
   - {fileID: 7903640175299597750, guid: ee31b9ffd98475245aefebfae90786b1, type: 3}
   - {fileID: 5487274689742196484, guid: fdd30bf65363c7f42a13560adb4fc500, type: 3}

@@ -7,6 +7,8 @@ using UnityEngine;
 [RequireComponent(typeof(BossHealth), typeof(BehaviorGraphAgent))]
 public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
 {
+    internal enum AttackPattern { Basic, Sniper, Frenzy }
+
     [Header("전투 시작")]
     [Tooltip("공격 대상으로 사용할 플레이어입니다. 미할당 시 전투 시작 때 활성 플레이어를 찾습니다.")]
     [SerializeField] Transform target;
@@ -32,6 +34,16 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     [SerializeField] float aimedRange = 40f;
     [Tooltip("조준탄을 발사한 뒤 다음 확산탄 공격까지 기다리는 시간입니다. 단위: 초.")]
     [SerializeField] float aimedRecovery = .8f;
+
+    [Header("예약 패턴")]
+    [Tooltip("플레이어가 이 거리 이하에 연속으로 머무르면 광분 패턴을 예약합니다. 단위: position 값 1.")]
+    [SerializeField] float frenzyRange = 5f;
+    [Tooltip("광분 패턴 예약에 필요한 연속 근접 시간입니다. 단위: 초.")]
+    [SerializeField] float frenzyDuration = 10f;
+    [Tooltip("광분 확산탄 3연사의 발사 간격입니다. 단위: 초.")]
+    [SerializeField] float frenzyShotInterval = .12f;
+    [Tooltip("저격 조준탄 첫 발 발사 후 두 번째 경고를 시작하기까지의 간격입니다. 단위: 초.")]
+    [SerializeField] float sniperShotInterval = .2f;
 
     [Header("벽 러시")]
     [Tooltip("한 번의 벽 러시에서 무작위로 생성할 벽 프리팩 목록입니다.")]
@@ -73,6 +85,10 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     Coroutine wallRushRoutine;
     GameObject spikeWall;
     int remainingRushWalls;
+    int sniperReservations;
+    float frenzyProximityTime;
+    bool frenzyReserved;
+    AttackPattern currentAttackPattern;
     bool battleStarted;
     Vector3 startPosition;
 
@@ -104,6 +120,27 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         }
 
         if (!battleStarted) BeginBattle();
+    }
+
+    void Update()
+    {
+        if (!battleStarted || health.IsDead) return;
+        if (player == null) ResolvePlayer();
+        if (player == null) return;
+
+        if (Vector2.Distance(transform.position, player.position) > frenzyRange)
+        {
+            frenzyProximityTime = 0f;
+            return;
+        }
+
+        if (frenzyReserved) return;
+        frenzyProximityTime += Time.deltaTime;
+        if (frenzyProximityTime >= frenzyDuration)
+        {
+            frenzyReserved = true;
+            Debug.Log("[Boss2] 광분 패턴 예약", this);
+        }
     }
 
     void OnDisable()
@@ -150,6 +187,24 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         return true;
     }
 
+    internal AttackPattern BeginAttackCycle()
+    {
+        if (sniperReservations > 0)
+        {
+            sniperReservations--;
+            Debug.Log($"[Boss2] 저격 패턴 시작 (남은 예약: {sniperReservations})", this);
+            return currentAttackPattern = AttackPattern.Sniper;
+        }
+        if (frenzyReserved)
+        {
+            frenzyReserved = false;
+            frenzyProximityTime = 0f;
+            Debug.Log("[Boss2] 광분 패턴 시작", this);
+            return currentAttackPattern = AttackPattern.Frenzy;
+        }
+        return currentAttackPattern = AttackPattern.Basic;
+    }
+
     internal bool TryBeginAimed(out Vector2 direction, out GameObject warning)
     {
         direction = default;
@@ -171,6 +226,9 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     internal float SpreadRecovery => spreadRecovery;
     internal float AimedWarning => aimedWarning;
     internal float AimedRecovery => aimedRecovery;
+    internal float FrenzyShotInterval => frenzyShotInterval;
+    internal float SniperShotInterval => sniperShotInterval;
+    internal AttackPattern CurrentAttackPattern => currentAttackPattern;
 
     bool CanAttack()
     {
@@ -251,8 +309,14 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         }
         GameObject wall = Instantiate(prefab, wallSpawnPosition, Quaternion.identity);
         wall.name = "Boss2 Moving Wall";
-        wall.AddComponent<Boss2MovingWall>().Initialize(wallSpeed, arenaRightX, wallDespawnX, OnWallEntered, OnWallExited);
+        wall.AddComponent<Boss2MovingWall>().Initialize(wallSpeed, arenaRightX, wallDespawnX, OnWallEntered, OnWallExited, ReserveSniper);
         spawned.Add(wall);
+    }
+
+    void ReserveSniper()
+    {
+        sniperReservations++;
+        Debug.Log($"[Boss2] 벽 넉백으로 저격 패턴 예약 (누적: {sniperReservations})", this);
     }
 
     void OnWallEntered() => SetSpikeWall(true);
@@ -341,6 +405,10 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         if (wallRushRoutine != null) StopCoroutine(wallRushRoutine);
         wallRushRoutine = null;
         remainingRushWalls = 0;
+        sniperReservations = 0;
+        frenzyProximityTime = 0f;
+        frenzyReserved = false;
+        currentAttackPattern = AttackPattern.Basic;
         SetSpikeWall(false);
         ClearSpawned();
         BossHealthGauge.HideFor(health);
@@ -371,6 +439,12 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     [ContextMenu("Test: Reset")]
     void TestReset() => ResetForRetry();
 
+    [ContextMenu("Test: Reserve Frenzy")]
+    void TestReserveFrenzy() => frenzyReserved = true;
+
+    [ContextMenu("Test: Reserve Sniper")]
+    void TestReserveSniper() => ReserveSniper();
+
     [ContextMenu("Self Test")]
     void SelfTest()
     {
@@ -378,8 +452,23 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         Debug.Assert(aimedWarning >= 0f && aimedSpeed > spreadSpeed && aimedRange > 0f && aimedRecovery >= 0f);
         Debug.Assert(spreadProjectileSize > 0f && aimedProjectileSize > 0f && warningLineWidth > 0f);
         Debug.Assert(wallsPerRush > 0 && wallRushInterval >= wallSpawnInterval * (wallsPerRush - 1) && wallSpawnInterval >= 0f && wallSpeed > 0f);
+        Debug.Assert(frenzyRange > 0f && frenzyDuration > 0f && frenzyShotInterval >= 0f && sniperShotInterval >= 0f);
         Debug.Assert(arenaRightX < wallSpawnPosition.x && wallDespawnX < arenaRightX);
         Debug.Assert(wallPrefabs != null && wallPrefabs.Length > 0);
+
+        int savedSniperReservations = sniperReservations;
+        bool savedFrenzyReserved = frenzyReserved;
+        float savedFrenzyProximityTime = frenzyProximityTime;
+        AttackPattern savedAttackPattern = currentAttackPattern;
+        sniperReservations = 1;
+        frenzyReserved = true;
+        Debug.Assert(BeginAttackCycle() == AttackPattern.Sniper);
+        Debug.Assert(BeginAttackCycle() == AttackPattern.Frenzy);
+        Debug.Assert(BeginAttackCycle() == AttackPattern.Basic);
+        sniperReservations = savedSniperReservations;
+        frenzyReserved = savedFrenzyReserved;
+        frenzyProximityTime = savedFrenzyProximityTime;
+        currentAttackPattern = savedAttackPattern;
         Debug.Log("Boss2Controller Self Test PASS", this);
     }
 #endif

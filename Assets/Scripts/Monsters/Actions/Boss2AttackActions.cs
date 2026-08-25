@@ -10,27 +10,42 @@ public partial class Boss2SpreadShotAction : Action
 {
     Boss2Controller controller;
     float timer;
-    bool fired;
+    int shotsFired;
+    Boss2Controller.AttackPattern pattern;
 
     protected override Status OnStart()
     {
         controller = GameObject.GetComponent<Boss2Controller>();
         timer = 0f;
-        fired = false;
+        shotsFired = 0;
+        if (controller != null) pattern = controller.BeginAttackCycle();
         return controller == null ? Status.Failure : Status.Running;
     }
 
     protected override Status OnUpdate()
     {
-        if (!fired)
+        if (pattern == Boss2Controller.AttackPattern.Sniper) return Status.Success;
+
+        timer += Time.deltaTime;
+        if (shotsFired == 0)
         {
-            timer += Time.deltaTime;
             if (timer < controller.SpreadWindup) return Status.Running;
             if (!controller.TryFireSpread()) return Status.Running;
-            fired = true;
+            shotsFired = 1;
             timer = 0f;
         }
-        timer += Time.deltaTime;
+
+        if (pattern == Boss2Controller.AttackPattern.Frenzy)
+        {
+            if (shotsFired < 3 && timer >= controller.FrenzyShotInterval)
+            {
+                if (!controller.TryFireSpread()) return Status.Running;
+                shotsFired++;
+                timer = 0f;
+            }
+            return shotsFired == 3 ? Status.Success : Status.Running;
+        }
+
         return timer < controller.SpreadRecovery ? Status.Running : Status.Success;
     }
 }
@@ -43,37 +58,50 @@ public partial class Boss2AimedShotAction : Action
     GameObject warning;
     Vector2 direction;
     float timer;
-    bool fired;
+    int shotsFired;
+    int shotsToFire;
+    bool warningStarted;
 
     protected override Status OnStart()
     {
         controller = GameObject.GetComponent<Boss2Controller>();
         timer = 0f;
-        fired = false;
+        shotsFired = 0;
+        warningStarted = false;
+        shotsToFire = controller != null && controller.CurrentAttackPattern == Boss2Controller.AttackPattern.Sniper ? 2 : 1;
         return controller == null ? Status.Failure : Status.Running;
     }
 
     protected override Status OnUpdate()
     {
-        if (warning == null && !fired)
+        if (controller.CurrentAttackPattern == Boss2Controller.AttackPattern.Frenzy) return Status.Success;
+
+        if (!warningStarted)
         {
             if (!controller.TryBeginAimed(out direction, out warning)) return Status.Running;
+            warningStarted = true;
             timer = 0f;
         }
         timer += Time.deltaTime;
-        if (!fired && timer >= controller.AimedWarning)
+        if (warning != null && timer >= controller.AimedWarning)
         {
             controller.FireAimed(direction, warning);
             warning = null;
-            fired = true;
+            shotsFired++;
             timer = 0f;
         }
-        return fired && timer >= controller.AimedRecovery ? Status.Success : Status.Running;
+
+        if (shotsFired < shotsToFire)
+        {
+            if (warning == null && timer >= controller.SniperShotInterval) warningStarted = false;
+            return Status.Running;
+        }
+        return timer >= controller.AimedRecovery ? Status.Success : Status.Running;
     }
 
     protected override void OnEnd()
     {
-        if (!fired) controller?.CancelWarning(warning);
+        controller?.CancelWarning(warning);
         warning = null;
     }
 }
