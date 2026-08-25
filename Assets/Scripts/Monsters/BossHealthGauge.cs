@@ -33,6 +33,29 @@ public class BossHealthGauge : MonoBehaviour
 
     void HandleDamaged(int _) => Refresh();
 
+    public void Bind(BossHealth newBoss)
+    {
+        if (boss == newBoss) return;
+        if (isActiveAndEnabled && boss != null) boss.OnDamaged -= HandleDamaged;
+        boss = newBoss;
+        if (isActiveAndEnabled && boss != null) boss.OnDamaged += HandleDamaged;
+        Refresh();
+    }
+
+    public static void ShowFor(BossHealth health)
+    {
+        BossHealthGauge gauge = FindGauge();
+        if (gauge == null) return;
+        gauge.Bind(health);
+        gauge.SetVisible(true);
+    }
+
+    public static void HideFor(BossHealth health)
+    {
+        BossHealthGauge gauge = FindGauge();
+        if (gauge != null && gauge.boss == health) gauge.SetVisible(false);
+    }
+
     public void SetVisible(bool visible)
     {
         if (fill != null) fill.transform.parent.gameObject.SetActive(visible);
@@ -50,5 +73,12 @@ public class BossHealthGauge : MonoBehaviour
 
         fillTop.fillAmount = Mathf.Clamp01(boss.HpRatio * 2f - 1f);
         fill.fillAmount = Mathf.Clamp01(boss.HpRatio * 2f);
+    }
+
+    static BossHealthGauge FindGauge()
+    {
+        foreach (BossHealthGauge gauge in FindObjectsByType<BossHealthGauge>(FindObjectsInactive.Include))
+            if (gauge.fill != null) return gauge;
+        return null;
     }
 }

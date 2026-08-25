@@ -11,20 +11,25 @@ public static class Boss2BehaviorSetup
     const string GraphPath = "Assets/Behavior/Boss2Brain.asset";
     const string PrefabPath = "Assets/Prefabs/Monster/Boss/Boss-2.prefab";
     const string ScenePath = "Assets/Scenes/boss-semi-complete-arena.unity";
+    const string DronePath = "Assets/Prefabs/Monster/Drone.prefab";
 
     [MenuItem("Tools/Boss 2/Build and Verify")]
     public static void BuildAndVerify()
     {
-        BehaviorGraph graph = BuildGraph();
+        BehaviorGraph graph = LoadOrBuildGraph();
         ConfigurePrefab(graph);
         VerifyScene();
         AssetDatabase.SaveAssets();
         Debug.Log("BOSS2_SETUP_PASS");
     }
 
-    static BehaviorGraph BuildGraph()
+    static BehaviorGraph LoadOrBuildGraph()
     {
-        AssetDatabase.DeleteAsset(GraphPath);
+        BehaviorGraph existing = AssetDatabase.LoadAllAssetsAtPath(GraphPath).OfType<BehaviorGraph>().FirstOrDefault();
+        if (existing != null) return existing;
+        if (AssetDatabase.LoadMainAssetAtPath(GraphPath) != null)
+            throw new InvalidOperationException("Boss2Brain.asset은 존재하지만 런타임 그래프를 찾을 수 없습니다.");
+
         Assembly authoring = AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "Unity.Behavior.Authoring");
         Type graphType = authoring.GetType("Unity.Behavior.BehaviorAuthoringGraph", true);
         ScriptableObject asset = ScriptableObject.CreateInstance(graphType);
@@ -74,6 +79,9 @@ public static class Boss2BehaviorSetup
         {
             BehaviorGraphAgent agent = root.GetComponent<BehaviorGraphAgent>() ?? root.AddComponent<BehaviorGraphAgent>();
             agent.Graph = graph;
+            SerializedObject controller = new(root.GetComponent<Boss2Controller>());
+            controller.FindProperty("dronePrefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<GameObject>(DronePath);
+            controller.ApplyModifiedPropertiesWithoutUndo();
             if (root.GetComponent<Boss>() != null || root.GetComponents<Component>().Any(c => c != null && c.GetType().Name == "BossArenaController"))
                 throw new InvalidOperationException("Boss 1 component found on Boss-2 prefab");
             PrefabUtility.SaveAsPrefabAsset(root, PrefabPath);
@@ -87,7 +95,11 @@ public static class Boss2BehaviorSetup
         GameObject[] roots = scene.GetRootGameObjects();
         Boss2IntroTrigger trigger = roots.SelectMany(r => r.GetComponentsInChildren<Boss2IntroTrigger>(true)).Single();
         Boss2Controller boss2 = roots.SelectMany(r => r.GetComponentsInChildren<Boss2Controller>(true)).Single();
-        if (boss2.gameObject.activeSelf) throw new InvalidOperationException("Boss-2 must start inactive");
+        if (!boss2.gameObject.activeSelf) throw new InvalidOperationException("Boss-2 must stay active while waiting for BeginBattle");
+        if (!new SerializedObject(boss2).FindProperty("waitForBattleTrigger").boolValue)
+            throw new InvalidOperationException("Boss-2 must wait for the battle trigger");
+        if (new SerializedObject(boss2).FindProperty("dronePrefab").objectReferenceValue == null)
+            throw new InvalidOperationException("Boss-2 drone prefab is not assigned");
         if (roots.SelectMany(r => r.GetComponentsInChildren<Transform>(true))
                  .Sum(t => GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject)) != 0)
             throw new InvalidOperationException("Scene contains Missing Script");

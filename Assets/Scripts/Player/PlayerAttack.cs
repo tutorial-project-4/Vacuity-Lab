@@ -27,7 +27,7 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private float hitboxAngleOffset;
 
     private readonly Collider2D[] hitBuffer = new Collider2D[16];
-    private readonly HashSet<BossHealth> damagedTargets = new HashSet<BossHealth>();
+    private readonly HashSet<object> damagedTargets = new HashSet<object>();
     private float cooldownTimer;
     private Coroutine attackRoutine;
     private bool isAttacking;
@@ -207,20 +207,22 @@ public class PlayerAttack : MonoBehaviour
 
         for (int i = 0; i < hitCount; i++)
         {
-            BossHealth bossHealth = hitBuffer[i].GetComponentInParent<BossHealth>();
-            if (bossHealth == null)
+            Collider2D hit = hitBuffer[i];
+            BossHealth bossHealth = hit.GetComponentInParent<BossHealth>();
+            if (bossHealth != null)
             {
+                if (!damagedTargets.Add(bossHealth)) continue;
+                bossHealth.TakeDamage(damage);
+                Debug.Log($"[PlayerAttack] 보스={bossHealth.name}, 대미지={damage}, 보스Hp={bossHealth.CurrentHp}/{bossHealth.MaxHp}", bossHealth);
                 continue;
             }
 
-            if (damagedTargets.Contains(bossHealth))
+            foreach (MonoBehaviour behaviour in hit.GetComponentsInParent<MonoBehaviour>())
             {
-                continue;
+                if (behaviour is not IPlayerDashDamageable damageable || !damagedTargets.Add(damageable)) continue;
+                damageable.TakeDamage(damage);
+                break;
             }
-
-            damagedTargets.Add(bossHealth);
-            bossHealth.TakeDamage(damage);
-            Debug.Log($"[PlayerAttack] 보스={bossHealth.name}, 대미지={damage}, 보스Hp={bossHealth.CurrentHp}/{bossHealth.MaxHp}", bossHealth);
         }
     }
 

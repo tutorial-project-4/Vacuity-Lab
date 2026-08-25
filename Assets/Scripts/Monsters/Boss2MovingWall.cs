@@ -9,19 +9,21 @@ public sealed class Boss2MovingWall : MonoBehaviour
     readonly HashSet<PlayerController> contactedPlayers = new();
     Action entered;
     Action<GameObject> exited;
+    Action knockedBackPlayer;
     float speed;
     float arenaRightX;
     float despawnX;
     bool enteredArena;
     bool exiting;
 
-    public void Initialize(float moveSpeed, float rightX, float leftX, Action onEntered, Action<GameObject> onExited)
+    public void Initialize(float moveSpeed, float rightX, float leftX, Action onEntered, Action<GameObject> onExited, Action onKnockedBackPlayer)
     {
         speed = moveSpeed;
         arenaRightX = rightX;
         despawnX = leftX;
         entered = onEntered;
         exited = onExited;
+        knockedBackPlayer = onKnockedBackPlayer;
 
         int layer = LayerMask.NameToLayer("DashPassableWall");
         SetLayerRecursively(transform, layer);
@@ -71,6 +73,7 @@ public sealed class Boss2MovingWall : MonoBehaviour
         {
             contactedPlayers.Add(player);
             player.ReceiveKnockback(Vector2.left * 2.5f, .25f);
+            knockedBackPlayer?.Invoke();
         }
     }
 
@@ -81,6 +84,8 @@ public sealed class Boss2MovingWall : MonoBehaviour
         exited?.Invoke(gameObject);
         Destroy(gameObject);
     }
+
+    public void SuppressExitCallback() => exiting = true;
 
     void OnDestroy()
     {

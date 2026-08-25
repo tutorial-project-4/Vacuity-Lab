@@ -71,10 +71,13 @@ public class BossRetryCheckpoint : MonoBehaviour
 
     private void ResetBoss()
     {
-        if (bossRetryTarget != null)
+        if (bossRetryTarget is IBossEncounter encounter)
         {
-            bossRetryTarget.SendMessage("ResetForRetry", SendMessageOptions.DontRequireReceiver);
+            encounter.ResetForRetry();
+            return;
         }
+
+        Debug.LogWarning("[BossRetryCheckpoint] IBossEncounter 재시작 대상이 연결되지 않았습니다.", this);
     }
 
     private void ApplyCamera(PlayerHealth playerHealth)

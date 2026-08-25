@@ -1,11 +1,20 @@
 using System.Collections.Generic;
 using System.Collections;
+using Unity.Behavior;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(BossHealth))]
-public sealed class Boss2Controller : MonoBehaviour
+[RequireComponent(typeof(BossHealth), typeof(BehaviorGraphAgent))]
+public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
 {
+    internal enum AttackPattern { Basic, Sniper, Frenzy, Drone }
+
+    [Header("전투 시작")]
+    [Tooltip("공격 대상으로 사용할 플레이어입니다. 미할당 시 전투 시작 때 활성 플레이어를 찾습니다.")]
+    [SerializeField] Transform target;
+    [Tooltip("활성화하면 BeginBattle() 호출 전까지 행동·피격·체력 UI를 중지합니다.")]
+    [SerializeField] bool waitForBattleTrigger = true;
+
     [Header("확산탄")]
     [Tooltip("확산탄이 1초 동안 이동하는 거리입니다. 단위: position 값 1/초.")]
     [SerializeField] float spreadSpeed = 4.25f;
@@ -25,6 +34,38 @@ public sealed class Boss2Controller : MonoBehaviour
     [SerializeField] float aimedRange = 40f;
     [Tooltip("조준탄을 발사한 뒤 다음 확산탄 공격까지 기다리는 시간입니다. 단위: 초.")]
     [SerializeField] float aimedRecovery = .8f;
+
+    [Header("예약 패턴")]
+    [Tooltip("플레이어가 이 거리 이하에 연속으로 머무르면 광분 패턴을 예약합니다. 단위: position 값 1.")]
+    [SerializeField] float frenzyRange = 5f;
+    [Tooltip("광분 패턴 예약에 필요한 연속 근접 시간입니다. 단위: 초.")]
+    [SerializeField] float frenzyDuration = 10f;
+    [Tooltip("광분 확산탄 3연사의 발사 간격입니다. 단위: 초.")]
+    [SerializeField] float frenzyShotInterval = .12f;
+    [Tooltip("저격 조준탄 첫 발 발사 후 두 번째 경고를 시작하기까지의 간격입니다. 단위: 초.")]
+    [SerializeField] float sniperShotInterval = .2f;
+
+    [Header("2페이즈 및 드론")]
+    [Tooltip("2페이즈가 시작되는 보스 체력입니다.")]
+    [SerializeField] int phaseTwoHp = 800;
+    [Tooltip("2페이즈 전환 중 보스가 행동과 피격을 멈추는 시간입니다. 단위: 초.")]
+    [SerializeField] float phaseTransitionDuration = 3f;
+    [Tooltip("2페이즈에서 추가 드론 소환을 예약하는 주기입니다. 첫 드론은 진입 즉시 소환합니다. 단위: 초.")]
+    [SerializeField] float droneSummonInterval = 30f;
+    [Tooltip("소환할 드론 프리팩입니다.")]
+    [SerializeField] GameObject dronePrefab;
+    [Tooltip("드론 한 체의 최대 체력입니다.")]
+    [SerializeField] int droneHp = 60;
+    [Tooltip("드론이 1초 동안 이동하는 거리입니다. 단위: position 값 1/초.")]
+    [SerializeField] float droneSpeed = 2f;
+    [Tooltip("드론이 플레이어 추적을 멈추는 거리입니다. 단위: position 값 1.")]
+    [SerializeField] float droneStopDistance = 1f;
+    [Tooltip("플레이어 이동속도를 30% 낮추는 반경입니다. 여러 드론이 겹쳐도 30%까지만 감속합니다.")]
+    [SerializeField] float droneSlowRadius = 3f;
+    [Tooltip("드론이 피격됐을 때 플레이어 반대 방향으로 밀리는 거리입니다. 임시 조정값입니다.")]
+    [SerializeField] float droneKnockbackDistance = 1f;
+    [Tooltip("드론 피격 넉백이 진행되는 시간입니다. 임시 조정값이며 단위는 초입니다.")]
+    [SerializeField] float droneKnockbackDuration = .2f;
 
     [Header("벽 러시")]
     [Tooltip("한 번의 벽 러시에서 무작위로 생성할 벽 프리팩 목록입니다.")]
@@ -59,38 +100,116 @@ public sealed class Boss2Controller : MonoBehaviour
     static Sprite projectileSprite;
     readonly List<GameObject> spawned = new();
     BossHealth health;
+    BehaviorGraphAgent agent;
     Transform player;
+    PlayerHealth playerHealth;
     float attackStartTime;
     Coroutine wallRushRoutine;
+    Coroutine phaseTransitionRoutine;
+    Coroutine droneSummonRoutine;
     GameObject spikeWall;
     int remainingRushWalls;
+    int sniperReservations;
+    int droneReservations;
+    float frenzyProximityTime;
+    bool frenzyReserved;
+    AttackPattern currentAttackPattern;
+    bool phaseTwo;
+    bool transitioning;
+    bool battleStarted;
+    Vector3 startPosition;
+
+    public bool IsBattleStarted => battleStarted;
+    public BossHealth Health => health;
 
     void Awake()
     {
         health = GetComponent<BossHealth>();
+        agent = GetComponent<BehaviorGraphAgent>();
+        startPosition = transform.position;
+        health.OnDamaged += HandleDamaged;
         health.OnDeath += HandleDeath;
     }
 
     void OnEnable()
     {
-        attackStartTime = Time.time + .5f;
         spikeWall = FindInactiveObject(spikeWallName);
         SetSpikeWall(false);
-        wallRushRoutine = StartCoroutine(WallRushLoop());
+    }
+
+    void Start()
+    {
+        if (!battleStarted && waitForBattleTrigger)
+        {
+            agent.End();
+            health.Invulnerable = true;
+            BossHealthGauge.HideFor(health);
+            return;
+        }
+
+        if (!battleStarted) BeginBattle();
+    }
+
+    void Update()
+    {
+        if (!battleStarted || health.IsDead || transitioning) return;
+        if (player == null) ResolvePlayer();
+        if (player == null) return;
+
+        if (Vector2.Distance(transform.position, player.position) > frenzyRange)
+        {
+            frenzyProximityTime = 0f;
+            return;
+        }
+
+        if (frenzyReserved) return;
+        frenzyProximityTime += Time.deltaTime;
+        if (frenzyProximityTime >= frenzyDuration)
+        {
+            frenzyReserved = true;
+            Debug.Log("[Boss2] 광분 패턴 예약", this);
+        }
     }
 
     void OnDisable()
     {
-        if (wallRushRoutine != null) StopCoroutine(wallRushRoutine);
-        wallRushRoutine = null;
-        remainingRushWalls = 0;
-        SetSpikeWall(false);
-        ClearSpawned();
+        StopBattle();
+        UnsubscribePlayerDeath();
     }
 
     void OnDestroy()
     {
-        if (health != null) health.OnDeath -= HandleDeath;
+        if (health != null)
+        {
+            health.OnDamaged -= HandleDamaged;
+            health.OnDeath -= HandleDeath;
+        }
+        UnsubscribePlayerDeath();
+    }
+
+    public void BeginBattle()
+    {
+        if (!gameObject.activeSelf) gameObject.SetActive(true);
+        if (battleStarted || health.IsDead) return;
+
+        battleStarted = true;
+        health.Invulnerable = false;
+        ResolvePlayer();
+        attackStartTime = Time.time + .5f;
+        agent.Restart();
+        wallRushRoutine = StartCoroutine(WallRushLoop());
+        BossHealthGauge.ShowFor(health);
+        Debug.Log("[Boss2] 보스전 시작", this);
+    }
+
+    public void ResetForRetry()
+    {
+        Time.timeScale = 1f;
+        StopBattle();
+        transform.position = startPosition;
+        health.ResetHealth();
+        BeginBattle();
+        Debug.Log("[Boss2] 재도전 초기화", this);
     }
 
     internal bool TryFireSpread()
@@ -98,6 +217,31 @@ public sealed class Boss2Controller : MonoBehaviour
         if (!CanAttack()) return false;
         FireSpread();
         return true;
+    }
+
+    internal AttackPattern BeginAttackCycle()
+    {
+        if (droneReservations > 0)
+        {
+            droneReservations--;
+            SpawnDrone();
+            Debug.Log($"[Boss2] 드론 소환 패턴 시작 (남은 예약: {droneReservations})", this);
+            return currentAttackPattern = AttackPattern.Drone;
+        }
+        if (sniperReservations > 0)
+        {
+            sniperReservations--;
+            Debug.Log($"[Boss2] 저격 패턴 시작 (남은 예약: {sniperReservations})", this);
+            return currentAttackPattern = AttackPattern.Sniper;
+        }
+        if (frenzyReserved)
+        {
+            frenzyReserved = false;
+            frenzyProximityTime = 0f;
+            Debug.Log("[Boss2] 광분 패턴 시작", this);
+            return currentAttackPattern = AttackPattern.Frenzy;
+        }
+        return currentAttackPattern = AttackPattern.Basic;
     }
 
     internal bool TryBeginAimed(out Vector2 direction, out GameObject warning)
@@ -121,16 +265,37 @@ public sealed class Boss2Controller : MonoBehaviour
     internal float SpreadRecovery => spreadRecovery;
     internal float AimedWarning => aimedWarning;
     internal float AimedRecovery => aimedRecovery;
+    internal float FrenzyShotInterval => frenzyShotInterval;
+    internal float SniperShotInterval => sniperShotInterval;
+    internal AttackPattern CurrentAttackPattern => currentAttackPattern;
 
     bool CanAttack()
     {
-        if (health.IsDead || Time.time < attackStartTime) return false;
-        if (player == null)
+        if (!battleStarted || health.IsDead || transitioning || Time.time < attackStartTime) return false;
+        if (player == null) ResolvePlayer();
+        return player != null;
+    }
+
+    void ResolvePlayer()
+    {
+        if (target == null)
         {
             PlayerMovement found = FindAnyObjectByType<PlayerMovement>();
-            if (found != null) player = found.transform;
+            if (found != null) target = found.transform;
         }
-        return player != null;
+
+        player = target;
+        PlayerHealth next = target != null ? target.GetComponentInParent<PlayerHealth>() : null;
+        if (playerHealth == next) return;
+        UnsubscribePlayerDeath();
+        playerHealth = next;
+        if (playerHealth != null) playerHealth.Died += HandlePlayerDeath;
+    }
+
+    void UnsubscribePlayerDeath()
+    {
+        if (playerHealth != null) playerHealth.Died -= HandlePlayerDeath;
+        playerHealth = null;
     }
 
     void FireSpread()
@@ -183,8 +348,14 @@ public sealed class Boss2Controller : MonoBehaviour
         }
         GameObject wall = Instantiate(prefab, wallSpawnPosition, Quaternion.identity);
         wall.name = "Boss2 Moving Wall";
-        wall.AddComponent<Boss2MovingWall>().Initialize(wallSpeed, arenaRightX, wallDespawnX, OnWallEntered, OnWallExited);
+        wall.AddComponent<Boss2MovingWall>().Initialize(wallSpeed, arenaRightX, wallDespawnX, OnWallEntered, OnWallExited, ReserveSniper);
         spawned.Add(wall);
+    }
+
+    void ReserveSniper()
+    {
+        sniperReservations++;
+        Debug.Log($"[Boss2] 벽 넉백으로 저격 패턴 예약 (누적: {sniperReservations})", this);
     }
 
     void OnWallEntered() => SetSpikeWall(true);
@@ -253,10 +424,114 @@ public sealed class Boss2Controller : MonoBehaviour
         return warning;
     }
 
+    void HandleDamaged(int currentHp)
+    {
+        if (!battleStarted || phaseTwo || currentHp > phaseTwoHp) return;
+        phaseTransitionRoutine = StartCoroutine(EnterPhaseTwo());
+    }
+
+    IEnumerator EnterPhaseTwo()
+    {
+        phaseTwo = true;
+        transitioning = true;
+        health.Invulnerable = true;
+        agent.End();
+        StopPatternRoutines();
+        ResetPatternState();
+        SetSpikeWall(false);
+        ClearSpawned();
+        Debug.Log($"[Boss2] 2페이즈 전환 시작 ({phaseTransitionDuration:0.##}초)", this);
+
+        yield return new WaitForSeconds(phaseTransitionDuration);
+        phaseTransitionRoutine = null;
+        if (!battleStarted || health.IsDead) yield break;
+
+        transitioning = false;
+        health.Invulnerable = false;
+        attackStartTime = Time.time + .5f;
+        agent.Restart();
+        wallRushRoutine = StartCoroutine(WallRushLoop());
+        SpawnDrone();
+        droneSummonRoutine = StartCoroutine(DroneSummonLoop());
+        Debug.Log("[Boss2] 2페이즈 시작 및 첫 드론 소환", this);
+    }
+
+    IEnumerator DroneSummonLoop()
+    {
+        while (battleStarted && phaseTwo && !health.IsDead)
+        {
+            yield return new WaitForSeconds(droneSummonInterval);
+            if (!battleStarted || health.IsDead) yield break;
+            droneReservations++;
+            Debug.Log($"[Boss2] 드론 소환 예약 (누적: {droneReservations})", this);
+        }
+    }
+
+    void SpawnDrone()
+    {
+        if (dronePrefab == null || player == null)
+        {
+            Debug.LogWarning("[Boss2] 드론 프리팩 또는 플레이어 참조가 없습니다.", this);
+            return;
+        }
+
+        GameObject drone = Instantiate(dronePrefab, transform.position, Quaternion.identity);
+        drone.name = "Boss2 Drone";
+        SetLayerRecursively(drone.transform, LayerMask.NameToLayer("Boss"));
+        drone.AddComponent<Boss2Drone>().Initialize(player, droneHp, droneSpeed, droneStopDistance, droneSlowRadius, droneKnockbackDistance, droneKnockbackDuration);
+        spawned.Add(drone);
+    }
+
+    static void SetLayerRecursively(Transform root, int layer)
+    {
+        root.gameObject.layer = layer;
+        foreach (Transform child in root) SetLayerRecursively(child, layer);
+    }
+
     void HandleDeath()
     {
+        StopBattle();
+        Debug.Log("[Boss2] 사망 — 행동 및 생성물 정리", this);
+    }
+
+    void HandlePlayerDeath()
+    {
+        if (!battleStarted || health.IsDead) return;
+        health.Invulnerable = true;
+        Time.timeScale = 0f;
+    }
+
+    void StopBattle()
+    {
+        battleStarted = false;
+        agent.End();
+        StopPatternRoutines();
+        if (phaseTransitionRoutine != null) StopCoroutine(phaseTransitionRoutine);
+        phaseTransitionRoutine = null;
+        phaseTwo = false;
+        transitioning = false;
+        ResetPatternState();
+        SetSpikeWall(false);
         ClearSpawned();
-        gameObject.SetActive(false);
+        BossHealthGauge.HideFor(health);
+    }
+
+    void StopPatternRoutines()
+    {
+        if (wallRushRoutine != null) StopCoroutine(wallRushRoutine);
+        if (droneSummonRoutine != null) StopCoroutine(droneSummonRoutine);
+        wallRushRoutine = null;
+        droneSummonRoutine = null;
+    }
+
+    void ResetPatternState()
+    {
+        remainingRushWalls = 0;
+        droneReservations = 0;
+        sniperReservations = 0;
+        frenzyProximityTime = 0f;
+        frenzyReserved = false;
+        currentAttackPattern = AttackPattern.Basic;
     }
 
     void RemoveSpawned(GameObject item)
@@ -273,6 +548,8 @@ public sealed class Boss2Controller : MonoBehaviour
         foreach (GameObject item in spawned)
         {
             if (item == null) continue;
+            Boss2MovingWall wall = item.GetComponent<Boss2MovingWall>();
+            if (wall != null) wall.SuppressExitCallback();
             LineRenderer line = item.GetComponent<LineRenderer>();
             if (line != null && line.material != null) Destroy(line.material);
             Destroy(item);
@@ -281,6 +558,15 @@ public sealed class Boss2Controller : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    [ContextMenu("Test: Reset")]
+    void TestReset() => ResetForRetry();
+
+    [ContextMenu("Test: Reserve Frenzy")]
+    void TestReserveFrenzy() => frenzyReserved = true;
+
+    [ContextMenu("Test: Reserve Sniper")]
+    void TestReserveSniper() => ReserveSniper();
+
     [ContextMenu("Self Test")]
     void SelfTest()
     {
@@ -288,8 +574,25 @@ public sealed class Boss2Controller : MonoBehaviour
         Debug.Assert(aimedWarning >= 0f && aimedSpeed > spreadSpeed && aimedRange > 0f && aimedRecovery >= 0f);
         Debug.Assert(spreadProjectileSize > 0f && aimedProjectileSize > 0f && warningLineWidth > 0f);
         Debug.Assert(wallsPerRush > 0 && wallRushInterval >= wallSpawnInterval * (wallsPerRush - 1) && wallSpawnInterval >= 0f && wallSpeed > 0f);
+        Debug.Assert(frenzyRange > 0f && frenzyDuration > 0f && frenzyShotInterval >= 0f && sniperShotInterval >= 0f);
+        Debug.Assert(phaseTwoHp > 0 && phaseTransitionDuration >= 0f && droneSummonInterval > 0f);
+        Debug.Assert(dronePrefab != null && droneHp > 0 && droneSpeed > 0f && droneStopDistance >= 0f && droneSlowRadius > 0f);
         Debug.Assert(arenaRightX < wallSpawnPosition.x && wallDespawnX < arenaRightX);
         Debug.Assert(wallPrefabs != null && wallPrefabs.Length > 0);
+
+        int savedSniperReservations = sniperReservations;
+        bool savedFrenzyReserved = frenzyReserved;
+        float savedFrenzyProximityTime = frenzyProximityTime;
+        AttackPattern savedAttackPattern = currentAttackPattern;
+        sniperReservations = 1;
+        frenzyReserved = true;
+        Debug.Assert(BeginAttackCycle() == AttackPattern.Sniper);
+        Debug.Assert(BeginAttackCycle() == AttackPattern.Frenzy);
+        Debug.Assert(BeginAttackCycle() == AttackPattern.Basic);
+        sniperReservations = savedSniperReservations;
+        frenzyReserved = savedFrenzyReserved;
+        frenzyProximityTime = savedFrenzyProximityTime;
+        currentAttackPattern = savedAttackPattern;
         Debug.Log("Boss2Controller Self Test PASS", this);
     }
 #endif
