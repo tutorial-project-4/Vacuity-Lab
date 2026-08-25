@@ -1,6 +1,14 @@
 using System;
 using UnityEngine;
 
+public interface IBossEncounter
+{
+    bool IsBattleStarted { get; }
+    BossHealth Health { get; }
+    void BeginBattle();
+    void ResetForRetry();
+}
+
 /// 보스의 정수 HP 체력. 플레이어의 하트 체력과는 별개 시스템
 ///
 /// 데미지 계약(플레이어 담당자 코드 기준):
@@ -18,6 +26,10 @@ public class BossHealth : MonoBehaviour
 {
     [SerializeField] int maxHp = 1000;
     [SerializeField] float invulnDuration = 0.1f;
+#if UNITY_EDITOR
+    [Tooltip("QA 테스트에서 한 번에 적용할 피해량입니다.")]
+    [SerializeField] int testDamage = 100;
+#endif
 
     public int MaxHp => maxHp;
     public int CurrentHp { get; private set; }
@@ -58,6 +70,15 @@ public class BossHealth : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    [ContextMenu("Test: Apply Damage")]
+    void TestApplyDamage() => TakeDamage(testDamage);
+
+    [ContextMenu("Test: Kill")]
+    void TestKill() => TakeDamage(int.MaxValue);
+
+    [ContextMenu("Test: Full Heal")]
+    void TestFullHeal() => ResetHealth();
+
     // 러너블 체크: 컴포넌트 우클릭 → Self Test. (asmdef 없이 EditMode 대체)
     [ContextMenu("Self Test")]
     void SelfTest()

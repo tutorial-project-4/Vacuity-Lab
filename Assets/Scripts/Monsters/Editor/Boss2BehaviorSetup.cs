@@ -15,16 +15,20 @@ public static class Boss2BehaviorSetup
     [MenuItem("Tools/Boss 2/Build and Verify")]
     public static void BuildAndVerify()
     {
-        BehaviorGraph graph = BuildGraph();
+        BehaviorGraph graph = LoadOrBuildGraph();
         ConfigurePrefab(graph);
         VerifyScene();
         AssetDatabase.SaveAssets();
         Debug.Log("BOSS2_SETUP_PASS");
     }
 
-    static BehaviorGraph BuildGraph()
+    static BehaviorGraph LoadOrBuildGraph()
     {
-        AssetDatabase.DeleteAsset(GraphPath);
+        BehaviorGraph existing = AssetDatabase.LoadAllAssetsAtPath(GraphPath).OfType<BehaviorGraph>().FirstOrDefault();
+        if (existing != null) return existing;
+        if (AssetDatabase.LoadMainAssetAtPath(GraphPath) != null)
+            throw new InvalidOperationException("Boss2Brain.asset은 존재하지만 런타임 그래프를 찾을 수 없습니다.");
+
         Assembly authoring = AppDomain.CurrentDomain.GetAssemblies().Single(a => a.GetName().Name == "Unity.Behavior.Authoring");
         Type graphType = authoring.GetType("Unity.Behavior.BehaviorAuthoringGraph", true);
         ScriptableObject asset = ScriptableObject.CreateInstance(graphType);
@@ -87,7 +91,9 @@ public static class Boss2BehaviorSetup
         GameObject[] roots = scene.GetRootGameObjects();
         Boss2IntroTrigger trigger = roots.SelectMany(r => r.GetComponentsInChildren<Boss2IntroTrigger>(true)).Single();
         Boss2Controller boss2 = roots.SelectMany(r => r.GetComponentsInChildren<Boss2Controller>(true)).Single();
-        if (boss2.gameObject.activeSelf) throw new InvalidOperationException("Boss-2 must start inactive");
+        if (!boss2.gameObject.activeSelf) throw new InvalidOperationException("Boss-2 must stay active while waiting for BeginBattle");
+        if (!new SerializedObject(boss2).FindProperty("waitForBattleTrigger").boolValue)
+            throw new InvalidOperationException("Boss-2 must wait for the battle trigger");
         if (roots.SelectMany(r => r.GetComponentsInChildren<Transform>(true))
                  .Sum(t => GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject)) != 0)
             throw new InvalidOperationException("Scene contains Missing Script");

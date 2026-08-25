@@ -1,11 +1,18 @@
 using System.Collections.Generic;
 using System.Collections;
+using Unity.Behavior;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(BossHealth))]
-public sealed class Boss2Controller : MonoBehaviour
+[RequireComponent(typeof(BossHealth), typeof(BehaviorGraphAgent))]
+public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
 {
+    [Header("전투 시작")]
+    [Tooltip("공격 대상으로 사용할 플레이어입니다. 미할당 시 전투 시작 때 활성 플레이어를 찾습니다.")]
+    [SerializeField] Transform target;
+    [Tooltip("활성화하면 BeginBattle() 호출 전까지 행동·피격·체력 UI를 중지합니다.")]
+    [SerializeField] bool waitForBattleTrigger = true;
+
     [Header("확산탄")]
     [Tooltip("확산탄이 1초 동안 이동하는 거리입니다. 단위: position 값 1/초.")]
     [SerializeField] float spreadSpeed = 4.25f;
@@ -59,38 +66,81 @@ public sealed class Boss2Controller : MonoBehaviour
     static Sprite projectileSprite;
     readonly List<GameObject> spawned = new();
     BossHealth health;
+    BehaviorGraphAgent agent;
     Transform player;
+    PlayerHealth playerHealth;
     float attackStartTime;
     Coroutine wallRushRoutine;
     GameObject spikeWall;
     int remainingRushWalls;
+    bool battleStarted;
+    Vector3 startPosition;
+
+    public bool IsBattleStarted => battleStarted;
+    public BossHealth Health => health;
 
     void Awake()
     {
         health = GetComponent<BossHealth>();
+        agent = GetComponent<BehaviorGraphAgent>();
+        startPosition = transform.position;
         health.OnDeath += HandleDeath;
     }
 
     void OnEnable()
     {
-        attackStartTime = Time.time + .5f;
         spikeWall = FindInactiveObject(spikeWallName);
         SetSpikeWall(false);
-        wallRushRoutine = StartCoroutine(WallRushLoop());
+    }
+
+    void Start()
+    {
+        if (!battleStarted && waitForBattleTrigger)
+        {
+            agent.End();
+            health.Invulnerable = true;
+            BossHealthGauge.HideFor(health);
+            return;
+        }
+
+        if (!battleStarted) BeginBattle();
     }
 
     void OnDisable()
     {
-        if (wallRushRoutine != null) StopCoroutine(wallRushRoutine);
-        wallRushRoutine = null;
-        remainingRushWalls = 0;
-        SetSpikeWall(false);
-        ClearSpawned();
+        StopBattle();
+        UnsubscribePlayerDeath();
     }
 
     void OnDestroy()
     {
         if (health != null) health.OnDeath -= HandleDeath;
+        UnsubscribePlayerDeath();
+    }
+
+    public void BeginBattle()
+    {
+        if (!gameObject.activeSelf) gameObject.SetActive(true);
+        if (battleStarted || health.IsDead) return;
+
+        battleStarted = true;
+        health.Invulnerable = false;
+        ResolvePlayer();
+        attackStartTime = Time.time + .5f;
+        agent.Restart();
+        wallRushRoutine = StartCoroutine(WallRushLoop());
+        BossHealthGauge.ShowFor(health);
+        Debug.Log("[Boss2] 보스전 시작", this);
+    }
+
+    public void ResetForRetry()
+    {
+        Time.timeScale = 1f;
+        StopBattle();
+        transform.position = startPosition;
+        health.ResetHealth();
+        BeginBattle();
+        Debug.Log("[Boss2] 재도전 초기화", this);
     }
 
     internal bool TryFireSpread()
@@ -124,13 +174,31 @@ public sealed class Boss2Controller : MonoBehaviour
 
     bool CanAttack()
     {
-        if (health.IsDead || Time.time < attackStartTime) return false;
-        if (player == null)
+        if (!battleStarted || health.IsDead || Time.time < attackStartTime) return false;
+        if (player == null) ResolvePlayer();
+        return player != null;
+    }
+
+    void ResolvePlayer()
+    {
+        if (target == null)
         {
             PlayerMovement found = FindAnyObjectByType<PlayerMovement>();
-            if (found != null) player = found.transform;
+            if (found != null) target = found.transform;
         }
-        return player != null;
+
+        player = target;
+        PlayerHealth next = target != null ? target.GetComponentInParent<PlayerHealth>() : null;
+        if (playerHealth == next) return;
+        UnsubscribePlayerDeath();
+        playerHealth = next;
+        if (playerHealth != null) playerHealth.Died += HandlePlayerDeath;
+    }
+
+    void UnsubscribePlayerDeath()
+    {
+        if (playerHealth != null) playerHealth.Died -= HandlePlayerDeath;
+        playerHealth = null;
     }
 
     void FireSpread()
@@ -255,8 +323,27 @@ public sealed class Boss2Controller : MonoBehaviour
 
     void HandleDeath()
     {
+        StopBattle();
+        Debug.Log("[Boss2] 사망 — 행동 및 생성물 정리", this);
+    }
+
+    void HandlePlayerDeath()
+    {
+        if (!battleStarted || health.IsDead) return;
+        health.Invulnerable = true;
+        Time.timeScale = 0f;
+    }
+
+    void StopBattle()
+    {
+        battleStarted = false;
+        agent.End();
+        if (wallRushRoutine != null) StopCoroutine(wallRushRoutine);
+        wallRushRoutine = null;
+        remainingRushWalls = 0;
+        SetSpikeWall(false);
         ClearSpawned();
-        gameObject.SetActive(false);
+        BossHealthGauge.HideFor(health);
     }
 
     void RemoveSpawned(GameObject item)
@@ -281,6 +368,9 @@ public sealed class Boss2Controller : MonoBehaviour
     }
 
 #if UNITY_EDITOR
+    [ContextMenu("Test: Reset")]
+    void TestReset() => ResetForRetry();
+
     [ContextMenu("Self Test")]
     void SelfTest()
     {

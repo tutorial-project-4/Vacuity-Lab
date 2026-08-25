@@ -218,11 +218,21 @@
 
 ## 10. 개발 인수인계 — 2026-08-24 기준
 
+### 10.0.1 2026-08-25 공통 보스 외부 계약 갱신
+
+- 보스 1의 `Boss`와 보스 2의 `Boss2Controller`가 공통 `IBossEncounter` 계약(`BeginBattle`, `ResetForRetry`, `IsBattleStarted`, `Health`)을 구현한다.
+- `BossBattleStartTrigger`, `BossRetryCheckpoint`, `GameplayUI`는 구체적인 `Boss` 타입 대신 `IBossEncounter`를 사용한다.
+- 보스 2는 씬에서 활성 상태로 대기하되 `BeginBattle()` 전까지 피격, Behavior Graph, 벽 러시와 체력 UI를 중지한다.
+- 공용 `BossHealth`에 QA용 `Test: Apply Damage`, `Test: Kill`, `Test: Full Heal` 메뉴를 추가했다. 기본 테스트 피해량은 보스 1이 500, 보스 2가 700이다.
+- 공용 `BossHealthGauge`는 전투가 시작된 보스의 `BossHealth`로 바인딩되므로 같은 체력 UI를 두 보스가 재사용한다.
+- 보스 2는 플레이어 사망 정지와 `ResetForRetry()` 시 체력, 위치, Behavior Graph, 벽 러시와 생성물을 초기화한다.
+- `Tools/Boss 2/Build and Verify`는 기존 `Boss2Brain.asset`이 있으면 삭제·재생성하지 않고 그대로 검증한다.
+
 ### 10.0 2026-08-24 작업 갱신
 
 - 보스전 시작 15초 후부터 15초 주기로 벽 러시를 시작하며, 벽 3개를 `0초 / 1.50초 / 3.00초`에 `Assets/Prefabs/Terrain/walls`의 임시 프리팩 3종 중 무작위로 생성한다.
 - 한 러시의 벽 수는 `wallsPerRush`로 조정하며, 5개로 늘어나도 같은 생성 간격과 무작위 프리팩 선택을 사용한다.
-- 벽은 초당 3타일로 오른쪽에서 왼쪽으로 이동하며, 일반 이동을 막고 벽뚫대시는 통과시킨다. 접촉당 한 번만 피해 없이 왼쪽 2.5타일/0.25초 넉백을 적용한다.
+- 벽은 초당 3타일로 오른쪽에서 왼쪽으로 이동하며, 일반 이동을 막고 벽뚫대시는 통과시킨다. 접촉당 1 피해와 왼쪽 2.5타일/0.25초 넉백을 적용한다.
 - 첫 벽 진입 시 `spikeWall L`을 켜고 마지막 벽 퇴장 시 끄며, 보스 사망·비활성화 시 이동 벽과 가시 벽을 정리한다.
 - 확산탄은 0.15초 선딜 후 발사 순간 플레이어가 있는 좌/우 반구를 선택한다. 오른쪽은 `-60°~+60°`, 왼쪽은 `120°~240°`에서 중심각을 균등 무작위로 뽑고 `-30°, -15°, 0°, +15°, +30°`의 5발을 동시 발사한다.
 - 확산탄에 `spreadWindup=0.15`와 한국어 툴팁을 추가했으며 선딜 중 별도 경고선은 표시하지 않는다.
@@ -238,9 +248,9 @@
 
 ### 10.1 현재 Git 상태
 
-- 작업 브랜치: `feat/boss-2`
-- 최신 구현 커밋: `6291755 feat: 보스 2 전용 Behavior Tree 및 진입 트리거 구현`
-- 기준 씬: `Assets/Scenes/semi-complete-arena.unity`
+- 작업 브랜치: `main`
+- 최신 벽 러시 병합 커밋: `fd31bed feat: 보스 2 벽 러시 패턴 구현 (#45)`
+- 기준 씬: `Assets/Scenes/boss-semi-complete-arena.unity`
 - 보스 프리팹: `Assets/Prefabs/Monster/Boss/Boss-2.prefab`
 - 보스 행동 코드: `Assets/Scripts/Monsters/Boss2Controller.cs`
 - `Assets/Docs` 아래 문서들은 현재 Git 미추적 상태이며 구현 커밋에 포함되지 않았다.

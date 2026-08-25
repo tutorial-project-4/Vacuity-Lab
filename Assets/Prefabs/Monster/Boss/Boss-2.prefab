@@ -155,6 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 1500
   invulnDuration: 0.1
+  testDamage: 700
 --- !u!114 &7000000000000000003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +168,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d4703560ce84f09a3a8ce086a65ee23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  waitForBattleTrigger: 1
   spreadSpeed: 4.25
   spreadRange: 12
   spreadWindup: 0.15
