@@ -246,7 +246,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 60
+  spritePixelsToUnits: 120
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -1588,11 +1588,11 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 327
-        y: 64
+        y: 69
         width: 129
         height: 138
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1609,12 +1609,12 @@ TextureImporter:
       name: PLAYER 2_59
       rect:
         serializedVersion: 2
-        x: 556
-        y: 62
-        width: 134
-        height: 98
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 561
+        y: 69
+        width: 133
+        height: 86
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1631,12 +1631,12 @@ TextureImporter:
       name: PLAYER 2_60
       rect:
         serializedVersion: 2
-        x: 791
-        y: 66
-        width: 139
-        height: 87
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 808
+        y: 69
+        width: 126
+        height: 82
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -1653,12 +1653,12 @@ TextureImporter:
       name: PLAYER 2_61
       rect:
         serializedVersion: 2
-        x: 1016
-        y: 62
-        width: 157
-        height: 64
-      alignment: 7
-      pivot: {x: 0.5, y: 0}
+        x: 1022
+        y: 69
+        width: 150
+        height: 56
+      alignment: 2
+      pivot: {x: 0.5, y: 1}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []

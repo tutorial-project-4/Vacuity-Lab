@@ -49,15 +49,28 @@ public class PlayerAnimationController : MonoBehaviour
     private AnimatorUpdateMode originalAnimatorUpdateMode;
     private bool hasOriginalAnimatorUpdateMode;
     private bool wasDead;
+    private PlayerAttack subscribedAttack;
 
     private void Awake()
     {
         CacheComponents();
     }
 
+    private void OnEnable()
+    {
+        CacheComponents();
+        SubscribeToAttack();
+    }
+
+    private void OnDisable()
+    {
+        UnsubscribeFromAttack();
+    }
+
     private void LateUpdate()
     {
         CacheComponents();
+        SubscribeToAttack();
 
         if (animator == null || movement == null)
         {
@@ -92,7 +105,6 @@ public class PlayerAnimationController : MonoBehaviour
         animator.SetBool(IsDashHash, movement.IsDashing);
         animator.SetBool(IsDeadHash, isDead);
 
-        UpdateAttackTrigger(isAttacking);
         UpdateHitTrigger();
         UpdateFacing();
         wasGrounded = movement.IsGrounded;
@@ -159,6 +171,8 @@ public class PlayerAnimationController : MonoBehaviour
         {
             attackAnimationLockTimer -= Time.deltaTime;
         }
+
+        wasAttacking = isAttacking;
     }
 
     private void UpdateAnimationGrounded()
@@ -218,14 +232,47 @@ public class PlayerAnimationController : MonoBehaviour
         }
     }
 
-    private void UpdateAttackTrigger(bool isAttacking)
+    private void SubscribeToAttack()
     {
-        if (isAttacking && !wasAttacking)
+        if (subscribedAttack == attack)
         {
-            animator.SetTrigger(AttackHash);
+            return;
         }
 
-        wasAttacking = isAttacking;
+        UnsubscribeFromAttack();
+        subscribedAttack = attack;
+
+        if (subscribedAttack != null)
+        {
+            subscribedAttack.AttackStarted += HandleAttackStarted;
+
+            if (subscribedAttack.IsAttacking)
+            {
+                HandleAttackStarted();
+            }
+        }
+    }
+
+    private void UnsubscribeFromAttack()
+    {
+        if (subscribedAttack != null)
+        {
+            subscribedAttack.AttackStarted -= HandleAttackStarted;
+            subscribedAttack = null;
+        }
+    }
+
+    private void HandleAttackStarted()
+    {
+        CacheComponents();
+        if (animator == null || (health != null && health.IsDead))
+        {
+            return;
+        }
+
+        attackAnimationLockTimer = attackAnimationLockTime;
+        animator.ResetTrigger(AttackHash);
+        animator.SetTrigger(AttackHash);
     }
 
     private void UpdateHitTrigger()

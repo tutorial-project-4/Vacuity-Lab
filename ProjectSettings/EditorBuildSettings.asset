@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Title-Consolidation.unity
     guid: 7cb4ae9f0748319449705e9c5120c574
+  - enabled: 1
+    path: Assets/Scenes/semi-complete-arena.unity
+    guid: 85f139be348592d43b696dcdad28a1cc
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 99f9c9493070a9d4c979a8fec7c5a8d3, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
