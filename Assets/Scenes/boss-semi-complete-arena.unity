@@ -59766,11 +59766,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2132913203123064602, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.3
+      value: 74.17
       objectReference: {fileID: 0}
     - target: {fileID: 2132913203123064602, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.8
+      value: 24.18
       objectReference: {fileID: 0}
     - target: {fileID: 2132913203123064602, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_LocalPosition.z
@@ -61242,8 +61242,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6fe4f59c5db4b7cbedc377ad554499f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameplayUI
-  titleScene: TitleScene
+  titleScene: Title-Consolidation
   bossDisplayName: WARDEN-01
+  optionsPrefab: {fileID: 3901153035989306561, guid: bc4e38c7e8bd57b4babfb5677a20c50c, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
