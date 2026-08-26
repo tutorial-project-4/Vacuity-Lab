@@ -7,13 +7,11 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public sealed class TitleMenuUI : MonoBehaviour
 {
-    [SerializeField] string gameScene = "semi-complete-arena";
+    [SerializeField] string gameScene = "boss-semi-complete-arena";
     [SerializeField] Button newGameButton;
     [SerializeField] Button quickStartButton;
     [SerializeField] Button optionButton;
     [SerializeField] Button quitButton;
-    [SerializeField] OpeningQuoteSequence openingQuoteSequence;
-    [SerializeField] bool playOpeningQuoteOnNewGame = true;
     const string StartModeKey = "game.startMode";
     const string VolumeKey = "ui.masterVolume";
     const string ShakeKey = "ui.screenShake";
@@ -21,29 +19,21 @@ public sealed class TitleMenuUI : MonoBehaviour
     const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
     GameObject optionsPanel;
-    bool isStarting;
 
     void Awake()
     {
         Time.timeScale = 1f;
         EnsureEventSystem();
-        CacheOpeningSequence();
-        if (newGameButton != null) newGameButton.onClick.AddListener(() => StartGame(0));
-        if (quickStartButton != null) quickStartButton.onClick.AddListener(() => StartGame(1));
-        if (optionButton != null) optionButton.onClick.AddListener(OpenOptions);
-        if (quitButton != null) quitButton.onClick.AddListener(Quit);
-        if (quickStartButton != null) quickStartButton.interactable = PlayerPrefs.GetInt(QuickStartUnlockedKey, 0) != 0;
+        newGameButton.onClick.AddListener(() => StartGame(0));
+        quickStartButton.onClick.AddListener(() => StartGame(1));
+        optionButton.onClick.AddListener(OpenOptions);
+        quitButton.onClick.AddListener(Quit);
+        quickStartButton.interactable = PlayerPrefs.GetInt(QuickStartUnlockedKey, 0) != 0;
         BuildOptions();
         ApplySavedOptions();
     }
 
-    void Start()
-    {
-        if (newGameButton != null)
-        {
-            EventSystem.current?.SetSelectedGameObject(newGameButton.gameObject);
-        }
-    }
+    void Start() => EventSystem.current?.SetSelectedGameObject(newGameButton.gameObject);
 
     void BuildOptions()
     {
@@ -70,27 +60,13 @@ public sealed class TitleMenuUI : MonoBehaviour
 
     void StartGame(int mode)
     {
-        if (isStarting)
-        {
-            return;
-        }
-
-        isStarting = true;
         PlayerPrefs.SetInt(StartModeKey, mode);
         PlayerPrefs.Save();
-
-        SetMenuButtonsInteractable(false);
-        if (mode == 0 && playOpeningQuoteOnNewGame && openingQuoteSequence != null)
-        {
-            openingQuoteSequence.Play(gameScene);
-            return;
-        }
-
         SceneManager.LoadScene(gameScene);
     }
 
     void OpenOptions() { optionsPanel.SetActive(true); EventSystem.current?.SetSelectedGameObject(optionsPanel.GetComponentInChildren<Button>().gameObject); }
-    void CloseOptions() { optionsPanel.SetActive(false); if (newGameButton != null) EventSystem.current?.SetSelectedGameObject(newGameButton.gameObject); }
+    void CloseOptions() { optionsPanel.SetActive(false); EventSystem.current?.SetSelectedGameObject(newGameButton.gameObject); }
     void Quit() { PlayerPrefs.Save();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
@@ -109,28 +85,6 @@ public sealed class TitleMenuUI : MonoBehaviour
     static void SetVolume(float value) { AudioListener.volume = value; PlayerPrefs.SetFloat(VolumeKey, value); }
     static void SetShake(bool value) { CinemachineScreenShake2D.Enabled = value; PlayerPrefs.SetInt(ShakeKey, value ? 1 : 0); }
     static void SetFullscreen(bool value) { Screen.fullScreen = value; PlayerPrefs.SetInt(FullscreenKey, value ? 1 : 0); }
-
-    void CacheOpeningSequence()
-    {
-        if (openingQuoteSequence != null)
-        {
-            return;
-        }
-
-#if UNITY_2023_1_OR_NEWER
-        openingQuoteSequence = FindFirstObjectByType<OpeningQuoteSequence>();
-#else
-        openingQuoteSequence = FindObjectOfType<OpeningQuoteSequence>();
-#endif
-    }
-
-    void SetMenuButtonsInteractable(bool interactable)
-    {
-        if (newGameButton != null) newGameButton.interactable = interactable;
-        if (quickStartButton != null) quickStartButton.interactable = interactable && PlayerPrefs.GetInt(QuickStartUnlockedKey, 0) != 0;
-        if (optionButton != null) optionButton.interactable = interactable;
-        if (quitButton != null) quitButton.interactable = interactable;
-    }
 
     static void EnsureEventSystem()
     {
