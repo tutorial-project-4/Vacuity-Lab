@@ -51,6 +51,13 @@ public class PlayerController : MonoBehaviour
         blinkRoutine = StartCoroutine(BlinkRoutine(invincibleDuration));
     }
 
+    public void ReceiveKnockback(Vector2 displacement, float duration)
+    {
+        CacheComponents();
+        if (knockbackRoutine != null) StopCoroutine(knockbackRoutine);
+        knockbackRoutine = StartCoroutine(ForcedMoveRoutine(displacement, duration));
+    }
+
     /// 보스 페이즈 전환 컷신(#10) 등 연출 중 조작 잠금 — 이동·점프·대시(ControlLock)와 공격(CanAttack)을 함께 막는다.
     public void SetCutsceneLock(bool locked)
     {
@@ -126,6 +133,32 @@ public class PlayerController : MonoBehaviour
 
         IsKnockbacking = false;
         CanAttack = !cutsceneLocked;                 // 넉백 종료가 컷신 잠금을 풀지 않도록
+        movement.SetControlLocked(cutsceneLocked);
+        movement.StopVerticalMovement();
+        knockbackRoutine = null;
+    }
+
+    private IEnumerator ForcedMoveRoutine(Vector2 displacement, float duration)
+    {
+        IsKnockbacking = true;
+        CanAttack = false;
+        movement.SetControlLocked(true);
+        movement.StopVerticalMovement();
+
+        Vector2 start = transform.position;
+        float elapsed = 0f;
+        bool blocked = false;
+        while (elapsed < duration && !blocked)
+        {
+            elapsed += Time.deltaTime;
+            Vector2 target = start + displacement * Mathf.Clamp01(elapsed / duration);
+            movement.MoveX(target.x - transform.position.x, () => blocked = true);
+            if (!blocked) movement.MoveY(target.y - transform.position.y, () => blocked = true);
+            yield return null;
+        }
+
+        IsKnockbacking = false;
+        CanAttack = !cutsceneLocked;
         movement.SetControlLocked(cutsceneLocked);
         movement.StopVerticalMovement();
         knockbackRoutine = null;

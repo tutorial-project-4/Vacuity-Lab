@@ -155,6 +155,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHp: 1500
   invulnDuration: 0.1
+  testDamage: 700
 --- !u!114 &7000000000000000003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,6 +168,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d4703560ce84f09a3a8ce086a65ee23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  waitForBattleTrigger: 1
   spreadSpeed: 4.25
   spreadRange: 12
   spreadWindup: 0.15
@@ -175,6 +178,32 @@ MonoBehaviour:
   aimedSpeed: 12
   aimedRange: 40
   aimedRecovery: 0.8
+  frenzyRange: 5
+  frenzyDuration: 10
+  frenzyShotInterval: 0.12
+  sniperShotInterval: 0.2
+  phaseTwoHp: 800
+  phaseTransitionDuration: 3
+  droneSummonInterval: 30
+  dronePrefab: {fileID: 189685705224975232, guid: fb2d0ceed506ebe4486c499862131d1f, type: 3}
+  droneHp: 60
+  droneSpeed: 2
+  droneStopDistance: 1
+  droneSlowRadius: 3
+  droneKnockbackDistance: 1
+  droneKnockbackDuration: 0.2
+  wallPrefabs:
+  - {fileID: 7903640175299597750, guid: ee31b9ffd98475245aefebfae90786b1, type: 3}
+  - {fileID: 5487274689742196484, guid: fdd30bf65363c7f42a13560adb4fc500, type: 3}
+  - {fileID: 851868559991288992, guid: 91587818776ba904199c218c97b3b12f, type: 3}
+  wallRushInterval: 15
+  wallSpawnInterval: 1.5
+  wallsPerRush: 3
+  wallSpeed: 3
+  wallSpawnPosition: {x: 105, y: 28.96}
+  arenaRightX: 104
+  wallDespawnX: 76
+  spikeWallName: spikeWall L
   spreadProjectileSize: 0.5
   aimedProjectileSize: 0.5
   projectileOrderInLayer: 4
@@ -191,16 +220,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0038c16c34866b4f9e25c9c0dc0f7e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.BehaviorGraphAgent
-  m_Graph: {fileID: -7444681606230687969, guid: 8272ac75decdb354f833d840812b972d, type: 2}
+  m_Graph: {fileID: -8533336479961001237, guid: 8272ac75decdb354f833d840812b972d, type: 2}
   m_BlackboardVariableOverridesList:
-  - rid: 8727337795276505245
-  m_OriginalGraph: {fileID: -7444681606230687969, guid: 8272ac75decdb354f833d840812b972d, type: 2}
+  - rid: 8727337811659456725
+  m_OriginalGraph: {fileID: -8533336479961001237, guid: 8272ac75decdb354f833d840812b972d, type: 2}
   m_IsInitialised: 0
   m_IsStarted: 0
   references:
     version: 2
     RefIds:
-    - rid: 8727337795276505245
+    - rid: 8727337811659456725
       type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         GUID:

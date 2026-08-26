@@ -346,6 +346,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BossHealth
   maxHp: 1000
   invulnDuration: 0.1
+  testDamage: 500
 --- !u!61 &3629168828445085216
 BoxCollider2D:
   m_ObjectHideFlags: 0

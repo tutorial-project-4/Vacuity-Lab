@@ -20,8 +20,6 @@ public sealed class GameplayUI : MonoBehaviour
     PlayerHealth health;
     PlayerMovement movement;
     PlayerWallPhaseDash wallDash;
-    BossHealth bossHealth;
-    Boss boss;
     readonly List<Image> hearts = new();
     Image dashCooldown;
     Image wallDashCooldown;
@@ -37,8 +35,6 @@ public sealed class GameplayUI : MonoBehaviour
         health = FindFirstObjectByType<PlayerHealth>();
         movement = health ? health.GetComponent<PlayerMovement>() : null;
         wallDash = health ? health.GetComponent<PlayerWallPhaseDash>() : null;
-        bossHealth = FindFirstObjectByType<BossHealth>();
-        boss = bossHealth ? bossHealth.GetComponent<Boss>() : null;
         Build();
         ApplySavedOptions();
     }
@@ -205,7 +201,8 @@ public sealed class GameplayUI : MonoBehaviour
 
     void ShowDeath()
     {
-        if (boss && boss.IsBattleStarted && bossHealth && !bossHealth.IsDead)
+        IBossEncounter boss = FindActiveBoss();
+        if (boss != null && !boss.Health.IsDead)
         {
             PlayerPrefs.SetInt(QuickStartUnlockedKey, 1);
             PlayerPrefs.Save();
@@ -252,7 +249,8 @@ public sealed class GameplayUI : MonoBehaviour
         Time.timeScale = 1f;
         paused = false;
 
-        if (!boss || !boss.IsBattleStarted)
+        IBossEncounter boss = FindActiveBoss();
+        if (boss == null)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             return;
@@ -279,6 +277,13 @@ public sealed class GameplayUI : MonoBehaviour
         return trigger
             ? new Vector2(trigger.bounds.max.x + 1f, trigger.bounds.center.y)
             : health ? (Vector2)health.transform.position : Vector2.zero;
+    }
+
+    static IBossEncounter FindActiveBoss()
+    {
+        foreach (MonoBehaviour behaviour in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include))
+            if (behaviour is IBossEncounter boss && boss.IsBattleStarted && !boss.Health.IsDead) return boss;
+        return null;
     }
 
     void ApplySavedOptions()

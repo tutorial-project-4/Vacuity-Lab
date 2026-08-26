@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -62,6 +63,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isGroundCheck;
     private bool warnedCollisionBufferFull;
     private bool warnedPlatformCastBufferFull;
+    private readonly HashSet<object> moveSlowSources = new HashSet<object>();
 
     public Vector2 AttackDirection { get; private set; } = Vector2.right;
     public int FacingDirection { get; private set; } = 1;
@@ -229,7 +231,7 @@ public class PlayerMovement : MonoBehaviour
             IsJumping = false;
         }
 
-        HorizontalSpeed = horizontal * moveSpeed;
+        HorizontalSpeed = horizontal * moveSpeed * (moveSlowSources.Count > 0 ? .7f : 1f);
         MoveX(HorizontalSpeed * deltaTime, null);
         MoveY(ySpeed * deltaTime, OnVerticalCollide);
     }
@@ -447,6 +449,13 @@ public class PlayerMovement : MonoBehaviour
 
             IsJumping = false;
         }
+    }
+
+    public void SetMoveSlowed(object source, bool slowed)
+    {
+        if (source == null) return;
+        if (slowed) moveSlowSources.Add(source);
+        else moveSlowSources.Remove(source);
     }
 
     public void StopVerticalMovement()

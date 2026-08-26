@@ -4,7 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(Collider2D))]
 public sealed class BossBattleStartTrigger : MonoBehaviour
 {
-    [SerializeField] Boss boss;
+    [Tooltip("IBossEncounter를 구현한 보스 컴포넌트입니다.")]
+    [SerializeField] MonoBehaviour boss;
     bool triggered;
 
     void Reset() => GetComponent<Collider2D>().isTrigger = true;
@@ -12,13 +13,13 @@ public sealed class BossBattleStartTrigger : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         if (triggered || other.GetComponentInParent<PlayerController>() == null) return;
-        if (boss == null)
+        if (boss is not IBossEncounter encounter)
         {
-            Debug.LogWarning("[BossBattleStartTrigger] Boss 참조가 없습니다", this);
+            Debug.LogWarning("[BossBattleStartTrigger] IBossEncounter 보스 참조가 없습니다", this);
             return;
         }
 
         triggered = true;
-        boss.BeginBattle();
+        encounter.BeginBattle();
     }
 }

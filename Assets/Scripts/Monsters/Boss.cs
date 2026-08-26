@@ -14,7 +14,7 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(BossHealth), typeof(BehaviorGraphAgent))]
-public class Boss : MonoBehaviour
+public class Boss : MonoBehaviour, IBossEncounter
 {
     [Tooltip("추적 대상. feat/player 병합 전에는 빈 GameObject를 임시 타깃으로 사용")]
     [SerializeField] Transform target;
@@ -33,6 +33,7 @@ public class Boss : MonoBehaviour
     public float BeamMouthYOffset => beamMouthYOffset;
     public float BeamAlignSpeed => beamAlignSpeed;
     public bool IsBattleStarted => _battleStarted;
+    public BossHealth Health => _health;
 
     [Header("애니메이션")]
     [SerializeField] RuntimeAnimatorController idleAnimation;
@@ -134,7 +135,7 @@ public class Boss : MonoBehaviour
             Electric()?.Stop();
             if (enhancedElectric) enhancedElectric.Stop();
             foreach (var hitbox in _hitboxes) hitbox.SetActive(false);
-            GetComponent<BossHealthGauge>()?.SetVisible(false);
+            BossHealthGauge.HideFor(_health);
             Debug.Log("[Boss] 전투 시작 트리거 대기");
         }
     }
@@ -145,7 +146,7 @@ public class Boss : MonoBehaviour
 
         _battleStarted = true;
         _health.Invulnerable = false;
-        GetComponent<BossHealthGauge>()?.SetVisible(true);
+        BossHealthGauge.ShowFor(_health);
         for (int i = 0; i < _hitboxes.Length; i++) _hitboxes[i].SetActive(_hitboxRest[i]);
         _agent.SetVariableValue("Target", target ? target.gameObject : null);
         _agent.Restart();
@@ -180,7 +181,7 @@ public class Boss : MonoBehaviour
         if (beam != null && beam.activeSelf) beam.SetActive(false); // 빔 잔상 제거
         if (spikeWalls) spikeWalls.SetActive(false);                // 필드 기믹 판정 제거
         foreach (var hitbox in _hitboxes) hitbox.SetActive(false);  // 몸체·슬램 히트박스 제거
-        GetComponent<BossHealthGauge>()?.SetVisible(false);
+        BossHealthGauge.HideFor(_health);
         PlayAnimation(destroyAnimation);
 
         StartCoroutine(DeathSequence());
@@ -200,6 +201,7 @@ public class Boss : MonoBehaviour
     void HandlePlayerDeath()
     {
         if (!freezeOnPlayerDeath) return;
+        if (!_battleStarted) return;
         if (_health.IsDead) return; // 같은 프레임에 둘 다 죽으면 보스 사망 우선(기획 A-4)
         FreezeForPlayerDeath();
     }
