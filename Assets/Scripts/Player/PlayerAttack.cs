@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,13 @@ public class PlayerAttack : MonoBehaviour
     [SerializeField] private Camera worldCamera;
     [SerializeField] private Transform attackOrigin;
 
+    [Header("Attack Effect")]
+    [SerializeField] private Animator attackEffectAnimator;
+    [SerializeField] private SpriteRenderer attackEffectRenderer;
+    [SerializeField] private string attackEffectTriggerName = "Attack";
+    [SerializeField] private string attackEffectStateName = "Effect";
+    [SerializeField] private float attackEffectVisibleDuration = 0.25f;
+
     [Header("Attack")]
     [SerializeField] private int damage = 20;
     [SerializeField] private float attackCooldown = 0.35f;
@@ -30,9 +38,11 @@ public class PlayerAttack : MonoBehaviour
     private readonly HashSet<object> damagedTargets = new HashSet<object>();
     private float cooldownTimer;
     private Coroutine attackRoutine;
+    private Coroutine effectRoutine;
     private bool isAttacking;
 
     public bool IsAttacking => isAttacking;
+    public event Action AttackStarted;
 
     private void Awake()
     {
@@ -44,6 +54,7 @@ public class PlayerAttack : MonoBehaviour
         }
 
         ConfigureCollider(false);
+        SetAttackEffectVisible(false);
     }
 
     private void Update()
@@ -72,8 +83,15 @@ public class PlayerAttack : MonoBehaviour
             attackRoutine = null;
         }
 
+        if (effectRoutine != null)
+        {
+            StopCoroutine(effectRoutine);
+            effectRoutine = null;
+        }
+
         isAttacking = false;
         ConfigureCollider(false);
+        SetAttackEffectVisible(false);
     }
 
     private bool CanStartAttack()
@@ -94,6 +112,7 @@ public class PlayerAttack : MonoBehaviour
         cooldownTimer = attackCooldown;
         damagedTargets.Clear();
         UpdateSwordPose();
+        NotifyAttackStarted();
         Debug.Log($"[PlayerAttack] 공격 시작 무기 위치={transform.position}, 타겟레이어={targetLayer.value}", this);
         ConfigureCollider(true);
         DetectHits();
@@ -116,6 +135,50 @@ public class PlayerAttack : MonoBehaviour
         }
 
         attackRoutine = null;
+    }
+
+    private void NotifyAttackStarted()
+    {
+        AttackStarted?.Invoke();
+
+        if (attackEffectAnimator == null || string.IsNullOrWhiteSpace(attackEffectTriggerName))
+        {
+            return;
+        }
+
+        SetAttackEffectVisible(true);
+        attackEffectAnimator.ResetTrigger(attackEffectTriggerName);
+        attackEffectAnimator.SetTrigger(attackEffectTriggerName);
+        attackEffectAnimator.Update(0f);
+
+        if (!string.IsNullOrWhiteSpace(attackEffectStateName)
+            && !attackEffectAnimator.GetCurrentAnimatorStateInfo(0).IsName(attackEffectStateName))
+        {
+            attackEffectAnimator.Play(attackEffectStateName, 0, 0f);
+            attackEffectAnimator.Update(0f);
+        }
+
+        if (effectRoutine != null)
+        {
+            StopCoroutine(effectRoutine);
+        }
+
+        effectRoutine = StartCoroutine(HideAttackEffectAfterDelay());
+    }
+
+    private IEnumerator HideAttackEffectAfterDelay()
+    {
+        yield return new WaitForSeconds(attackEffectVisibleDuration);
+        SetAttackEffectVisible(false);
+        effectRoutine = null;
+    }
+
+    private void SetAttackEffectVisible(bool visible)
+    {
+        if (attackEffectRenderer != null)
+        {
+            attackEffectRenderer.enabled = visible;
+        }
     }
 
     private bool CanKeepAttackActive()
@@ -261,6 +324,16 @@ public class PlayerAttack : MonoBehaviour
         {
             playerController = playerMovement.GetComponent<PlayerController>();
         }
+
+        if (attackEffectAnimator == null)
+        {
+            attackEffectAnimator = GetComponent<Animator>();
+        }
+
+        if (attackEffectRenderer == null)
+        {
+            attackEffectRenderer = GetComponent<SpriteRenderer>();
+        }
     }
 
     private void OnValidate()
@@ -268,6 +341,7 @@ public class PlayerAttack : MonoBehaviour
         damage = Mathf.Max(0, damage);
         attackCooldown = Mathf.Max(0f, attackCooldown);
         activeDuration = Mathf.Max(0.01f, activeDuration);
+        attackEffectVisibleDuration = Mathf.Max(0.01f, attackEffectVisibleDuration);
         attackOffsetDistance = Mathf.Max(0f, attackOffsetDistance);
         hitboxSize.x = Mathf.Max(0.01f, hitboxSize.x);
         hitboxSize.y = Mathf.Max(0.01f, hitboxSize.y);
