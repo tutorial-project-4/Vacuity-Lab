@@ -325,6 +325,7 @@ MonoBehaviour:
   quickStartButton: {fileID: 1633474928}
   optionButton: {fileID: 759639462}
   quitButton: {fileID: 586105194}
+  optionsPrefab: {fileID: 3901153035989306561, guid: bc4e38c7e8bd57b4babfb5677a20c50c, type: 3}
 --- !u!1 &253977285
 GameObject:
   m_ObjectHideFlags: 0

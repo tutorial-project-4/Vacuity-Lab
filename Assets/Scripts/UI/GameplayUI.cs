@@ -14,8 +14,9 @@ public sealed class GameplayUI : MonoBehaviour
     const string StartModeKey = "game.startMode";
     const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
-    [SerializeField] string titleScene = "TitleScene";
+    [SerializeField] string titleScene = "Title-Consolidation";
     [SerializeField] string bossDisplayName = "WARDEN-01";
+    [SerializeField] GameObject optionsPrefab;
 
     PlayerHealth health;
     PlayerMovement movement;
@@ -26,7 +27,7 @@ public sealed class GameplayUI : MonoBehaviour
     Text memoryText;
     GameObject optionsPanel;
     GameObject deathPanel;
-    GameObject optionsFirstSelection;
+    OptionsPrefabUI optionsUI;
     float previousTimeScale = 1f;
     bool paused;
 
@@ -149,27 +150,10 @@ public sealed class GameplayUI : MonoBehaviour
 
     void BuildOptions()
     {
-        optionsPanel = Panel("Options Panel", transform, new Color(.02f, .035f, .055f, .97f));
-        Place(optionsPanel, new Vector2(.5f, .5f), new Vector2(.5f, .5f), Vector2.zero, new Vector2(650, 650), new Vector2(.5f, .5f));
-        AddHeading(optionsPanel.transform, "OPTION", -44);
-
-        var volume = SliderControl(optionsPanel.transform, "마스터 볼륨", -135);
-        optionsFirstSelection = volume.gameObject;
-        volume.value = PlayerPrefs.GetFloat(VolumeKey, 1f);
-        volume.onValueChanged.AddListener(SetVolume);
-
-        var shake = ToggleControl(optionsPanel.transform, "화면 흔들림", -225);
-        shake.isOn = PlayerPrefs.GetInt(ShakeKey, 1) != 0;
-        shake.onValueChanged.AddListener(SetShake);
-
-        var fullscreen = ToggleControl(optionsPanel.transform, "전체 화면", -295);
-        fullscreen.isOn = PlayerPrefs.GetInt(FullscreenKey, Screen.fullScreen ? 1 : 0) != 0;
-        fullscreen.onValueChanged.AddListener(SetFullscreen);
-
-        var controls = Label("Controls", optionsPanel.transform, "이동  A / D     점프  SPACE     공격  F\n대시  SHIFT     벽 관통  E     옵션  ESC", 20, TextAnchor.MiddleCenter);
-        Place(controls.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, -395), new Vector2(560, 90), new Vector2(.5f, 1));
-        ButtonControl(optionsPanel.transform, "계속", new Vector2(-175, -530), () => SetOptions(false));
-        ButtonControl(optionsPanel.transform, "타이틀 화면", new Vector2(175, -530), GoToTitle);
+        optionsPanel = Instantiate(optionsPrefab);
+        optionsPanel.transform.localScale = Vector3.one;
+        optionsUI = optionsPanel.AddComponent<OptionsPrefabUI>();
+        optionsUI.Initialize(health, () => SetOptions(false), GoToTitle);
         optionsPanel.SetActive(false);
     }
 
@@ -220,7 +204,7 @@ public sealed class GameplayUI : MonoBehaviour
         if (visible)
         {
             Pause();
-            EventSystem.current?.SetSelectedGameObject(optionsFirstSelection);
+            optionsUI.Show();
         }
         else
         {

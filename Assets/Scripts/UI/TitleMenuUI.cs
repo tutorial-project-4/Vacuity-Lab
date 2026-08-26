@@ -12,6 +12,7 @@ public sealed class TitleMenuUI : MonoBehaviour
     [SerializeField] Button quickStartButton;
     [SerializeField] Button optionButton;
     [SerializeField] Button quitButton;
+    [SerializeField] GameObject optionsPrefab;
     const string StartModeKey = "game.startMode";
     const string VolumeKey = "ui.masterVolume";
     const string ShakeKey = "ui.screenShake";
@@ -19,6 +20,7 @@ public sealed class TitleMenuUI : MonoBehaviour
     const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
     GameObject optionsPanel;
+    OptionsPrefabUI optionsUI;
 
     void Awake()
     {
@@ -37,24 +39,10 @@ public sealed class TitleMenuUI : MonoBehaviour
 
     void BuildOptions()
     {
-        optionsPanel = Rect("Options", transform);
-        Stretch((RectTransform)optionsPanel.transform, 0);
-        var dim = optionsPanel.AddComponent<Image>();
-        dim.color = new Color(.01f, .025f, .035f, .94f);
-
-        var heading = Label("Heading", optionsPanel.transform, "OPTIONS", 52, TextAnchor.MiddleCenter);
-        Place(heading.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, -150), new Vector2(600, 80), new Vector2(.5f, 1));
-
-        var volume = SliderControl(optionsPanel.transform, "마스터 볼륨", -335);
-        volume.value = PlayerPrefs.GetFloat(VolumeKey, 1f);
-        volume.onValueChanged.AddListener(SetVolume);
-        var shake = ToggleControl(optionsPanel.transform, "화면 흔들림", -440);
-        shake.isOn = PlayerPrefs.GetInt(ShakeKey, 1) != 0;
-        shake.onValueChanged.AddListener(SetShake);
-        var fullscreen = ToggleControl(optionsPanel.transform, "전체 화면", -515);
-        fullscreen.isOn = PlayerPrefs.GetInt(FullscreenKey, Screen.fullScreen ? 1 : 0) != 0;
-        fullscreen.onValueChanged.AddListener(SetFullscreen);
-        MenuButton(optionsPanel.transform, "BACK", -650, CloseOptions);
+        optionsPanel = Instantiate(optionsPrefab);
+        optionsPanel.transform.localScale = Vector3.one;
+        optionsUI = optionsPanel.AddComponent<OptionsPrefabUI>();
+        optionsUI.Initialize(null, CloseOptions, CloseOptions);
         optionsPanel.SetActive(false);
     }
 
@@ -65,7 +53,7 @@ public sealed class TitleMenuUI : MonoBehaviour
         SceneManager.LoadScene(gameScene);
     }
 
-    void OpenOptions() { optionsPanel.SetActive(true); EventSystem.current?.SetSelectedGameObject(optionsPanel.GetComponentInChildren<Button>().gameObject); }
+    void OpenOptions() { optionsPanel.SetActive(true); optionsUI.Show(); }
     void CloseOptions() { optionsPanel.SetActive(false); EventSystem.current?.SetSelectedGameObject(newGameButton.gameObject); }
     void Quit() { PlayerPrefs.Save();
 #if UNITY_EDITOR
