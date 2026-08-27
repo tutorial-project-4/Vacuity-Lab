@@ -80,12 +80,15 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     [SerializeField] float wallSpeed = 3f;
     [Tooltip("이동 벽을 생성할 월드 위치입니다. 임시 아레나가 바뀌면 조정하세요.")]
     [SerializeField] Vector2 wallSpawnPosition = new(105f, 28.96f);
-    [Tooltip("벽이 아레나에 진입했다고 판정할 오른쪽 경계 X입니다.")]
-    [SerializeField] float arenaRightX = 104f;
     [Tooltip("벽을 제거할 왼쪽 경계 X입니다.")]
     [SerializeField] float wallDespawnX = 76f;
     [Tooltip("벽 러시 중에만 활성화할 왼쪽 가시 벽의 씬 오브젝트 이름입니다.")]
     [SerializeField] string spikeWallName = "spikeWall L";
+    [Tooltip("벽 러시 동안 아래로 이동할 천장 가시 벽의 씬 오브젝트 이름입니다.")]
+    [SerializeField] string ceilingSpikeWallName = "SpikeWall-2";
+    [SerializeField] float ceilingSpikeWallRaisedY = 66f;
+    [SerializeField] float ceilingSpikeWallLoweredY = 42f;
+    [SerializeField] float ceilingSpikeWallMoveDuration = 1f;
 
     [Header("발사체 및 경고선 표시")]
     [Tooltip("확산탄의 가로·세로 크기 배율입니다. 1이면 기본 스프라이트 크기이며 충돌 범위도 함께 변합니다.")]
@@ -105,9 +108,11 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     PlayerHealth playerHealth;
     float attackStartTime;
     Coroutine wallRushRoutine;
+    Coroutine ceilingSpikeWallRoutine;
     Coroutine phaseTransitionRoutine;
     Coroutine droneSummonRoutine;
     GameObject spikeWall;
+    GameObject ceilingSpikeWall;
     int remainingRushWalls;
     int sniperReservations;
     int droneReservations;
@@ -134,7 +139,8 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     void OnEnable()
     {
         spikeWall = FindInactiveObject(spikeWallName);
-        SetSpikeWall(false);
+        ceilingSpikeWall = FindInactiveObject(ceilingSpikeWallName);
+        SetSpikeWall(false, true);
     }
 
     void Start()
@@ -330,6 +336,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         }
 
         Debug.Log($"[Boss2] 벽 러시 시작: {wallsPerRush}개, {wallSpawnInterval:0.##}초 간격", this);
+        SetSpikeWall(true);
         remainingRushWalls += wallsPerRush;
         for (int i = 0; i < wallsPerRush; i++)
         {
@@ -348,7 +355,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         }
         GameObject wall = Instantiate(prefab, wallSpawnPosition, Quaternion.identity);
         wall.name = "Boss2 Moving Wall";
-        wall.AddComponent<Boss2MovingWall>().Initialize(wallSpeed, arenaRightX, wallDespawnX, OnWallEntered, OnWallExited, ReserveSniper);
+        wall.AddComponent<Boss2MovingWall>().Initialize(wallSpeed, wallDespawnX, OnWallExited, ReserveSniper);
         spawned.Add(wall);
     }
 
@@ -358,8 +365,6 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         Debug.Log($"[Boss2] 벽 넉백으로 저격 패턴 예약 (누적: {sniperReservations})", this);
     }
 
-    void OnWallEntered() => SetSpikeWall(true);
-
     void OnWallExited(GameObject wall)
     {
         spawned.Remove(wall);
@@ -367,9 +372,40 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         if (remainingRushWalls <= 0) SetSpikeWall(false);
     }
 
-    void SetSpikeWall(bool active)
+    void SetSpikeWall(bool active, bool immediate = false)
     {
         if (spikeWall != null) spikeWall.SetActive(active);
+        if (ceilingSpikeWall == null) return;
+        ceilingSpikeWall.SetActive(true);
+        if (ceilingSpikeWallRoutine != null) StopCoroutine(ceilingSpikeWallRoutine);
+        float targetY = active ? ceilingSpikeWallLoweredY : ceilingSpikeWallRaisedY;
+        if (immediate || !isActiveAndEnabled)
+        {
+            SetCeilingSpikeWallY(targetY);
+            return;
+        }
+        ceilingSpikeWallRoutine = StartCoroutine(MoveCeilingSpikeWall(targetY));
+    }
+
+    IEnumerator MoveCeilingSpikeWall(float targetY)
+    {
+        float startY = ceilingSpikeWall.transform.position.y;
+        float elapsed = 0f;
+        while (elapsed < ceilingSpikeWallMoveDuration)
+        {
+            elapsed += Time.deltaTime;
+            SetCeilingSpikeWallY(Mathf.Lerp(startY, targetY, Mathf.Clamp01(elapsed / ceilingSpikeWallMoveDuration)));
+            yield return null;
+        }
+        SetCeilingSpikeWallY(targetY);
+        ceilingSpikeWallRoutine = null;
+    }
+
+    void SetCeilingSpikeWallY(float y)
+    {
+        Vector3 position = ceilingSpikeWall.transform.position;
+        position.y = y;
+        ceilingSpikeWall.transform.position = position;
     }
 
     static GameObject FindInactiveObject(string objectName)
@@ -520,8 +556,10 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     {
         if (wallRushRoutine != null) StopCoroutine(wallRushRoutine);
         if (droneSummonRoutine != null) StopCoroutine(droneSummonRoutine);
+        if (ceilingSpikeWallRoutine != null) StopCoroutine(ceilingSpikeWallRoutine);
         wallRushRoutine = null;
         droneSummonRoutine = null;
+        ceilingSpikeWallRoutine = null;
     }
 
     void ResetPatternState()
@@ -574,10 +612,11 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         Debug.Assert(aimedWarning >= 0f && aimedSpeed > spreadSpeed && aimedRange > 0f && aimedRecovery >= 0f);
         Debug.Assert(spreadProjectileSize > 0f && aimedProjectileSize > 0f && warningLineWidth > 0f);
         Debug.Assert(wallsPerRush > 0 && wallRushInterval >= wallSpawnInterval * (wallsPerRush - 1) && wallSpawnInterval >= 0f && wallSpeed > 0f);
+        Debug.Assert(ceilingSpikeWallRaisedY > ceilingSpikeWallLoweredY && ceilingSpikeWallMoveDuration > 0f);
         Debug.Assert(frenzyRange > 0f && frenzyDuration > 0f && frenzyShotInterval >= 0f && sniperShotInterval >= 0f);
         Debug.Assert(phaseTwoHp > 0 && phaseTransitionDuration >= 0f && droneSummonInterval > 0f);
         Debug.Assert(dronePrefab != null && droneHp > 0 && droneSpeed > 0f && droneStopDistance >= 0f && droneSlowRadius > 0f);
-        Debug.Assert(arenaRightX < wallSpawnPosition.x && wallDespawnX < arenaRightX);
+        Debug.Assert(wallDespawnX < wallSpawnPosition.x);
         Debug.Assert(wallPrefabs != null && wallPrefabs.Length > 0);
 
         int savedSniperReservations = sniperReservations;

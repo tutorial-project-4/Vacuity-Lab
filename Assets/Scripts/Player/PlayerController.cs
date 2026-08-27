@@ -24,7 +24,7 @@ public class PlayerController : MonoBehaviour
         CacheComponents();
     }
 
-    public void ReceiveHit(Vector2 damageSourcePosition, float invincibleDuration)
+    public void ReceiveHit(Vector2 damageSourcePosition, float invincibleDuration, Collider2D ignoredCollider = null)
     {
         CacheComponents();
 
@@ -47,7 +47,7 @@ public class PlayerController : MonoBehaviour
         knockbackDirection.y = Mathf.Max(knockbackDirection.y, 0.35f);
         knockbackDirection.Normalize();
 
-        knockbackRoutine = StartCoroutine(KnockbackRoutine(knockbackDirection));
+        knockbackRoutine = StartCoroutine(KnockbackRoutine(knockbackDirection, ignoredCollider));
         blinkRoutine = StartCoroutine(BlinkRoutine(invincibleDuration));
     }
 
@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour
         SetSpriteVisible(true);
     }
 
-    private IEnumerator KnockbackRoutine(Vector2 direction)
+    private IEnumerator KnockbackRoutine(Vector2 direction, Collider2D ignoredCollider)
     {
         IsKnockbacking = true;
         CanAttack = false;
@@ -124,8 +124,8 @@ public class PlayerController : MonoBehaviour
                 direction.y * knockbackUpwardSpeed
             );
 
-            movement.MoveX(velocity.x * deltaTime, null);
-            movement.MoveY(velocity.y * deltaTime, null);
+            movement.MoveX(velocity.x * deltaTime, null, collider => collider == ignoredCollider);
+            movement.MoveY(velocity.y * deltaTime, null, collider => collider == ignoredCollider);
 
             elapsed += deltaTime;
             yield return null;
