@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -5,6 +6,9 @@ using UnityEngine;
 public sealed class Boss2IntroTrigger : MonoBehaviour
 {
     [SerializeField] GameObject boss2;
+    [SerializeField] string platformName = "platform-boss2";
+    [SerializeField] float platformTargetY = 26f;
+    [SerializeField] float platformMoveDuration = 1f;
     bool triggered;
 
     void OnTriggerEnter2D(Collider2D other)
@@ -17,6 +21,33 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
             return;
         }
         triggered = true;
+        StartCoroutine(RaisePlatform(encounter));
+    }
+
+    IEnumerator RaisePlatform(IBossEncounter encounter)
+    {
+        Transform platform = GameObject.Find(platformName)?.transform;
+        if (platform == null)
+        {
+            Debug.LogWarning($"[Boss2IntroTrigger] '{platformName}' 오브젝트가 없습니다", this);
+            encounter.BeginBattle();
+            yield break;
+        }
+
+        Vector3 start = platform.position;
+        float elapsed = 0f;
+        while (elapsed < platformMoveDuration)
+        {
+            elapsed += Time.deltaTime;
+            Vector3 position = start;
+            position.y = Mathf.Lerp(start.y, platformTargetY, Mathf.Clamp01(elapsed / platformMoveDuration));
+            platform.position = position;
+            yield return null;
+        }
+
+        Vector3 target = start;
+        target.y = platformTargetY;
+        platform.position = target;
         encounter.BeginBattle();
     }
 }
