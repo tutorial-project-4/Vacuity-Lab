@@ -21,6 +21,90 @@ MonoBehaviour:
     RefIds:
     - rid: -2
       type: {class: , ns: , asm: }
+    - rid: 1430582893890502813
+      type: {class: ParallelAllComposite, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 0
+          m_Value1: 0
+        Graph:
+          rid: 8727337811659456716
+        m_Parent:
+          rid: -2
+        m_Children:
+        - rid: 1430582893890502814
+        - rid: 1430582893890502815
+        m_RegisteredObservers: []
+    - rid: 1430582893890502814
+      type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 11439759561493626509
+          m_Value1: 6846607478636749772
+        Graph:
+          rid: 8727337811659456716
+        m_Parent:
+          rid: 1430582893890502813
+        m_Child:
+          rid: -2
+        Repeat: 1
+        AllowMultipleRepeatsPerTick: 0
+    - rid: 1430582893890502815
+      type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 10348760708366961474
+          m_Value1: 4362407007695614800
+        Graph:
+          rid: 8727337811659456716
+        m_Parent:
+          rid: 1430582893890502813
+        m_Child:
+          rid: 1430582893890502817
+        Repeat: 1
+        AllowMultipleRepeatsPerTick: 0
+    - rid: 1430582893890502816
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Self
+        m_Value: {fileID: 0}
+    - rid: 1430582893890502817
+      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 16635044356276922290
+          m_Value1: 17296815702688824117
+        Graph:
+          rid: 8727337811659456716
+        m_Parent:
+          rid: 1430582893890502815
+        m_Children:
+        - rid: 1430582893890502818
+        - rid: 1430582893890502819
+        m_RegisteredObservers: []
+    - rid: 1430582893890502818
+      type: {class: Boss2SpreadShotAction, ns: , asm: Assembly-CSharp}
+      data:
+        ID:
+          m_Value0: 12861815231937817285
+          m_Value1: 16760020990449272719
+        Graph:
+          rid: 8727337811659456716
+        m_Parent:
+          rid: 1430582893890502817
+    - rid: 1430582893890502819
+      type: {class: Boss2AimedShotAction, ns: , asm: Assembly-CSharp}
+      data:
+        ID:
+          m_Value0: 18239751050710257274
+          m_Value1: 8422854678345504860
+        Graph:
+          rid: 8727337811659456716
+        m_Parent:
+          rid: 1430582893890502817
     - rid: 8727337811659456716
       type: {class: BehaviorGraphModule, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -32,8 +116,8 @@ MonoBehaviour:
           rid: 8727337811659456717
         BlackboardGroupReferences: []
         Root:
-          rid: 8727337811659456743
-        m_VersionTimestamp: 639232078375790903
+          rid: 1430582893890502813
+        m_VersionTimestamp: 639234562874201705
     - rid: 8727337811659456717
       type: {class: BlackboardReference, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -44,91 +128,7 @@ MonoBehaviour:
       type: {class: Blackboard, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         m_Variables:
-        - rid: 8727337811659456720
-    - rid: 8727337811659456720
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]', ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 1
-          m_Value1: 0
-        Name: Self
-        m_Value: {fileID: 0}
-    - rid: 8727337811659456743
-      type: {class: ParallelAllComposite, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 0
-          m_Value1: 0
-        Graph:
-          rid: 8727337811659456716
-        m_Parent:
-          rid: -2
-        m_Children:
-        - rid: 8727337811659456744
-        - rid: 8727337811659456745
-        m_RegisteredObservers: []
-    - rid: 8727337811659456744
-      type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 11439759561493626509
-          m_Value1: 6846607478636749772
-        Graph:
-          rid: 8727337811659456716
-        m_Parent:
-          rid: 8727337811659456743
-        m_Child:
-          rid: -2
-        Repeat: 1
-        AllowMultipleRepeatsPerTick: 0
-    - rid: 8727337811659456745
-      type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 10348760708366961474
-          m_Value1: 4362407007695614800
-        Graph:
-          rid: 8727337811659456716
-        m_Parent:
-          rid: 8727337811659456743
-        m_Child:
-          rid: 8727337811659456746
-        Repeat: 1
-        AllowMultipleRepeatsPerTick: 0
-    - rid: 8727337811659456746
-      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        ID:
-          m_Value0: 16635044356276922290
-          m_Value1: 17296815702688824117
-        Graph:
-          rid: 8727337811659456716
-        m_Parent:
-          rid: 8727337811659456745
-        m_Children:
-        - rid: 8727337811659456747
-        - rid: 8727337811659456748
-        m_RegisteredObservers: []
-    - rid: 8727337811659456747
-      type: {class: Boss2SpreadShotAction, ns: , asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 12861815231937817285
-          m_Value1: 16760020990449272719
-        Graph:
-          rid: 8727337811659456716
-        m_Parent:
-          rid: 8727337811659456746
-    - rid: 8727337811659456748
-      type: {class: Boss2AimedShotAction, ns: , asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 18239751050710257274
-          m_Value1: 8422854678345504860
-        Graph:
-          rid: 8727337811659456716
-        m_Parent:
-          rid: 8727337811659456746
+        - rid: 1430582893890502816
 --- !u!114 &-6994870557629921170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,7 +180,7 @@ MonoBehaviour:
   - rid: 8727337811659456733
   - rid: 8727337811659456734
   - rid: 8727337811659456735
-  m_VersionTimestamp: 639232078375790903
+  m_VersionTimestamp: 639234562874201705
   m_SerializedVersion: 3
   m_DebugInfo: {fileID: 6826810977506573088}
   m_RuntimeGraph: {fileID: -8533336479961001237}
@@ -318,7 +318,7 @@ MonoBehaviour:
     - rid: 8727337811659456735
       type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
-        Position: {x: 100, y: 200}
+        Position: {x: 99.2, y: 200}
         ID:
           m_Value0: 18239751050710257274
           m_Value1: 8422854678345504860
@@ -412,8 +412,8 @@ MonoBehaviour:
   m_Name: Boss2Brain Blackboard
   m_EditorClassIdentifier: Unity.Behavior.Authoring::Unity.Behavior.BehaviorBlackboardAuthoringAsset
   AssetID:
-    m_Value0: 0
-    m_Value1: 0
+    m_Value0: 6103448275357823618
+    m_Value1: 3285142287328752632
   m_Variables:
   - rid: 8727337811659456724
   m_VersionTimestamp: 639232078368222333
