@@ -9,9 +9,26 @@ public sealed class BossBattleStartTrigger : MonoBehaviour
     [SerializeField] MonoBehaviour boss;
     [SerializeField] float dropHeight = 20f;
     [SerializeField] float entranceDuration = 1f;
+    Vector3 bossEndPosition;
+    Collider2D[] bossColliders;
+    bool[] bossColliderStates;
+    Rigidbody2D bossBody;
+    bool bossBodySimulated;
     bool triggered;
 
     void Reset() => GetComponent<Collider2D>().isTrigger = true;
+
+    void Awake()
+    {
+        if (boss == null) return;
+        bossEndPosition = boss.transform.position;
+        bossColliders = boss.GetComponentsInChildren<Collider2D>(true);
+        bossColliderStates = System.Array.ConvertAll(bossColliders, item => item.enabled);
+        bossBody = boss.GetComponent<Rigidbody2D>();
+        bossBodySimulated = bossBody == null || bossBody.simulated;
+        foreach (Collider2D item in bossColliders) item.enabled = false;
+        if (bossBody != null) bossBody.simulated = false;
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -29,27 +46,28 @@ public sealed class BossBattleStartTrigger : MonoBehaviour
     IEnumerator PlayEntrance(IBossEncounter encounter)
     {
         Transform bossTransform = boss.transform;
-        Vector3 end = bossTransform.position;
-        Vector3 start = end + Vector3.up * dropHeight;
-        Collider2D[] colliders = boss.GetComponentsInChildren<Collider2D>(true);
-        bool[] enabledStates = System.Array.ConvertAll(colliders, item => item.enabled);
-        Rigidbody2D body = boss.GetComponent<Rigidbody2D>();
-        bool bodySimulated = body == null || body.simulated;
-        foreach (Collider2D item in colliders) item.enabled = false;
-        if (body != null) body.simulated = false;
+        Vector3 start = bossEndPosition + Vector3.up * dropHeight;
+        bossTransform.position = start;
 
         float elapsed = 0f;
         while (elapsed < entranceDuration)
         {
             elapsed += Time.deltaTime;
-            bossTransform.position = Vector3.Lerp(start, end, Mathf.Clamp01(elapsed / entranceDuration));
+            bossTransform.position = Vector3.Lerp(start, bossEndPosition, Mathf.Clamp01(elapsed / entranceDuration));
             yield return null;
         }
 
-        bossTransform.position = end;
-        for (int i = 0; i < colliders.Length; i++)
-            if (colliders[i] != null) colliders[i].enabled = enabledStates[i];
-        if (body != null) body.simulated = bodySimulated;
+        bossTransform.position = bossEndPosition;
+        if (bossBody != null)
+        {
+            bossBody.position = bossEndPosition;
+            bossBody.linearVelocity = Vector2.zero;
+            bossBody.angularVelocity = 0f;
+        }
+        Physics2D.SyncTransforms();
+        if (bossBody != null) bossBody.simulated = bossBodySimulated;
+        for (int i = 0; i < bossColliders.Length; i++)
+            if (bossColliders[i] != null) bossColliders[i].enabled = bossColliderStates[i];
         encounter.BeginBattle();
     }
 }

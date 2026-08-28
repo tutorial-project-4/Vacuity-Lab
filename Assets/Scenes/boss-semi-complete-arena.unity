@@ -285,7 +285,7 @@ Animator:
   m_GameObject: {fileID: 42440990}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: b712735eaa913e1468ba5a9e814f788f, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -2428,6 +2428,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BossBattleStartTrigger
   boss: {fileID: 1351374672}
+  dropHeight: 20
+  entranceDuration: 1
 --- !u!1 &477060694
 GameObject:
   m_ObjectHideFlags: 0
@@ -10801,7 +10803,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2510729065464148895, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 21.8
+      value: 21.81
       objectReference: {fileID: 0}
     - target: {fileID: 2510729065464148895, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -10858,7 +10860,7 @@ PrefabInstance:
     - target: {fileID: 3163220603550389819, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 537fefe3338c4bb43895c29e4609100b, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 3629168828445085216, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_Size.y
       value: 1.1419271
@@ -11150,6 +11152,7 @@ MonoBehaviour:
   platformName: platform-boss2
   platformTargetY: 26
   platformMoveDuration: 1
+  bossRiseDistance: 20
   retryPoint: {fileID: 354571378}
 --- !u!61 &1113133608
 BoxCollider2D:
@@ -43722,7 +43725,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2132913203123064602, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 46.7
+      value: -13.9
       objectReference: {fileID: 0}
     - target: {fileID: 2132913203123064602, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_LocalPosition.y
