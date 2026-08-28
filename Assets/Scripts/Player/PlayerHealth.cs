@@ -30,6 +30,8 @@ public class PlayerHealth : MonoBehaviour
     public bool IsDead { get; private set; }
 
     public event Action<int, int> HealthChanged;
+    public event Action<int, Vector2> Damaged;
+    public event Action<int> Healed;
     public event Action Died;
 
     private void Awake()
@@ -89,6 +91,7 @@ public class PlayerHealth : MonoBehaviour
         }
         else
         {
+            Damaged?.Invoke(damage, damageSourcePosition);
             StartInvincible();
         }
 
@@ -155,8 +158,10 @@ public class PlayerHealth : MonoBehaviour
             return;
         }
 
+        int healedHearts = nextHearts - currentHearts;
         currentHearts = nextHearts;
         HealthChanged?.Invoke(currentHearts, maxHearts);
+        Healed?.Invoke(healedHearts);
     }
 
     public void AddInvincibleOverride()

@@ -42105,6 +42105,7 @@ MonoBehaviour:
   visualRoot: {fileID: 0}
   spriteRenderer: {fileID: 0}
   flipSpriteWithFacing: 1
+  attackFacingXThreshold: 0.1
   risingThreshold: 0.1
   fallingThreshold: -0.1
   jumpStartHoldTime: 0.08
@@ -42461,14 +42462,6 @@ PrefabInstance:
     - target: {fileID: 2939724068974572123, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: moveSpeed
       value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 2939724068974572123, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
-      propertyPath: glideDuration
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2939724068974572123, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
-      propertyPath: glideFallSpeed
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2939724068974572123, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: solidLayer.m_Bits

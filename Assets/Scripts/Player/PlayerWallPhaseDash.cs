@@ -41,6 +41,8 @@ public class PlayerWallPhaseDash : MonoBehaviour
     private bool warnedOverlapBufferFull;
     private bool warnedResolveDistanceExceeded;
 
+    public event System.Action DashStarted;
+
     public bool IsWallPhaseDashing { get; private set; }
     public float CooldownRatio => dashCooldown > 0f ? Mathf.Clamp01(cooldownTimer / dashCooldown) : 0f;
     public bool IsAvailable => CanStartDash();
@@ -117,6 +119,7 @@ public class PlayerWallPhaseDash : MonoBehaviour
             && health != null
             && !health.IsDead
             && !movement.IsControlLocked
+            && !movement.IsInputLocked
             && !movement.IsDashing
             && !IsWallPhaseDashing
             && cooldownTimer <= 0f
@@ -172,6 +175,7 @@ public class PlayerWallPhaseDash : MonoBehaviour
         IsWallPhaseDashing = true;
         cooldownTimer = dashCooldown;
         damagedTargets.Clear();
+        DashStarted?.Invoke();
 
         if (!movement.IsGrounded)
         {

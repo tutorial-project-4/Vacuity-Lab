@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private Coroutine knockbackRoutine;
     private Coroutine blinkRoutine;
     private bool cutsceneLocked;
+    private bool dialogueInputLocked;
 
     public bool CanAttack { get; private set; } = true;
     public bool IsKnockbacking { get; private set; }
@@ -72,13 +73,23 @@ public class PlayerController : MonoBehaviour
             movement.StopVerticalMovement();
         }
 
-        CanAttack = !locked;
+        CanAttack = !cutsceneLocked && !dialogueInputLocked;
         movement.SetControlLocked(locked);
+    }
+
+    /// 대화 중에는 입력과 공격만 막고, 낙하/착지/애니메이션 갱신은 그대로 유지한다.
+    public void SetDialogueInputLock(bool locked)
+    {
+        CacheComponents();
+        dialogueInputLocked = locked;
+        CanAttack = !cutsceneLocked && !dialogueInputLocked;
+        movement.SetInputLocked(locked);
     }
 
     public void OnDeath()
     {
         CacheComponents();
+        dialogueInputLocked = false;
         CanAttack = false;
 
         if (knockbackRoutine != null)
@@ -102,8 +113,11 @@ public class PlayerController : MonoBehaviour
     {
         CacheComponents();
         StopHitReaction();
+        cutsceneLocked = false;
+        dialogueInputLocked = false;
         CanAttack = true;
         IsKnockbacking = false;
+        movement.SetInputLocked(false);
         movement.ResetMovementState(false);
         SetSpriteVisible(true);
     }
@@ -132,7 +146,7 @@ public class PlayerController : MonoBehaviour
         }
 
         IsKnockbacking = false;
-        CanAttack = !cutsceneLocked;                 // 넉백 종료가 컷신 잠금을 풀지 않도록
+        CanAttack = !cutsceneLocked && !dialogueInputLocked; // 넉백 종료가 컷신/대화 잠금을 풀지 않도록
         movement.SetControlLocked(cutsceneLocked);
         movement.StopVerticalMovement();
         knockbackRoutine = null;
@@ -158,7 +172,7 @@ public class PlayerController : MonoBehaviour
         }
 
         IsKnockbacking = false;
-        CanAttack = !cutsceneLocked;
+        CanAttack = !cutsceneLocked && !dialogueInputLocked;
         movement.SetControlLocked(cutsceneLocked);
         movement.StopVerticalMovement();
         knockbackRoutine = null;

@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public enum PlayerJumpType
+{
+    Ground,
+    Air
+}
+
 [RequireComponent(typeof(BoxCollider2D))]
 public class PlayerMovement : MonoBehaviour
 {
@@ -21,10 +27,6 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Double Jump")]
     [SerializeField] private int maxAirJumps = 1;
-
-    [Header("Glide")]
-    [SerializeField] private float glideDuration = 2f;
-    [SerializeField] private float glideFallSpeed = 2f;
 
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 16f;
@@ -46,11 +48,9 @@ public class PlayerMovement : MonoBehaviour
     private float ySpeed;
     private float coyoteTimer;
     private float jumpBufferTimer;
-    private float glideTimer;
     private float dashTimer;
     private float dashCooldownTimer;
     private Vector2 dashDirection;
-    private bool canGlide;
     private bool canAirDash = true;
     private int airJumpsRemaining;
     private readonly Collider2D[] collisionBuffer = new Collider2D[32];
@@ -69,14 +69,18 @@ public class PlayerMovement : MonoBehaviour
     public int FacingDirection { get; private set; } = 1;
     public bool IsGrounded { get; private set; }
     public bool IsControlLocked { get; private set; }
+    public bool IsInputLocked { get; private set; }
     public bool IsJumping { get; private set; }
-    public bool IsGliding { get; private set; }
     public bool IsDashing { get; private set; }
     public float HorizontalSpeed { get; private set; }
     public float VerticalSpeed => ySpeed;
     public LayerMask SolidLayer => solidLayer;
     public float DashCooldownRatio => dashCooldown > 0f ? Mathf.Clamp01(dashCooldownTimer / dashCooldown) : 0f;
-    public bool IsDashAvailable => !IsControlLocked && !IsDashing && dashCooldownTimer <= 0f && (IsGrounded || canAirDash);
+    public bool IsDashAvailable => !IsControlLocked && !IsInputLocked && !IsDashing && dashCooldownTimer <= 0f && (IsGrounded || canAirDash);
+
+    public event Action<PlayerJumpType> Jumped;
+    public event Action<float> Landed;
+    public event Action DashStarted;
 
     private void Awake()
     {
@@ -88,7 +92,6 @@ public class PlayerMovement : MonoBehaviour
             solidLayer = LayerMask.GetMask("Solid", "DashPassableWall", "OneWayPlatform");
         }
 
-        ResetGlide();
         ResetAirJumps();
     }
 
@@ -108,16 +111,17 @@ public class PlayerMovement : MonoBehaviour
         }
 
         float deltaTime = Time.deltaTime;
+        bool canReadInput = !IsInputLocked;
         dashCooldownTimer -= deltaTime;
         UpdatePlatformDropThrough(deltaTime);
         float horizontal = 0f;
 
-        if (keyboard.aKey.isPressed)
+        if (canReadInput && keyboard.aKey.isPressed)
         {
             horizontal -= 1f;
         }
 
-        if (keyboard.dKey.isPressed)
+        if (canReadInput && keyboard.dKey.isPressed)
         {
             horizontal += 1f;
         }
@@ -128,19 +132,26 @@ public class PlayerMovement : MonoBehaviour
             AttackDirection = new Vector2(FacingDirection, 0f);
         }
 
-        if (keyboard.wKey.isPressed)
+        if (canReadInput && keyboard.wKey.isPressed)
         {
             AttackDirection = Vector2.up;
         }
-        else if (keyboard.sKey.isPressed)
+        else if (canReadInput && keyboard.sKey.isPressed)
         {
             AttackDirection = Vector2.down;
         }
 
+        bool wasGrounded = IsGrounded;
+        float landingSpeed = ySpeed;
         IsGrounded = CheckGrounded();
+        if (!wasGrounded && IsGrounded)
+        {
+            NotifyLanded(landingSpeed);
+        }
+
         bool droppedThroughPlatform = false;
 
-        if (CanDropThroughPlatform(keyboard))
+        if (canReadInput && CanDropThroughPlatform(keyboard))
         {
             StartPlatformDropThrough();
             IsGrounded = false;
@@ -152,7 +163,6 @@ public class PlayerMovement : MonoBehaviour
             coyoteTimer = coyoteTime;
             canAirDash = true;
             ResetAirJumps();
-            ResetGlide();
             IsJumping = false;
 
             if (ySpeed < 0f)
@@ -165,7 +175,7 @@ public class PlayerMovement : MonoBehaviour
             coyoteTimer -= deltaTime;
         }
 
-        if (CanStartDash(keyboard))
+        if (canReadInput && CanStartDash(keyboard))
         {
             StartDash(horizontal);
         }
@@ -176,7 +186,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        if (keyboard.spaceKey.wasPressedThisFrame && !droppedThroughPlatform)
+        if (canReadInput && keyboard.spaceKey.wasPressedThisFrame && !droppedThroughPlatform)
         {
             jumpBufferTimer = jumpBufferTime;
         }
@@ -194,37 +204,17 @@ public class PlayerMovement : MonoBehaviour
             PerformDoubleJump();
         }
 
-        if (CanStartGlide(keyboard))
+        float gravityMultiplier = 1f;
+        if (ySpeed < 0f)
         {
-            IsGliding = true;
-            IsJumping = false;
-            jumpBufferTimer = 0f;
+            gravityMultiplier = fallGravityMultiplier;
+        }
+        else if (ySpeed > 0f && (!canReadInput || !keyboard.spaceKey.isPressed))
+        {
+            gravityMultiplier = lowJumpGravityMultiplier;
         }
 
-        if (IsGliding)
-        {
-            ySpeed = -glideFallSpeed;
-            glideTimer -= deltaTime;
-
-            if (!keyboard.spaceKey.isPressed || glideTimer <= 0f)
-            {
-                EndGlide();
-            }
-        }
-        else
-        {
-            float gravityMultiplier = 1f;
-            if (ySpeed < 0f)
-            {
-                gravityMultiplier = fallGravityMultiplier;
-            }
-            else if (ySpeed > 0f && !keyboard.spaceKey.isPressed)
-            {
-                gravityMultiplier = lowJumpGravityMultiplier;
-            }
-
-            ySpeed = Mathf.Max(ySpeed - gravity * gravityMultiplier * deltaTime, -maxFallSpeed);
-        }
+        ySpeed = Mathf.Max(ySpeed - gravity * gravityMultiplier * deltaTime, -maxFallSpeed);
 
         if (ySpeed <= 0f)
         {
@@ -415,16 +405,20 @@ public class PlayerMovement : MonoBehaviour
     {
         if (collisionYSign < 0)
         {
+            bool wasGrounded = IsGrounded;
+            float landingSpeed = ySpeed;
             IsGrounded = true;
             coyoteTimer = coyoteTime;
             canAirDash = true;
             ResetAirJumps();
-            ResetGlide();
+            if (!wasGrounded)
+            {
+                NotifyLanded(landingSpeed);
+            }
         }
 
         ySpeed = 0f;
         IsJumping = false;
-        IsGliding = false;
     }
 
     public void SetControlLocked(bool isLocked)
@@ -442,12 +436,24 @@ public class PlayerMovement : MonoBehaviour
                 EndDash();
             }
 
-            if (IsGliding)
-            {
-                EndGlide();
-            }
-
             IsJumping = false;
+        }
+    }
+
+    public void SetInputLocked(bool isLocked)
+    {
+        IsInputLocked = isLocked;
+
+        if (isLocked)
+        {
+            xRemainder = 0f;
+            HorizontalSpeed = 0f;
+            jumpBufferTimer = 0f;
+
+            if (IsDashing)
+            {
+                EndDash();
+            }
         }
     }
 
@@ -464,7 +470,6 @@ public class PlayerMovement : MonoBehaviour
         yRemainder = 0f;
         HorizontalSpeed = 0f;
         IsJumping = false;
-        IsGliding = false;
     }
 
     public void ResetAttackDirectionToFacing()
@@ -480,11 +485,9 @@ public class PlayerMovement : MonoBehaviour
         HorizontalSpeed = 0f;
         coyoteTimer = 0f;
         jumpBufferTimer = 0f;
-        glideTimer = glideDuration;
         dashTimer = 0f;
         dashCooldownTimer = 0f;
         dashDirection = Vector2.zero;
-        canGlide = true;
         canAirDash = true;
         airJumpsRemaining = maxAirJumps;
         currentGroundPlatform = null;
@@ -494,10 +497,10 @@ public class PlayerMovement : MonoBehaviour
         isHorizontalCollisionCheck = false;
         isGroundCheck = false;
         IsJumping = false;
-        IsGliding = false;
         IsDashing = false;
         IsGrounded = false;
         IsControlLocked = lockControl;
+        IsInputLocked = false;
         ResetAttackDirectionToFacing();
     }
 
@@ -515,21 +518,19 @@ public class PlayerMovement : MonoBehaviour
             && airJumpsRemaining > 0;
     }
 
-    private void PerformJump(float speed)
+    private void PerformJump(float speed, PlayerJumpType jumpType = PlayerJumpType.Ground)
     {
         ySpeed = speed;
         IsJumping = true;
         jumpBufferTimer = 0f;
         coyoteTimer = 0f;
-        IsGliding = false;
-        canGlide = true;
-        glideTimer = glideDuration;
+        Jumped?.Invoke(jumpType);
     }
 
     private void PerformDoubleJump()
     {
         airJumpsRemaining--;
-        PerformJump(jumpSpeed);
+        PerformJump(jumpSpeed, PlayerJumpType.Air);
     }
 
     private void ResetAirJumps()
@@ -555,7 +556,6 @@ public class PlayerMovement : MonoBehaviour
         yRemainder = 0f;
         ySpeed = Mathf.Min(ySpeed, -platformDropSpeed);
         IsJumping = false;
-        IsGliding = false;
     }
 
     private void UpdatePlatformDropThrough(float deltaTime)
@@ -684,11 +684,6 @@ public class PlayerMovement : MonoBehaviour
             ? new Vector2(Mathf.Sign(horizontal), 0f)
             : new Vector2(FacingDirection, 0f);
 
-        if (IsGliding)
-        {
-            EndGlide();
-        }
-
         IsDashing = true;
         IsJumping = false;
         HorizontalSpeed = dashDirection.x * dashSpeed;
@@ -702,6 +697,8 @@ public class PlayerMovement : MonoBehaviour
         {
             canAirDash = false;
         }
+
+        DashStarted?.Invoke();
     }
 
     private void UpdateDash(float deltaTime)
@@ -723,27 +720,9 @@ public class PlayerMovement : MonoBehaviour
         dashTimer = 0f;
     }
 
-    private bool CanStartGlide(Keyboard keyboard)
+    private void NotifyLanded(float verticalSpeedBeforeLanding)
     {
-        return canGlide
-            && !IsGrounded
-            && ySpeed < 0f
-            && glideTimer > 0f
-            && keyboard.spaceKey.isPressed;
-    }
-
-    private void EndGlide()
-    {
-        IsGliding = false;
-        IsJumping = false;
-        canGlide = false;
-    }
-
-    private void ResetGlide()
-    {
-        IsGliding = false;
-        canGlide = true;
-        glideTimer = glideDuration;
+        Landed?.Invoke(Mathf.Abs(Mathf.Min(0f, verticalSpeedBeforeLanding)));
     }
 
     private void OnDrawGizmosSelected()
@@ -772,8 +751,6 @@ public class PlayerMovement : MonoBehaviour
         coyoteTime = Mathf.Max(0f, coyoteTime);
         jumpBufferTime = Mathf.Max(0f, jumpBufferTime);
         maxAirJumps = Mathf.Max(0, maxAirJumps);
-        glideDuration = Mathf.Max(0f, glideDuration);
-        glideFallSpeed = Mathf.Max(0f, glideFallSpeed);
         dashSpeed = Mathf.Max(0f, dashSpeed);
         dashDuration = Mathf.Max(0f, dashDuration);
         dashCooldown = Mathf.Max(0f, dashCooldown);

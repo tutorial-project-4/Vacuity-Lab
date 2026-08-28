@@ -42,7 +42,9 @@ public class PlayerAttack : MonoBehaviour
     private bool isAttacking;
 
     public bool IsAttacking => isAttacking;
+    public Vector2 LastAttackDirection { get; private set; } = Vector2.right;
     public event Action AttackStarted;
+    public event Action AttackConnected;
 
     private void Awake()
     {
@@ -198,6 +200,7 @@ public class PlayerAttack : MonoBehaviour
 
         Vector2 origin = GetAttackOriginPosition();
         Vector2 direction = GetMouseAttackDirection(origin);
+        LastAttackDirection = direction;
         Vector2 offset = direction * attackOffsetDistance;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg + hitboxAngleOffset;
 
@@ -276,6 +279,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (!damagedTargets.Add(bossHealth)) continue;
                 bossHealth.TakeDamage(damage);
+                AttackConnected?.Invoke();
                 Debug.Log($"[PlayerAttack] 보스={bossHealth.name}, 대미지={damage}, 보스Hp={bossHealth.CurrentHp}/{bossHealth.MaxHp}", bossHealth);
                 continue;
             }
@@ -284,6 +288,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (behaviour is not IPlayerDashDamageable damageable || !damagedTargets.Add(damageable)) continue;
                 damageable.TakeDamage(damage);
+                AttackConnected?.Invoke();
                 break;
             }
         }
