@@ -16,16 +16,12 @@ public sealed class GameplayUI : MonoBehaviour
     const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
     [SerializeField] string titleScene = "Title-Consolidation";
-    [SerializeField] string bossDisplayName = "WARDEN-01";
     [SerializeField] GameObject optionsPrefab;
+    [SerializeField] Sprite heartSprite;
 
     PlayerHealth health;
-    PlayerMovement movement;
     PlayerWallPhaseDash wallDash;
     readonly List<Image> hearts = new();
-    Image dashCooldown;
-    Image wallDashCooldown;
-    Text memoryText;
     GameObject optionsPanel;
     GameObject deathPanel;
     OptionsPrefabUI optionsUI;
@@ -37,7 +33,6 @@ public sealed class GameplayUI : MonoBehaviour
     void Awake()
     {
         health = FindFirstObjectByType<PlayerHealth>();
-        movement = health ? health.GetComponent<PlayerMovement>() : null;
         wallDash = health ? health.GetComponent<PlayerWallPhaseDash>() : null;
         Build();
         ApplySavedOptions();
@@ -86,8 +81,6 @@ public sealed class GameplayUI : MonoBehaviour
             && !(DialogueRunner.Instance?.IsRunning ?? false))
             SetOptions(!optionsPanel.activeSelf);
 
-        if (dashCooldown && movement) RefreshSkill(dashCooldown, movement.DashCooldownRatio, movement.IsDashAvailable);
-        if (wallDashCooldown && wallDash) RefreshSkill(wallDashCooldown, wallDash.CooldownRatio, wallDash.IsAvailable);
     }
 
     void Build()
@@ -102,7 +95,6 @@ public sealed class GameplayUI : MonoBehaviour
         gameObject.AddComponent<GraphicRaycaster>();
 
         BuildPlayerHud();
-        BuildSkillHud();
         BuildBossHud();
         BuildOptions();
         BuildDeath();
@@ -111,41 +103,18 @@ public sealed class GameplayUI : MonoBehaviour
     void BuildPlayerHud()
     {
         var panel = Panel("Player HUD", transform, new Color(0.03f, .06f, .09f, .78f));
-        Place(panel, new Vector2(0, 1), new Vector2(0, 1), new Vector2(34, -34), new Vector2(410, 132), new Vector2(0, 1));
+        Place(panel, new Vector2(0, 1), new Vector2(0, 1), new Vector2(34, -34), new Vector2(320, 67), new Vector2(0, 1));
 
         var row = Rect("Hearts", panel.transform);
-        Place(row, Vector2.zero, Vector2.zero, new Vector2(18, 60), new Vector2(370, 54), Vector2.zero);
+        Place(row, Vector2.zero, Vector2.zero, new Vector2(15, 11), new Vector2(370, 54), Vector2.zero);
         for (int i = 0; i < 7; i++)
         {
             var heart = Image("Heart", row.transform, new Color(.93f, .16f, .25f));
+            heart.sprite = heartSprite;
+            heart.preserveAspect = true;
             Place(heart.gameObject, Vector2.zero, Vector2.zero, new Vector2(i * 50, 0), new Vector2(42, 42), Vector2.zero);
             hearts.Add(heart);
         }
-
-        memoryText = Label("Memory Counter", panel.transform, "회수된 기억  0 / 3", 25, TextAnchor.MiddleLeft);
-        Place(memoryText.gameObject, Vector2.zero, Vector2.zero, new Vector2(18, 14), new Vector2(370, 36), Vector2.zero);
-    }
-
-    void BuildSkillHud()
-    {
-        var panel = Panel("Skill HUD", transform, new Color(0.03f, .06f, .09f, .78f));
-        Place(panel, Vector2.zero, Vector2.zero, new Vector2(34, 34), new Vector2(310, 110), Vector2.zero);
-        dashCooldown = Skill(panel.transform, "SHIFT", "DASH", 16);
-        wallDashCooldown = Skill(panel.transform, "E", "PHASE", 156);
-    }
-
-    Image Skill(Transform parent, string key, string title, float x)
-    {
-        var root = Panel(title, parent, new Color(.12f, .2f, .25f, 1));
-        Place(root, Vector2.zero, Vector2.zero, new Vector2(x, 14), new Vector2(128, 80), Vector2.zero);
-        var text = Label("Label", root.transform, $"{title}\n[{key}]", 18, TextAnchor.MiddleCenter);
-        Stretch(text.rectTransform, 5);
-        var overlay = Image("Cooldown", root.transform, new Color(0, 0, 0, .72f));
-        Stretch(overlay.rectTransform, 0);
-        overlay.type = UnityEngine.UI.Image.Type.Filled;
-        overlay.fillMethod = UnityEngine.UI.Image.FillMethod.Vertical;
-        overlay.fillOrigin = (int)UnityEngine.UI.Image.OriginVertical.Top;
-        return overlay;
     }
 
     void BuildBossHud()
@@ -156,8 +125,6 @@ public sealed class GameplayUI : MonoBehaviour
         if (!gauge) return;
         gauge.anchoredPosition = new Vector2(0, -76);
         gauge.sizeDelta = new Vector2(760, 28);
-        var name = Label("Boss Name", gauge, bossDisplayName, 30, TextAnchor.MiddleCenter);
-        Place(name.gameObject, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(0, 58), new Vector2(760, 38), new Vector2(.5f, 1));
     }
 
     void BuildOptions()
@@ -185,14 +152,8 @@ public sealed class GameplayUI : MonoBehaviour
         for (int i = 0; i < hearts.Count; i++)
         {
             hearts[i].gameObject.SetActive(i < max);
-            hearts[i].color = i < current ? new Color(.93f, .16f, .25f) : new Color(.2f, .23f, .27f);
+            hearts[i].color = i < current ? Color.white : new Color(.2f, .23f, .27f);
         }
-    }
-
-    static void RefreshSkill(Image overlay, float cooldown, bool available)
-    {
-        overlay.fillAmount = cooldown > 0f ? cooldown : available ? 0f : 1f;
-        overlay.color = new Color(0, 0, 0, cooldown > 0f ? .72f : .45f);
     }
 
     void ShowDeath()
