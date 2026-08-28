@@ -21,9 +21,9 @@ using Action = Unity.Behavior.Action;
     id: "b3a1c5d7e9f24a688c0d2e4f6a8b1c3d")]
 public partial class BeamAction : Action
 {
-    static readonly Color TelegraphColor = new(1f, 0.9f, 0.2f, 0.35f);
-    static readonly Color BodyColor = new(0.4f, 0.9f, 1f, 1f);
-    static readonly Color AfterimageColor = new(0.4f, 0.9f, 1f, 0.4f);
+    static readonly Color32 TelegraphColor = new(255, 255, 255, 45);
+    static readonly Color32 BodyColor = new(255, 255, 255, 255);
+    static readonly Color32 AfterimageColor = new(31, 31, 31, 174);
 
     [SerializeReference] public BlackboardVariable<GameObject> Beam;
     [SerializeReference] public BlackboardVariable<float> TelegraphSeconds = new(0.8f);
@@ -166,6 +166,7 @@ public partial class BeamAction : Action
         _direction = _boss.Target.position.x < _boss.transform.position.x ? -1f : 1f;
         Vector2 mouth = _boss.GetBeamMouthPosition(_direction);
         float width = Mathf.Abs(_beam.transform.lossyScale.x);
+        if (_sr != null) _sr.flipX = _direction < 0f;
         _beam.transform.position = new Vector3(mouth.x + _direction * width * 0.5f, mouth.y, _beam.transform.position.z);
         _beam.SetActive(true);
         Debug.Log($"[BossBeam] 예고 시작(입={mouth}, 방향={(_direction < 0f ? "←" : "→")}) @ {Time.time:F2}s");
