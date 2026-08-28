@@ -1,0 +1,216 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1786070581455583813
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8239670674128902413}
+  - component: {fileID: 6818258238191875450}
+  - component: {fileID: 660564876057889816}
+  - component: {fileID: 6931452794735160206}
+  - component: {fileID: 8648164697785866221}
+  - component: {fileID: 7602029881211784412}
+  - component: {fileID: 741025412550786804}
+  - component: {fileID: 6045892710611344303}
+  - component: {fileID: 661589468595025938}
+  m_Layer: 0
+  m_Name: Boss1 Intro Trigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8239670674128902413
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -20.64, y: 21.89, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!61 &6818258238191875450
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 4.36, y: 5.64}
+  m_EdgeRadius: 0
+--- !u!114 &660564876057889816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 141f089ebc174a9aa9675f28d154ed77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cameraFollow: {fileID: 0}
+  allowSceneCameraFallback: 1
+  focusPoint: {fileID: 0}
+  usePlayerAsTarget: 0
+  snapOnEnter: 1
+  focusOnTriggerEnter: 0
+  overrideOrthographicSize: 1
+  orthographicSize: 11.5
+  cameraBounds: {fileID: 0}
+  clearBounds: 0
+  triggerOnce: 1
+--- !u!114 &6931452794735160206
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 233ff86e9a244cca9871f4a121eb25c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targets:
+  - {fileID: 0}
+  targetLocalY: 28.5
+  moveDuration: 1
+  triggerOnEnter: 0
+  triggerOnce: 1
+--- !u!114 &8648164697785866221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62d00d4fd3fa4b0e9b2ac55163d3ee49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::BossBattleStartTrigger
+  boss: {fileID: 0}
+--- !u!114 &7602029881211784412
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25797ddc5ed549129b0dbfb8f746b6ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  respawnController: {fileID: 0}
+  checkpoint: {fileID: 0}
+  activationDelay: 1
+  triggerOnce: 1
+--- !u!114 &741025412550786804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aee668dfcf86400a8c71b1d201142208, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionsOnTrigger:
+  - {fileID: 6045892710611344303}
+  triggerOnce: 1
+--- !u!114 &6045892710611344303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94de85f78cb84f818f51e293375e9ead, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetCollider: {fileID: 0}
+  targetTerrainDescriptor: {fileID: 0}
+  targetAnimator: {fileID: 0}
+  animatorTriggerName: Active
+  resetAnimatorTriggerName: Deactive
+  animationStateName: barrier_activate
+  runOnce: 1
+--- !u!114 &661589468595025938
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43e18618981847a6921869788a0d3d61, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  requiredDialogue: {fileID: 0}
+  cameraFocuses:
+  - {fileID: 660564876057889816}
+  localYMoves:
+  - {fileID: 6931452794735160206}
+  actions:
+  - {fileID: 6045892710611344303}
+  boss: {fileID: 0}
+  bossStartDelay: 1
+  respawnController: {fileID: 0}
+  checkpoint: {fileID: 0}
+  checkpointActivationDelay: 1
+  triggerOnce: 1

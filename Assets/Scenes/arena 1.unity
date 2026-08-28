@@ -11765,10 +11765,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 4489409896736880395, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
-      propertyPath: glideDuration
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 7549675566413881513, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
       propertyPath: m_LocalPosition.x
       value: -4.6

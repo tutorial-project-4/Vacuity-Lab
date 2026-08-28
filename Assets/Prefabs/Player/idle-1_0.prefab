@@ -204,8 +204,6 @@ MonoBehaviour:
   coyoteTime: 0.1
   jumpBufferTime: 0.1
   maxAirJumps: 1
-  glideDuration: 2
-  glideFallSpeed: 2
   dashSpeed: 16
   dashDuration: 0.15
   dashCooldown: 0.6

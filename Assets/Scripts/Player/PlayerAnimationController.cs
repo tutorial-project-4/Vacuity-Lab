@@ -10,7 +10,6 @@ public class PlayerAnimationController : MonoBehaviour
     private static readonly int VelocityYHash = Animator.StringToHash("VelocityY");
     private static readonly int IsGroundHash = Animator.StringToHash("IsGround");
     private static readonly int IsJumpHash = Animator.StringToHash("IsJump");
-    private static readonly int IsGlideHash = Animator.StringToHash("IsGlide");
     private static readonly int IsDashHash = Animator.StringToHash("isDash");
     private static readonly int IsDeadHash = Animator.StringToHash("IsDead");
     private static readonly int AttackHash = Animator.StringToHash("Attack");
@@ -29,6 +28,7 @@ public class PlayerAnimationController : MonoBehaviour
 
     [Header("Visual")]
     [SerializeField] private bool flipSpriteWithFacing = true;
+    [SerializeField] private float attackFacingXThreshold = 0.1f;
 
     [Header("Air Animation")]
     [SerializeField] private float risingThreshold = 0.1f;
@@ -101,7 +101,6 @@ public class PlayerAnimationController : MonoBehaviour
         animator.SetFloat(VelocityYHash, animationVelocityY);
         animator.SetBool(IsGroundHash, animationGrounded);
         animator.SetBool(IsJumpHash, !holdAttackAnimation && !animationGrounded && movement.IsJumping);
-        animator.SetBool(IsGlideHash, movement.IsGliding);
         animator.SetBool(IsDashHash, movement.IsDashing);
         animator.SetBool(IsDeadHash, isDead);
 
@@ -139,7 +138,6 @@ public class PlayerAnimationController : MonoBehaviour
         animator.SetBool(IsDeadHash, true);
         animator.SetBool(IsDashHash, false);
         animator.SetBool(IsJumpHash, false);
-        animator.SetBool(IsGlideHash, false);
         animator.Play(DeathStateHash, 0, 0f);
         animator.Update(0f);
     }
@@ -156,7 +154,6 @@ public class PlayerAnimationController : MonoBehaviour
         animator.SetBool(IsDeadHash, false);
         animator.SetBool(IsDashHash, false);
         animator.SetBool(IsJumpHash, false);
-        animator.SetBool(IsGlideHash, false);
         animator.Play(IdleStateHash, 0, 0f);
         animator.Update(0f);
     }
@@ -293,7 +290,13 @@ public class PlayerAnimationController : MonoBehaviour
             return;
         }
 
-        spriteRenderer.flipX = movement.FacingDirection < 0;
+        int visualFacing = movement.FacingDirection;
+        if (attack != null && attack.IsAttacking && Mathf.Abs(attack.LastAttackDirection.x) > attackFacingXThreshold)
+        {
+            visualFacing = attack.LastAttackDirection.x < 0f ? -1 : 1;
+        }
+
+        spriteRenderer.flipX = visualFacing < 0;
     }
 
     private void CacheComponents()
@@ -348,5 +351,6 @@ public class PlayerAnimationController : MonoBehaviour
         jumpStartVelocity = Mathf.Max(risingThreshold, jumpStartVelocity);
         groundedAnimationGraceTime = Mathf.Max(0f, groundedAnimationGraceTime);
         attackAnimationLockTime = Mathf.Max(0f, attackAnimationLockTime);
+        attackFacingXThreshold = Mathf.Max(0f, attackFacingXThreshold);
     }
 }

@@ -7,6 +7,7 @@ public class TriggeredLocalYMove : MonoBehaviour
     [SerializeField] private Transform[] targets;
     [SerializeField] private float targetLocalY = 0f;
     [SerializeField] private float moveDuration = 2f;
+    [SerializeField] private bool triggerOnEnter = true;
     [SerializeField] private bool triggerOnce = true;
 
     private bool hasTriggered;
@@ -24,6 +25,11 @@ public class TriggeredLocalYMove : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (!triggerOnEnter)
+        {
+            return;
+        }
+
         if (triggerOnce && hasTriggered)
         {
             return;
@@ -34,13 +40,18 @@ public class TriggeredLocalYMove : MonoBehaviour
             return;
         }
 
+        TriggerMove();
+        hasTriggered = true;
+    }
+
+    public void TriggerMove()
+    {
         if (moveRoutine != null)
         {
             StopCoroutine(moveRoutine);
         }
 
         moveRoutine = StartCoroutine(MoveTargetsRoutine());
-        hasTriggered = true;
     }
 
     private IEnumerator MoveTargetsRoutine()

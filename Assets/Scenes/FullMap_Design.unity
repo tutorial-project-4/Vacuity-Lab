@@ -10016,10 +10016,6 @@ PrefabInstance:
       value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 4489409896736880395, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
-      propertyPath: glideDuration
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4489409896736880395, guid: c8cd38723851ac147a199bae56b5aa99, type: 3}
       propertyPath: solidLayer.m_Bits
       value: 2056
       objectReference: {fileID: 0}
