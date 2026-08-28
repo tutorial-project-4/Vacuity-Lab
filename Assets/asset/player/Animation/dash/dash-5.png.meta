@@ -51,7 +51,11 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
+<<<<<<< HEAD:Assets/asset/player/Animation/dash/dash-5.png.meta
   spritePixelsToUnits: 480
+=======
+  spritePixelsToUnits: 500
+>>>>>>> 192706194d844c17e82e19e3d06aadf5093be188:Assets/asset/player/플레이어/dash/dash-5.png.meta
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1

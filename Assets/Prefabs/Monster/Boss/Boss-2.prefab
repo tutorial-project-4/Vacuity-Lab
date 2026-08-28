@@ -201,9 +201,12 @@ MonoBehaviour:
   wallsPerRush: 3
   wallSpeed: 3
   wallSpawnPosition: {x: 105, y: 28.96}
-  arenaRightX: 104
   wallDespawnX: 76
   spikeWallName: spikeWall L
+  ceilingSpikeWallName: SpikeWall-2
+  ceilingSpikeWallRaisedY: 66
+  ceilingSpikeWallLoweredY: 42
+  ceilingSpikeWallMoveDuration: 1
   spreadProjectileSize: 0.5
   aimedProjectileSize: 0.5
   projectileOrderInLayer: 4
