@@ -9,7 +9,16 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
     [SerializeField] string platformName = "platform-boss2";
     [SerializeField] float platformTargetY = 26f;
     [SerializeField] float platformMoveDuration = 1f;
+    [SerializeField] Transform retryPoint;
+    Transform platform;
+    Vector3 platformStartPosition;
     bool triggered;
+
+    void Awake()
+    {
+        platform = GameObject.Find(platformName)?.transform;
+        if (platform != null) platformStartPosition = platform.position;
+    }
 
     void OnTriggerEnter2D(Collider2D other)
     {
@@ -21,12 +30,12 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
             return;
         }
         triggered = true;
+        FindAnyObjectByType<GameplayUI>()?.SetRetryCheckpoint(encounter, retryPoint);
         StartCoroutine(RaisePlatform(encounter));
     }
 
     IEnumerator RaisePlatform(IBossEncounter encounter)
     {
-        Transform platform = GameObject.Find(platformName)?.transform;
         if (platform == null)
         {
             Debug.LogWarning($"[Boss2IntroTrigger] '{platformName}' 오브젝트가 없습니다", this);
@@ -49,5 +58,12 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
         target.y = platformTargetY;
         platform.position = target;
         encounter.BeginBattle();
+    }
+
+    public void ResetForRetry()
+    {
+        StopAllCoroutines();
+        triggered = false;
+        if (platform != null) platform.position = platformStartPosition;
     }
 }

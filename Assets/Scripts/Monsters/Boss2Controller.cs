@@ -230,8 +230,10 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         StopBattle();
         transform.position = startPosition;
         health.ResetHealth();
-        BeginBattle();
-        Debug.Log("[Boss2] 재도전 초기화", this);
+        health.Invulnerable = true;
+        PlayIdleAnimation();
+        FindAnyObjectByType<Boss2IntroTrigger>()?.ResetForRetry();
+        Debug.Log("[Boss2] 재도전 초기화 — 입장 트리거 대기", this);
     }
 
     internal bool TryFireSpread()

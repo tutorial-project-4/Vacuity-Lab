@@ -28,6 +28,8 @@ public sealed class GameplayUI : MonoBehaviour
     GameObject optionsPanel;
     GameObject deathPanel;
     OptionsPrefabUI optionsUI;
+    IBossEncounter retryBoss;
+    Transform retryPoint;
     float previousTimeScale = 1f;
     bool paused;
 
@@ -233,7 +235,7 @@ public sealed class GameplayUI : MonoBehaviour
         Time.timeScale = 1f;
         paused = false;
 
-        IBossEncounter boss = FindActiveBoss();
+        IBossEncounter boss = retryBoss ?? FindActiveBoss();
         if (boss == null)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -243,7 +245,13 @@ public sealed class GameplayUI : MonoBehaviour
         deathPanel.SetActive(false);
         boss.ResetForRetry();
         wallDash?.ResetState();
-        health?.Respawn(BossEntrancePosition(), health.MaxHearts);
+        health?.Respawn(retryPoint ? (Vector2)retryPoint.position : BossEntrancePosition(), health.MaxHearts);
+    }
+
+    public void SetRetryCheckpoint(IBossEncounter boss, Transform point)
+    {
+        retryBoss = boss;
+        retryPoint = point;
     }
 
     void GoToTitle()
