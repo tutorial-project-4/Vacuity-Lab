@@ -76,7 +76,7 @@ public class PlayerMovement : MonoBehaviour
     public float VerticalSpeed => ySpeed;
     public LayerMask SolidLayer => solidLayer;
     public float DashCooldownRatio => dashCooldown > 0f ? Mathf.Clamp01(dashCooldownTimer / dashCooldown) : 0f;
-    public bool IsDashAvailable => !IsControlLocked && !IsInputLocked && !IsDashing && dashCooldownTimer <= 0f && (IsGrounded || canAirDash);
+    public bool IsDashAvailable => IsAbilityUnlocked(PlayerAbility.Dash) && !IsControlLocked && !IsInputLocked && !IsDashing && dashCooldownTimer <= 0f && (IsGrounded || canAirDash);
 
     public event Action<PlayerJumpType> Jumped;
     public event Action<float> Landed;
@@ -506,7 +506,8 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanStartDash(Keyboard keyboard)
     {
-        return !IsDashing
+        return IsAbilityUnlocked(PlayerAbility.Dash)
+            && !IsDashing
             && dashCooldownTimer <= 0f
             && (IsGrounded || canAirDash)
             && (keyboard.leftShiftKey.wasPressedThisFrame || keyboard.rightShiftKey.wasPressedThisFrame);
@@ -514,8 +515,15 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanDoubleJump()
     {
-        return !IsGrounded
+        return IsAbilityUnlocked(PlayerAbility.DoubleJump)
+            && !IsGrounded
             && airJumpsRemaining > 0;
+    }
+
+    private static bool IsAbilityUnlocked(PlayerAbility ability)
+    {
+        GameManager gameManager = GameManager.Instance;
+        return gameManager == null || gameManager.IsAbilityUnlocked(ability);
     }
 
     private void PerformJump(float speed, PlayerJumpType jumpType = PlayerJumpType.Ground)

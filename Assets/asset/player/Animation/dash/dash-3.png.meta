@@ -55,16 +55,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-<<<<<<< HEAD:Assets/asset/player/Animation/dash/dash-3.png.meta
-  spritePixelsToUnits: 480
-=======
   spritePixelsToUnits: 500
->>>>>>> 192706194d844c17e82e19e3d06aadf5093be188:Assets/asset/player/플레이어/dash/dash-3.png.meta
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -124,100 +120,12 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
-    sprites:
-    - serializedVersion: 2
-      name: dash-3_0
-      rect:
-        serializedVersion: 2
-        x: 11
-        y: 0
-        width: 1494
-        height: 1024
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: fc034cc957b0722d0800000000000000
-      internalID: -3303659201883787057
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: dash-3_1
-      rect:
-        serializedVersion: 2
-        x: 342
-        y: 459
-        width: 14
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 63d6eaa4c0a52ae00800000000000000
-      internalID: 1054504271597169974
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: dash-3_2
-      rect:
-        serializedVersion: 2
-        x: 373
-        y: 439
-        width: 14
-        height: 13
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: a61e4e73d53df7b50800000000000000
-      internalID: 6593220776816861546
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: dash-3_3
-      rect:
-        serializedVersion: 2
-        x: 389
-        y: 448
-        width: 15
-        height: 10
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 1bcdc6130919b8190800000000000000
-      internalID: -7959107867956683599
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
+    sprites: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 5e97eb03825dee720800000000000000
     internalID: 0
     vertices: []
     indices: 
@@ -226,11 +134,7 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable:
-      dash-3_0: -3303659201883787057
-      dash-3_1: 1054504271597169974
-      dash-3_2: 6593220776816861546
-      dash-3_3: -7959107867956683599
+    nameFileIdTable: {}
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

@@ -115,7 +115,8 @@ public class PlayerWallPhaseDash : MonoBehaviour
 
     private bool CanStartDash()
     {
-        return movement != null
+        return IsAbilityUnlocked()
+            && movement != null
             && health != null
             && !health.IsDead
             && !movement.IsControlLocked
@@ -124,6 +125,12 @@ public class PlayerWallPhaseDash : MonoBehaviour
             && !IsWallPhaseDashing
             && cooldownTimer <= 0f
             && (movement.IsGrounded || canAirWallPhaseDash);
+    }
+
+    private static bool IsAbilityUnlocked()
+    {
+        GameManager gameManager = GameManager.Instance;
+        return gameManager == null || gameManager.IsAbilityUnlocked(PlayerAbility.WallPhaseDash);
     }
 
     private IEnumerator DashRoutine(Vector2 direction)
