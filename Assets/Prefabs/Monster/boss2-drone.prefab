@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -4139833283696839137}
   - component: {fileID: -1939014939667766133}
   m_Layer: 0
-  m_Name: "\uBCF4\uC2A4 2 \uB4DC\uB860_0"
+  m_Name: boss2-drone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
