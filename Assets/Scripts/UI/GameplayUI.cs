@@ -12,6 +12,7 @@ public sealed class GameplayUI : MonoBehaviour
     const string ShakeKey = "ui.screenShake";
     const string FullscreenKey = "ui.fullscreen";
     const string StartModeKey = "game.startMode";
+    const string CheckpointKey = "game.checkpoint";
     const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
     [SerializeField] string titleScene = "Title-Consolidation";
@@ -46,6 +47,15 @@ public sealed class GameplayUI : MonoBehaviour
     {
         if (PlayerPrefs.GetInt(StartModeKey, 0) != 1 || !health) return;
 
+        if (PlayerPrefs.GetInt(CheckpointKey, 1) == 2)
+        {
+            Boss2IntroTrigger boss2Trigger = FindAnyObjectByType<Boss2IntroTrigger>();
+            if (boss2Trigger != null && boss2Trigger.PrepareQuickStart(this))
+            {
+                health.Respawn(boss2Trigger.RetryPosition, health.MaxHearts);
+                return;
+            }
+        }
         health.Respawn(BossEntrancePosition(), health.MaxHearts);
     }
 
@@ -267,7 +277,7 @@ public sealed class GameplayUI : MonoBehaviour
         var entrance = FindFirstObjectByType<BossBattleStartTrigger>();
         var trigger = entrance ? entrance.GetComponent<Collider2D>() : null;
         return trigger
-            ? new Vector2(trigger.bounds.max.x + 1f, trigger.bounds.center.y)
+            ? new Vector2(trigger.bounds.min.x - 1f, trigger.bounds.center.y)
             : health ? (Vector2)health.transform.position : Vector2.zero;
     }
 

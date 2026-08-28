@@ -14,6 +14,7 @@ public sealed class TitleMenuUI : MonoBehaviour
     [SerializeField] Button quitButton;
     [SerializeField] GameObject optionsPrefab;
     const string StartModeKey = "game.startMode";
+    const string CheckpointKey = "game.checkpoint";
     const string VolumeKey = "ui.masterVolume";
     const string ShakeKey = "ui.screenShake";
     const string FullscreenKey = "ui.fullscreen";
@@ -49,6 +50,7 @@ public sealed class TitleMenuUI : MonoBehaviour
     void StartGame(int mode)
     {
         PlayerPrefs.SetInt(StartModeKey, mode);
+        if (mode == 0) PlayerPrefs.SetInt(CheckpointKey, 1);
         PlayerPrefs.Save();
         SceneManager.LoadScene(gameScene);
     }
