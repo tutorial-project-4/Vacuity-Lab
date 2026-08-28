@@ -75,7 +75,7 @@ public class Boss : MonoBehaviour, IBossEncounter
     bool _battleStarted;
     Animator _animator;
     SpriteRenderer _spriteRenderer;
-    float _lastX;
+    bool _facingLocked;
 
     Vector3 _startPos;
     GameObject[] _hitboxes;   // 몸체·슬램 등 자식 판정
@@ -87,7 +87,6 @@ public class Boss : MonoBehaviour, IBossEncounter
         _agent = GetComponent<BehaviorGraphAgent>();
         _animator = GetComponent<Animator>();
         _spriteRenderer = GetComponent<SpriteRenderer>();
-        _lastX = transform.position.x;
         _playerHealth = target ? target.GetComponentInParent<PlayerHealth>() : null;
 
         _startPos = transform.position;
@@ -101,10 +100,7 @@ public class Boss : MonoBehaviour, IBossEncounter
 
     void LateUpdate()
     {
-        float x = transform.position.x;
-        if (_spriteRenderer != null && !Mathf.Approximately(x, _lastX))
-            _spriteRenderer.flipX = x < _lastX;
-        _lastX = x;
+        if (_battleStarted && !_health.IsDead && !_facingLocked) FaceTarget();
     }
 
     void OnEnable()
@@ -156,15 +152,41 @@ public class Boss : MonoBehaviour, IBossEncounter
 
     public void PlayAnimation(RuntimeAnimatorController controller)
     {
-        if (_animator != null && controller != null && _animator.runtimeAnimatorController != controller)
-            _animator.runtimeAnimatorController = controller;
+        if (_animator == null || controller == null) return;
+        _animator.runtimeAnimatorController = controller;
+        _animator.Play(0, 0, 0f);
     }
 
-    public void PlayIdle() => PlayAnimation(idleAnimation);
-    public void PlayWalk() => PlayAnimation(walkAnimation);
-    public void PlayDash() => PlayAnimation(dashAnimation);
-    public void PlaySlam() => PlayAnimation(slamAnimation);
-    public void PlayBeam() => PlayAnimation(beamAnimation);
+    public void PlayIdle()
+    {
+        _facingLocked = false;
+        FaceTarget();
+        PlayAnimation(idleAnimation);
+    }
+
+    public void PlayWalk()
+    {
+        _facingLocked = false;
+        FaceTarget();
+        PlayAnimation(walkAnimation);
+    }
+
+    public void PlayDash() => PlayLockedAnimation(dashAnimation);
+    public void PlaySlam() => PlayLockedAnimation(slamAnimation);
+    public void PlayBeam() => PlayLockedAnimation(beamAnimation);
+
+    void PlayLockedAnimation(RuntimeAnimatorController controller)
+    {
+        FaceTarget();
+        _facingLocked = true;
+        PlayAnimation(controller);
+    }
+
+    void FaceTarget()
+    {
+        if (_spriteRenderer != null && target != null)
+            _spriteRenderer.flipX = target.position.x < transform.position.x;
+    }
 
     /// #14 사망 처리(기획 J-6): 행동 중단 → 모든 판정 제거 → 연출 placeholder → 외부 훅.
     /// 피격 비활성은 BossHealth.IsDead가 담당(사망 후 TakeDamage 무시).
@@ -182,6 +204,7 @@ public class Boss : MonoBehaviour, IBossEncounter
         if (spikeWalls) spikeWalls.SetActive(false);                // 필드 기믹 판정 제거
         foreach (var hitbox in _hitboxes) hitbox.SetActive(false);  // 몸체·슬램 히트박스 제거
         BossHealthGauge.HideFor(_health);
+        _facingLocked = true;
         PlayAnimation(destroyAnimation);
 
         StartCoroutine(DeathSequence());
@@ -295,6 +318,7 @@ public class Boss : MonoBehaviour, IBossEncounter
         if (floor != null && enhancedElectric != null)
             floor.gameObject.SetActive(false);
         _health.Invulnerable = true;
+        _facingLocked = true;
         PlayAnimation(phaseAnimation);
 
         var pc = target ? target.GetComponentInParent<PlayerController>() : null;
