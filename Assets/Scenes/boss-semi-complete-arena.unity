@@ -10605,12 +10605,12 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 2868101353237766674, guid: aaf569d705605f64eb1d5a44379bee60, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c02be6887ac8be84bb324829b1bb231d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_DrawMode: 1
+  m_Size: {x: 1, y: 3.13}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -44904,11 +44904,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2540121861282519248, guid: 0e865f9441180224782b8f1966759070, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 74.45
+      value: 64.67
       objectReference: {fileID: 0}
     - target: {fileID: 2540121861282519248, guid: 0e865f9441180224782b8f1966759070, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9
+      value: 8.87
       objectReference: {fileID: 0}
     - target: {fileID: 2540121861282519248, guid: 0e865f9441180224782b8f1966759070, type: 3}
       propertyPath: m_LocalPosition.z
@@ -45259,8 +45259,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameplayUI
   titleScene: Title-Consolidation
-  bossDisplayName: WARDEN-01
   optionsPrefab: {fileID: 3901153035989306561, guid: bc4e38c7e8bd57b4babfb5677a20c50c, type: 3}
+  heartSprite: {fileID: 948176324317147129, guid: 7c76088b8c40946468e56e942dd237f5, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -45269,6 +45269,7 @@ SceneRoots:
   - {fileID: 326502336}
   - {fileID: 2038187151}
   - {fileID: 1451874130}
+  - {fileID: 7563018538807616786}
   - {fileID: 441919698}
   - {fileID: 96387137}
   - {fileID: 300030580}
@@ -45302,4 +45303,3 @@ SceneRoots:
   - {fileID: 1450497476}
   - {fileID: 1451053780}
   - {fileID: 1553818497}
-  - {fileID: 7563018538807616786}
