@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7000000000000000002}
   - component: {fileID: 7000000000000000003}
   - component: {fileID: 616070830821725876}
+  - component: {fileID: 7716238959468445166}
   m_Layer: 8
   m_Name: Boss-2
   m_TagString: Untagged
@@ -85,8 +86,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 4
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
-  m_Color: {r: 1, g: 0, b: 1, a: 1}
+  m_Sprite: {fileID: -320081759795221534, guid: 7aaf71020f957334298b0013aacab01b, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -133,7 +134,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    oldSize: {x: 1.1428572, y: 1.1428572}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -168,6 +169,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d4703560ce84f09a3a8ce086a65ee23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  idleAnimation: {fileID: 9100000, guid: 1649f9bcdc11ee040ac7655e99563712, type: 2}
+  deadAnimation: {fileID: 9100000, guid: 3cc8f3ccb9a57aa478d3e3334b783247, type: 2}
+  aimedAnimation: {fileID: 9100000, guid: 5fb6907763764e8449ed104bbd7d9ffb, type: 2}
+  spreadAnimation: {fileID: 9100000, guid: 87593a1d4a2e1b143898d23ac31b77e6, type: 2}
+  phaseAnimation: {fileID: 9100000, guid: 1d139fe000df30b4f944f56f84cd3e0d, type: 2}
+  droneAnimation: {fileID: 9100000, guid: a6e013d868365ba41abce3a311d0a782, type: 2}
   target: {fileID: 0}
   waitForBattleTrigger: 1
   spreadSpeed: 4.25
@@ -240,3 +247,25 @@ MonoBehaviour:
           m_Value1: 0
         Name: Self
         m_Value: {fileID: 2947302094895602139}
+--- !u!95 &7716238959468445166
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2947302094895602139}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1649f9bcdc11ee040ac7655e99563712, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0

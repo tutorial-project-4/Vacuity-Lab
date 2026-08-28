@@ -9,6 +9,14 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
 {
     internal enum AttackPattern { Basic, Sniper, Frenzy, Drone }
 
+    [Header("애니메이션")]
+    [SerializeField] RuntimeAnimatorController idleAnimation;
+    [SerializeField] RuntimeAnimatorController deadAnimation;
+    [SerializeField] RuntimeAnimatorController aimedAnimation;
+    [SerializeField] RuntimeAnimatorController spreadAnimation;
+    [SerializeField] RuntimeAnimatorController phaseAnimation;
+    [SerializeField] RuntimeAnimatorController droneAnimation;
+
     [Header("전투 시작")]
     [Tooltip("공격 대상으로 사용할 플레이어입니다. 미할당 시 전투 시작 때 활성 플레이어를 찾습니다.")]
     [SerializeField] Transform target;
@@ -104,6 +112,8 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     readonly List<GameObject> spawned = new();
     BossHealth health;
     BehaviorGraphAgent agent;
+    Animator animator;
+    SpriteRenderer spriteRenderer;
     Transform player;
     PlayerHealth playerHealth;
     float attackStartTime;
@@ -122,6 +132,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     bool phaseTwo;
     bool transitioning;
     bool battleStarted;
+    bool facingLocked;
     Vector3 startPosition;
 
     public bool IsBattleStarted => battleStarted;
@@ -131,9 +142,12 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     {
         health = GetComponent<BossHealth>();
         agent = GetComponent<BehaviorGraphAgent>();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         startPosition = transform.position;
         health.OnDamaged += HandleDamaged;
         health.OnDeath += HandleDeath;
+        PlayAnimation(idleAnimation);
     }
 
     void OnEnable()
@@ -161,6 +175,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         if (!battleStarted || health.IsDead || transitioning) return;
         if (player == null) ResolvePlayer();
         if (player == null) return;
+        if (!facingLocked && spriteRenderer != null) spriteRenderer.flipX = player.position.x < transform.position.x;
 
         if (Vector2.Distance(transform.position, player.position) > frenzyRange)
         {
@@ -200,6 +215,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
 
         battleStarted = true;
         health.Invulnerable = false;
+        PlayAnimation(idleAnimation);
         ResolvePlayer();
         attackStartTime = Time.time + .5f;
         agent.Restart();
@@ -223,6 +239,31 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         if (!CanAttack()) return false;
         FireSpread();
         return true;
+    }
+
+    internal void PlaySpreadAnimation()
+    {
+        LockFacing();
+        PlayAnimation(spreadAnimation);
+    }
+
+    internal void PlayAimedAnimation()
+    {
+        LockFacing();
+        PlayAnimation(aimedAnimation);
+    }
+
+    internal void PlayIdleAnimation()
+    {
+        facingLocked = false;
+        if (!health.IsDead && !transitioning) PlayAnimation(idleAnimation);
+    }
+
+    void LockFacing()
+    {
+        if (player != null && spriteRenderer != null)
+            spriteRenderer.flipX = player.position.x < transform.position.x;
+        facingLocked = true;
     }
 
     internal AttackPattern BeginAttackCycle()
@@ -476,6 +517,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         ResetPatternState();
         SetSpikeWall(false);
         ClearSpawned();
+        PlayAnimation(phaseAnimation);
         Debug.Log($"[Boss2] 2페이즈 전환 시작 ({phaseTransitionDuration:0.##}초)", this);
 
         yield return new WaitForSeconds(phaseTransitionDuration);
@@ -512,6 +554,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         }
 
         GameObject drone = Instantiate(dronePrefab, transform.position, Quaternion.identity);
+        PlayAnimation(droneAnimation);
         drone.name = "Boss2 Drone";
         SetLayerRecursively(drone.transform, LayerMask.NameToLayer("Boss"));
         drone.AddComponent<Boss2Drone>().Initialize(player, droneHp, droneSpeed, droneStopDistance, droneSlowRadius, droneKnockbackDistance, droneKnockbackDuration);
@@ -527,7 +570,16 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     void HandleDeath()
     {
         StopBattle();
+        PlayAnimation(deadAnimation);
         Debug.Log("[Boss2] 사망 — 행동 및 생성물 정리", this);
+    }
+
+
+    void PlayAnimation(RuntimeAnimatorController controller)
+    {
+        if (animator == null || controller == null) return;
+        animator.runtimeAnimatorController = controller;
+        animator.Play(0, 0, 0f);
     }
 
     void HandlePlayerDeath()
@@ -570,6 +622,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         frenzyProximityTime = 0f;
         frenzyReserved = false;
         currentAttackPattern = AttackPattern.Basic;
+        facingLocked = false;
     }
 
     void RemoveSpawned(GameObject item)
