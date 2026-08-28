@@ -19,6 +19,8 @@ public partial class Boss2SpreadShotAction : Action
         timer = 0f;
         shotsFired = 0;
         if (controller != null) pattern = controller.BeginAttackCycle();
+        if (pattern is Boss2Controller.AttackPattern.Basic or Boss2Controller.AttackPattern.Frenzy)
+            controller?.PlaySpreadAnimation();
         return controller == null ? Status.Failure : Status.Running;
     }
 
@@ -47,6 +49,11 @@ public partial class Boss2SpreadShotAction : Action
         }
 
         return timer < controller.SpreadRecovery ? Status.Running : Status.Success;
+    }
+
+    protected override void OnEnd()
+    {
+        if (pattern != Boss2Controller.AttackPattern.Drone) controller?.PlayIdleAnimation();
     }
 }
 
@@ -79,6 +86,7 @@ public partial class Boss2AimedShotAction : Action
         if (!warningStarted)
         {
             if (!controller.TryBeginAimed(out direction, out warning)) return Status.Running;
+            controller.PlayAimedAnimation();
             warningStarted = true;
             timer = 0f;
         }
@@ -102,6 +110,7 @@ public partial class Boss2AimedShotAction : Action
     protected override void OnEnd()
     {
         controller?.CancelWarning(warning);
+        controller?.PlayIdleAnimation();
         warning = null;
     }
 }

@@ -12,6 +12,7 @@ public sealed class GameplayUI : MonoBehaviour
     const string ShakeKey = "ui.screenShake";
     const string FullscreenKey = "ui.fullscreen";
     const string StartModeKey = "game.startMode";
+    const string CheckpointKey = "game.checkpoint";
     const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
     [SerializeField] string titleScene = "Title-Consolidation";
@@ -28,6 +29,8 @@ public sealed class GameplayUI : MonoBehaviour
     GameObject optionsPanel;
     GameObject deathPanel;
     OptionsPrefabUI optionsUI;
+    IBossEncounter retryBoss;
+    Transform retryPoint;
     float previousTimeScale = 1f;
     bool paused;
 
@@ -44,6 +47,15 @@ public sealed class GameplayUI : MonoBehaviour
     {
         if (PlayerPrefs.GetInt(StartModeKey, 0) != 1 || !health) return;
 
+        if (PlayerPrefs.GetInt(CheckpointKey, 1) == 2)
+        {
+            Boss2IntroTrigger boss2Trigger = FindAnyObjectByType<Boss2IntroTrigger>();
+            if (boss2Trigger != null && boss2Trigger.PrepareQuickStart(this))
+            {
+                health.Respawn(boss2Trigger.RetryPosition, health.MaxHearts);
+                return;
+            }
+        }
         health.Respawn(BossEntrancePosition(), health.MaxHearts);
     }
 
@@ -233,7 +245,7 @@ public sealed class GameplayUI : MonoBehaviour
         Time.timeScale = 1f;
         paused = false;
 
-        IBossEncounter boss = FindActiveBoss();
+        IBossEncounter boss = retryBoss ?? FindActiveBoss();
         if (boss == null)
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
@@ -243,7 +255,13 @@ public sealed class GameplayUI : MonoBehaviour
         deathPanel.SetActive(false);
         boss.ResetForRetry();
         wallDash?.ResetState();
-        health?.Respawn(BossEntrancePosition(), health.MaxHearts);
+        health?.Respawn(retryPoint ? (Vector2)retryPoint.position : BossEntrancePosition(), health.MaxHearts);
+    }
+
+    public void SetRetryCheckpoint(IBossEncounter boss, Transform point)
+    {
+        retryBoss = boss;
+        retryPoint = point;
     }
 
     void GoToTitle()
@@ -259,7 +277,7 @@ public sealed class GameplayUI : MonoBehaviour
         var entrance = FindFirstObjectByType<BossBattleStartTrigger>();
         var trigger = entrance ? entrance.GetComponent<Collider2D>() : null;
         return trigger
-            ? new Vector2(trigger.bounds.max.x + 1f, trigger.bounds.center.y)
+            ? new Vector2(trigger.bounds.min.x - 1f, trigger.bounds.center.y)
             : health ? (Vector2)health.transform.position : Vector2.zero;
     }
 
