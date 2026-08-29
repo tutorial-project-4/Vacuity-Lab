@@ -44153,7 +44153,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2939724068974572123, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: solidLayer.m_Bits
-      value: 3848
+      value: 3592
       objectReference: {fileID: 0}
     - target: {fileID: 5170651896266855098, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_Size.x
