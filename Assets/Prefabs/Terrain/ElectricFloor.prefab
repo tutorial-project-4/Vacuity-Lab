@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 6774787574408608275}
   - component: {fileID: 4106622766507668521}
   m_Layer: 0
-  m_Name: "\uC804\uAE30\uC7A5\uD310_0"
+  m_Name: Floor_sprite
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -195,7 +195,7 @@ Animator:
   m_GameObject: {fileID: 3866475511686900021}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 1633a508c81d84d4e8fb651656d0bbd9, type: 2}
+  m_Controller: {fileID: 9100000, guid: 3a2451bf63e299448a041e2ab1243d43, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -338,7 +338,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   stateVisual: {fileID: 6774787574408608275}
+  inactiveAnimation: {fileID: 9100000, guid: 3a2451bf63e299448a041e2ab1243d43, type: 2}
+  warningAnimation: {fileID: 9100000, guid: 6794b48f28a64334ba25680e8d448c4e, type: 2}
+  activeAnimation: {fileID: 9100000, guid: 1633a508c81d84d4e8fb651656d0bbd9, type: 2}
+  activeVisual: {fileID: 0}
   inactiveColor: {r: 0.35, g: 0.3, b: 0.3, a: 0}
-  warningColor: {r: 1, g: 0.85, b: 0.2, a: 1}
-  activeColor: {r: 1, g: 1, b: 1, a: 1}
+  warningColor: {r: 1, g: 0.85, b: 0.2, a: 0}
+  activeColor: {r: 1, g: 1, b: 1, a: 0}
   cooldownColor: {r: 0.4, g: 0.45, b: 0.6, a: 0}
+  stateAnimator: {fileID: 4106622766507668521}

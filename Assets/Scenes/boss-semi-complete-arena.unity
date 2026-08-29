@@ -45375,6 +45375,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Enhanced electric
       objectReference: {fileID: 0}
+    - target: {fileID: 8333384760432240727, guid: 24d3659005280c140bbebeb71c121393, type: 3}
+      propertyPath: m_Name
+      value: pillar_sprite
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
