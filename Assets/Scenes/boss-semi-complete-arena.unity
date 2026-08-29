@@ -44153,7 +44153,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2939724068974572123, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: solidLayer.m_Bits
-      value: 3848
+      value: 3592
       objectReference: {fileID: 0}
     - target: {fileID: 5170651896266855098, guid: 2c676a0c0da986143b716ec829d75703, type: 3}
       propertyPath: m_Size.x
@@ -45374,6 +45374,10 @@ PrefabInstance:
     - target: {fileID: 4121233874780148274, guid: 24d3659005280c140bbebeb71c121393, type: 3}
       propertyPath: m_Name
       value: Enhanced electric
+      objectReference: {fileID: 0}
+    - target: {fileID: 8333384760432240727, guid: 24d3659005280c140bbebeb71c121393, type: 3}
+      propertyPath: m_Name
+      value: pillar_sprite
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

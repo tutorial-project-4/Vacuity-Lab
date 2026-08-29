@@ -32,7 +32,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: "\uBC88\uAC1C \uAE30\uB465_0"
+  m_Name: electric_pillar
   serializedVersion: 6
   m_AnimatorParameters: []
   m_AnimatorLayers:
@@ -60,7 +60,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: -2886549850556868069}
-    m_Position: {x: 200, y: 0, z: 0}
+    m_Position: {x: 290, y: 110, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []

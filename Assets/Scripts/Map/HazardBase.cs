@@ -27,6 +27,10 @@ public class HazardBase : MonoBehaviour
 
     [Header("State Visual")]
     [SerializeField] private SpriteRenderer stateVisual;
+    [SerializeField] private RuntimeAnimatorController inactiveAnimation;
+    [SerializeField] private RuntimeAnimatorController warningAnimation;
+    [SerializeField] private RuntimeAnimatorController activeAnimation;
+    [SerializeField] private GameObject activeVisual;
     [SerializeField] private Color inactiveColor = new Color(0.35f, 0.3f, 0.3f);
     [SerializeField] private Color warningColor = new Color(1f, 0.85f, 0.2f);
     [SerializeField] private Color activeColor = new Color(1f, 0.25f, 0.2f);
@@ -42,6 +46,7 @@ public class HazardBase : MonoBehaviour
     private Coroutine cycleRoutine;
     private BoxCollider2D damageCollider;
     private PlayerDamageSource damageSource;
+    [SerializeField] private Animator stateAnimator;
 
     protected virtual void OnEnable()
     {
@@ -123,7 +128,33 @@ public class HazardBase : MonoBehaviour
             }
         }
 
-        if (stateVisual != null)
+        if (activeVisual != null) activeVisual.SetActive(state == HazardState.Active);
+
+        stateAnimator ??= GetComponentInChildren<Animator>(true);
+        string animationState = state switch
+        {
+            HazardState.Warning => "electric_floor_warning",
+            HazardState.Active when activeAnimation == warningAnimation => "electric_floor_warning",
+            HazardState.Active => "electric_floor_active",
+            _ => "electric_floor_deactive"
+        };
+        RuntimeAnimatorController animation = state switch
+        {
+            HazardState.Warning => warningAnimation,
+            HazardState.Active => activeAnimation,
+            _ => inactiveAnimation
+        };
+        if (stateAnimator != null && animation != null)
+        {
+            SpriteRenderer animatedVisual = stateAnimator.GetComponent<SpriteRenderer>();
+            if (animatedVisual != null) animatedVisual.color = Color.white;
+
+            stateAnimator.runtimeAnimatorController = animation;
+            stateAnimator.Rebind();
+            stateAnimator.Play(animationState, 0, 0f);
+            if (stateAnimator.isActiveAndEnabled) stateAnimator.Update(0f);
+        }
+        else if (stateVisual != null)
         {
             stateVisual.color = state switch
             {
