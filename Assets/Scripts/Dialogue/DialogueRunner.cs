@@ -285,6 +285,7 @@ public class DialogueRunner : MonoBehaviour
         {
             yield return PlayLines(selectedChoice.nextLines);
         }
+        RunChoiceActions(selectedChoice.actionsOnComplete);
     }
 
     private bool WasAdvancePressed()

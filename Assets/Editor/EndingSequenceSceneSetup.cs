@@ -37,8 +37,15 @@ public static class EndingSequenceSceneSetup
 
         ConfigureSequenceController(sequenceController, canvas, rootGroup, background, slideImage, speakerText, bodyText, bgmSource);
 
-        SetEndingChoiceAction choiceAction = GetOrAdd<SetEndingChoiceAction>(boss2DoorTrigger);
-        ConfigureChoiceAction(choiceAction, choiceState);
+        SetEndingChoiceAction acceptChoiceAction = GetOrAddChoiceAction(boss2DoorTrigger, EndingChoice.AcceptedInjection);
+        ConfigureChoiceAction(acceptChoiceAction, choiceState, EndingChoice.AcceptedInjection, true);
+        SetEndingChoiceAction rejectChoiceAction = GetOrAddChoiceAction(boss2DoorTrigger, EndingChoice.RejectedInjection);
+        ConfigureChoiceAction(rejectChoiceAction, choiceState, EndingChoice.RejectedInjection, false);
+
+        StartBoss2IntroAction boss2IntroAction = GetOrAdd<StartBoss2IntroAction>(boss2DoorTrigger);
+        ConfigureBoss2IntroAction(boss2IntroAction);
+
+        ConfigureEnding2Sequence(canvas, rootGroup, background, slideImage, speakerText, bodyText);
 
         EndingDoorTrigger endingTrigger = GetOrAdd<EndingDoorTrigger>(boss2DoorTrigger);
         ConfigureEndingTrigger(endingTrigger, choiceState, sequenceController);
@@ -49,7 +56,7 @@ public static class EndingSequenceSceneSetup
             autoDialogue = boss2DoorTrigger.AddComponent<AutoDialogueTrigger>();
         }
 
-        ConfigureBoss2DoorDialogue(autoDialogue, choiceAction);
+        ConfigureBoss2DoorDialogue(autoDialogue, acceptChoiceAction, rejectChoiceAction, boss2IntroAction);
 
         EditorUtility.SetDirty(boss2DoorTrigger);
         EditorUtility.SetDirty(root);
@@ -74,6 +81,21 @@ public static class EndingSequenceSceneSetup
     {
         T component = target.GetComponent<T>();
         return component != null ? component : target.AddComponent<T>();
+    }
+
+    private static SetEndingChoiceAction GetOrAddChoiceAction(GameObject target, EndingChoice choice)
+    {
+        SetEndingChoiceAction[] actions = target.GetComponents<SetEndingChoiceAction>();
+        for (int i = 0; i < actions.Length; i++)
+        {
+            SerializedObject serialized = new SerializedObject(actions[i]);
+            if (serialized.FindProperty("choice").enumValueIndex == (int)choice)
+            {
+                return actions[i];
+            }
+        }
+
+        return target.AddComponent<SetEndingChoiceAction>();
     }
 
     private static Canvas BuildEndingCanvas(Transform parent)
@@ -250,25 +272,105 @@ public static class EndingSequenceSceneSetup
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    private static void ConfigureSlide(SerializedProperty slide, string title, string imagePath, string text)
+    private static void ConfigureSlide(SerializedProperty slide, string title, string imagePath, string text, string fallbackImagePath = null)
     {
         slide.FindPropertyRelative("title").stringValue = title;
-        slide.FindPropertyRelative("image").objectReferenceValue = LoadSprite(imagePath);
+        slide.FindPropertyRelative("image").objectReferenceValue = LoadSprite(imagePath) ?? LoadSprite(fallbackImagePath);
         slide.FindPropertyRelative("text").stringValue = text;
     }
 
     private static Sprite LoadSprite(string path)
     {
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            return null;
+        }
+
         Object[] assets = AssetDatabase.LoadAllAssetsAtPath(path);
         return assets.OfType<Sprite>().FirstOrDefault();
     }
 
-    private static void ConfigureChoiceAction(SetEndingChoiceAction action, EndingChoiceState choiceState)
+    private static void ConfigureChoiceAction(SetEndingChoiceAction action, EndingChoiceState choiceState, EndingChoice choice, bool healPlayerToFull)
     {
         SerializedObject serialized = new SerializedObject(action);
         serialized.FindProperty("choiceState").objectReferenceValue = choiceState;
-        serialized.FindProperty("choice").enumValueIndex = (int)EndingChoice.AcceptedInjection;
-        serialized.FindProperty("healPlayerToFull").boolValue = true;
+        serialized.FindProperty("choice").enumValueIndex = (int)choice;
+        serialized.FindProperty("healPlayerToFull").boolValue = healPlayerToFull;
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void ConfigureEnding2Sequence(
+        Canvas canvas,
+        CanvasGroup rootGroup,
+        Image background,
+        Image slideImage,
+        Text speakerText,
+        Text bodyText)
+    {
+        GameObject root = FindOrCreateRoot("Ending2EventRoot");
+        EndingSequenceController sequenceController = GetOrAdd<EndingSequenceController>(root);
+        AudioSource bgmSource = GetOrAdd<AudioSource>(root);
+        bgmSource.playOnAwake = false;
+
+        ConfigureEnding2Controller(sequenceController, canvas, rootGroup, background, slideImage, speakerText, bodyText, bgmSource);
+
+        BossDeathEndingSequenceTrigger trigger = GetOrAdd<BossDeathEndingSequenceTrigger>(root);
+        SerializedObject triggerSerialized = new SerializedObject(trigger);
+        triggerSerialized.FindProperty("bossHealth").objectReferenceValue = GameObject.Find("Boss-2")?.GetComponent<BossHealth>();
+        triggerSerialized.FindProperty("choiceState").objectReferenceValue = GameObject.Find("EndingEventRoot")?.GetComponent<EndingChoiceState>();
+        triggerSerialized.FindProperty("sequenceController").objectReferenceValue = sequenceController;
+        SerializedProperty preEndingLines = triggerSerialized.FindProperty("preEndingLines");
+        preEndingLines.arraySize = 2;
+        SetDialogueLine(preEndingLines.GetArrayElementAtIndex(0), "대니", "어서... 나가 봐... 그녀가 기다리는 곳으로 가라구...그동안 도와줘서 고마웠어.");
+        SetDialogueLine(preEndingLines.GetArrayElementAtIndex(1), string.Empty, "대니는 기분 나쁜 웃음을 짓고 숨을 거뒀다.");
+        triggerSerialized.FindProperty("requireRejectedInjection").boolValue = true;
+        triggerSerialized.FindProperty("playDelay").floatValue = 1.5f;
+        triggerSerialized.FindProperty("triggerOnce").boolValue = true;
+        triggerSerialized.ApplyModifiedPropertiesWithoutUndo();
+
+        EditorUtility.SetDirty(root);
+        EditorUtility.SetDirty(sequenceController);
+        EditorUtility.SetDirty(trigger);
+    }
+
+    private static void ConfigureEnding2Controller(
+        EndingSequenceController controller,
+        Canvas canvas,
+        CanvasGroup rootGroup,
+        Image background,
+        Image slideImage,
+        Text speakerText,
+        Text bodyText,
+        AudioSource bgmSource)
+    {
+        SerializedObject serialized = new SerializedObject(controller);
+        serialized.FindProperty("canvas").objectReferenceValue = canvas;
+        serialized.FindProperty("rootGroup").objectReferenceValue = rootGroup;
+        serialized.FindProperty("backgroundImage").objectReferenceValue = background;
+        serialized.FindProperty("slideImage").objectReferenceValue = slideImage;
+        serialized.FindProperty("speakerText").objectReferenceValue = speakerText;
+        serialized.FindProperty("bodyText").objectReferenceValue = bodyText;
+        serialized.FindProperty("bgmSource").objectReferenceValue = bgmSource;
+        serialized.FindProperty("sfxSource").objectReferenceValue = bgmSource;
+        serialized.FindProperty("titleSceneName").stringValue = "Title 1";
+        serialized.FindProperty("fadeInDuration").floatValue = 1f;
+        serialized.FindProperty("fadeOutDuration").floatValue = 0.8f;
+        serialized.FindProperty("charactersPerSecond").floatValue = 35f;
+        serialized.FindProperty("slideFadeDuration").floatValue = 0.35f;
+
+        SerializedProperty blackScreenLines = serialized.FindProperty("blackScreenLines");
+        blackScreenLines.arraySize = 0;
+
+        SerializedProperty slides = serialized.FindProperty("slides");
+        slides.arraySize = 3;
+        ConfigureSlide(slides.GetArrayElementAtIndex(0), string.Empty, "Assets/Art/1. 풀숲.png",
+            "수습할 것이 많았지만, 우선 아내의 생사부터 확인해야 했다. 나는 서둘러 집으로 뛰어갔다.");
+        ConfigureSlide(slides.GetArrayElementAtIndex(1), string.Empty, "Assets/Art/엔딩 아내 사진.png",
+            "비밀리에 운영되던 연구소에는 총 28명의 연구원이 있었다. 이번 사고로 28명 중 27명이 사망했다. 미친 듯이 뛰어간 집에는 아무도 없었다. 당연한 일이다. 선배의 여동생이자 동료 연구원인 나의 아내는 집이 아니라 연구소 지하에 있었으니까.",
+            "Assets/Art/카드지갑 사진.png");
+        ConfigureSlide(slides.GetArrayElementAtIndex(2), string.Empty, "Assets/Art/공허한 연구.실.png",
+            "사형을 선고받은 범죄자가 있었다. 그는 사기와 살인을 수없이 저질렀음에도 불구하고 뻔뻔스럽게 감형을 받고자 연구소의 실험에 자원했다. 그 녀석이 아무리 고통스럽게 비명을 질러도 무시했어야 했는데. 왜 그날, 그의 고통을 덜어줘야겠다는 생각을 했을까. 왜 그 억제기의 강도를 낮췄을까. 끊임없이 떠오르는 기억에 잡아먹힐 것 같다. 아무것도 할 수가 없다. 머리가, 마음이, 구멍이라도 난 것처럼 멍하다.");
+
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
@@ -282,7 +384,54 @@ public static class EndingSequenceSceneSetup
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
-    private static void ConfigureBoss2DoorDialogue(AutoDialogueTrigger trigger, SetEndingChoiceAction choiceAction)
+    private static void ConfigureBoss2IntroAction(StartBoss2IntroAction action)
+    {
+        GameObject retryPoint = FindOrCreateRoot("Boss2 Player Respawn Point");
+        retryPoint.transform.position = new Vector3(65.7f, 23.51f, 0f);
+
+        GameObject checkpointObject = FindOrCreateRoot("Boss2 Retry Checkpoint");
+        BossRetryCheckpoint retryCheckpoint = GetOrAdd<BossRetryCheckpoint>(checkpointObject);
+        BossArenaRespawnController respawnController = Object.FindFirstObjectByType<BossArenaRespawnController>();
+        Boss2Controller boss2 = GameObject.Find("Boss-2")?.GetComponent<Boss2Controller>();
+        Transform boss2Platform = GameObject.Find("platform-boss2")?.transform;
+
+        SerializedObject checkpointSerialized = new SerializedObject(retryCheckpoint);
+        checkpointSerialized.FindProperty("respawnPoint").objectReferenceValue = retryPoint.transform;
+        checkpointSerialized.FindProperty("retryCameraFocus").objectReferenceValue = null;
+        checkpointSerialized.FindProperty("bossRetryTarget").objectReferenceValue = boss2;
+        checkpointSerialized.FindProperty("beginBattleAfterRetry").boolValue = true;
+        SerializedProperty raisedTargets = checkpointSerialized.FindProperty("raisedStateTargets");
+        raisedTargets.arraySize = boss2Platform != null ? 1 : 0;
+        if (boss2Platform != null)
+        {
+            raisedTargets.GetArrayElementAtIndex(0).objectReferenceValue = boss2Platform;
+        }
+
+        checkpointSerialized.FindProperty("raisedTargetLocalY").floatValue = 26f;
+        checkpointSerialized.FindProperty("respawnInvincibleDuration").floatValue = 0.25f;
+        checkpointSerialized.ApplyModifiedPropertiesWithoutUndo();
+
+        Boss2IntroTrigger introTrigger = GameObject.Find("Boss2 Intro Trigger")?.GetComponent<Boss2IntroTrigger>();
+        if (introTrigger != null)
+        {
+            SerializedObject introSerialized = new SerializedObject(introTrigger);
+            introSerialized.FindProperty("retryPoint").objectReferenceValue = retryPoint.transform;
+            introSerialized.FindProperty("triggerOnPlayerEnter").boolValue = false;
+            introSerialized.ApplyModifiedPropertiesWithoutUndo();
+        }
+
+        SerializedObject serialized = new SerializedObject(action);
+        serialized.FindProperty("introTrigger").objectReferenceValue = introTrigger;
+        serialized.FindProperty("respawnController").objectReferenceValue = respawnController;
+        serialized.FindProperty("retryCheckpoint").objectReferenceValue = retryCheckpoint;
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+    }
+
+    private static void ConfigureBoss2DoorDialogue(
+        AutoDialogueTrigger trigger,
+        SetEndingChoiceAction acceptChoiceAction,
+        SetEndingChoiceAction rejectChoiceAction,
+        StartBoss2IntroAction boss2IntroAction)
     {
         SerializedObject serialized = new SerializedObject(trigger);
         SerializedProperty lines = serialized.FindProperty("lines");
@@ -298,7 +447,8 @@ public static class EndingSequenceSceneSetup
         acceptChoice.FindPropertyRelative("text").stringValue = "주사기를 맞는다";
         SerializedProperty acceptActions = acceptChoice.FindPropertyRelative("actionsOnChoose");
         acceptActions.arraySize = 1;
-        acceptActions.GetArrayElementAtIndex(0).objectReferenceValue = choiceAction;
+        acceptActions.GetArrayElementAtIndex(0).objectReferenceValue = acceptChoiceAction;
+        acceptChoice.FindPropertyRelative("actionsOnComplete").arraySize = 0;
         SerializedProperty acceptLines = acceptChoice.FindPropertyRelative("nextLines");
         acceptLines.arraySize = 4;
         SetDialogueLine(acceptLines.GetArrayElementAtIndex(0), "폴", "알았어.");
@@ -308,10 +458,28 @@ public static class EndingSequenceSceneSetup
 
         SerializedProperty rejectChoice = choices.GetArrayElementAtIndex(1);
         rejectChoice.FindPropertyRelative("text").stringValue = "맞지 않는다";
-        rejectChoice.FindPropertyRelative("actionsOnChoose").arraySize = 0;
-        rejectChoice.FindPropertyRelative("nextLines").arraySize = 0;
+        SerializedProperty rejectActions = rejectChoice.FindPropertyRelative("actionsOnChoose");
+        rejectActions.arraySize = 1;
+        rejectActions.GetArrayElementAtIndex(0).objectReferenceValue = rejectChoiceAction;
+        SerializedProperty rejectCompleteActions = rejectChoice.FindPropertyRelative("actionsOnComplete");
+        rejectCompleteActions.arraySize = 1;
+        rejectCompleteActions.GetArrayElementAtIndex(0).objectReferenceValue = boss2IntroAction;
+        SerializedProperty rejectLines = rejectChoice.FindPropertyRelative("nextLines");
+        rejectLines.arraySize = 12;
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(0), "폴", "아니. 이 주사는 필요 없어.");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(1), "대니", "무슨 소리야? 머리가 아파서 숨도 못 쉬고 있으면서!");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(2), "폴", "괜찮아졌어. 두통이 조금 가시니까 몇 가지 떠오르는 기억이 있어.");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(3), "대니", "그래? 뭐가 떠오르는데?");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(4), "폴", "...");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(5), "대니", "뭘 기억하길래 눈물을 흘리는 거야. 응?");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(6), "폴", "...");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(7), "대니", "기분 나쁜 표정만 짓지 말고, 대답해!");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(8), "폴", "연구소에 사고가 났었지. 한 연구원이 실험체를 동정하는 바람에 억제 장치가 느슨해졌어. 녀석은 탈출하기 위해 난동을 부리고 그 여파로 연구원 대부분이 죽었다. 두 명을 제외하고, 빌어먹을 대니, 제이콥은 내 선배 동료였어. 그리고, 나는 수감자가 아니라 이 연구소의 부소장이야.");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(9), "대니", "이거 골치 아프게 됐네. 그래서 뭐, 어쩌라구? 뒈진 사람들은 돌아오지 않아!");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(10), "폴", "내가 살아있는 한 너는 이곳에서 탈출할 수 없어. 너 같은 녀석을 바깥 세상에 내보내선 안 돼, 밖에는 아내가 있으니까.");
+        SetDialogueLine(rejectLines.GetArrayElementAtIndex(11), "대니", "푸핫, 그거 정말 유감이야.");
 
-        serialized.FindProperty("triggerOnce").boolValue = false;
+        serialized.FindProperty("triggerOnce").boolValue = true;
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
