@@ -1,58 +1,58 @@
 fileFormatVersion: 2
-guid: c7a7ab9967ed7ab4581746bf61772bcb
+guid: db847b604cacbf1439c4705ebff5d789
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 6946554223660043602
-    second: Boss2-bullet_0
+      213: -5683180584811884601
+    second: Boss2-AimedBullet_0
   - first:
-      213: -7122988410643966354
-    second: Boss2-bullet_1
+      213: -8724315792102178168
+    second: Boss2-AimedBullet_1
   - first:
-      213: 7501791755646482510
-    second: Boss2-bullet_2
+      213: -282614131803094540
+    second: Boss2-AimedBullet_2
   - first:
-      213: -2754521579145399001
-    second: Boss2-bullet_3
+      213: -6409476421108539350
+    second: Boss2-AimedBullet_3
   - first:
-      213: -5441316202136876258
-    second: Boss2-bullet_4
+      213: 1931047919709916656
+    second: Boss2-AimedBullet_4
   - first:
-      213: -4576257703638885520
-    second: Boss2-bullet_5
+      213: 2383538883110114396
+    second: Boss2-AimedBullet_5
   - first:
-      213: -1042964352033954058
-    second: Boss2-bullet_6
+      213: -4519574017830412682
+    second: Boss2-AimedBullet_6
   - first:
-      213: 1926620382270652528
-    second: Boss2-bullet_7
+      213: 1243992147483086083
+    second: Boss2-AimedBullet_7
   - first:
-      213: -7866624070217026088
-    second: Boss2-bullet_8
+      213: -5303725349040861616
+    second: Boss2-AimedBullet_8
   - first:
-      213: -2389940531247100440
-    second: Boss2-bullet_9
+      213: -8151215904677559978
+    second: Boss2-AimedBullet_9
   - first:
-      213: -8488762520263058594
-    second: Boss2-bullet_10
+      213: 5850210563608100893
+    second: Boss2-AimedBullet_10
   - first:
-      213: 4089699402276058115
-    second: Boss2-bullet_11
+      213: 1141621152828006148
+    second: Boss2-AimedBullet_11
   - first:
-      213: 7716263787853112092
-    second: Boss2-bullet_12
+      213: 3479303283888226976
+    second: Boss2-AimedBullet_12
   - first:
-      213: 8316197451928381998
-    second: Boss2-bullet_13
+      213: -3233406750286696527
+    second: Boss2-AimedBullet_13
   - first:
-      213: -4182045257190906229
-    second: Boss2-bullet_14
+      213: -763079071487647071
+    second: Boss2-AimedBullet_14
   - first:
-      213: 4760437372220511092
-    second: Boss2-bullet_15
+      213: 6482180343314164300
+    second: Boss2-AimedBullet_15
   - first:
-      213: 1256438348898857542
-    second: Boss2-bullet_16
+      213: 6435739209497462768
+    second: Boss2-AimedBullet_16
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -161,7 +161,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Boss2-bullet_0
+      name: Boss2-AimedBullet_0
       rect:
         serializedVersion: 2
         x: 0
@@ -176,14 +176,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 25d0f32134e176060800000000000000
-      internalID: 6946554223660043602
+      spriteID: 7cf04ef6e594121b0800000000000000
+      internalID: -5683180584811884601
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_1
+      name: Boss2-AimedBullet_1
       rect:
         serializedVersion: 2
         x: 145
@@ -198,14 +198,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e66975c97cf062d90800000000000000
-      internalID: -7122988410643966354
+      spriteID: 8824b6fa2010de680800000000000000
+      internalID: -8724315792102178168
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_2
+      name: Boss2-AimedBullet_2
       rect:
         serializedVersion: 2
         x: 151
@@ -220,14 +220,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e4833460bd7bb1860800000000000000
-      internalID: 7501791755646482510
+      spriteID: 4f10f59c1f3f31cf0800000000000000
+      internalID: -282614131803094540
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_3
+      name: Boss2-AimedBullet_3
       rect:
         serializedVersion: 2
         x: 965
@@ -242,14 +242,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 725f3e4c739f5c9d0800000000000000
-      internalID: -2754521579145399001
+      spriteID: a2065936727fc07a0800000000000000
+      internalID: -6409476421108539350
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_4
+      name: Boss2-AimedBullet_4
       rect:
         serializedVersion: 2
         x: 208
@@ -264,14 +264,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e1bcd055ebf8c74b0800000000000000
-      internalID: -5441316202136876258
+      spriteID: 0fd01921ad57cca10800000000000000
+      internalID: 1931047919709916656
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_5
+      name: Boss2-AimedBullet_5
       rect:
         serializedVersion: 2
         x: 981
@@ -286,14 +286,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 07b95f55ddddd70c0800000000000000
-      internalID: -4576257703638885520
+      spriteID: c541c145cf7041120800000000000000
+      internalID: 2383538883110114396
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_6
+      name: Boss2-AimedBullet_6
       rect:
         serializedVersion: 2
         x: 1001
@@ -308,14 +308,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6f6ee9b9275a681f0800000000000000
-      internalID: -1042964352033954058
+      spriteID: 67e1223606f3741c0800000000000000
+      internalID: -4519574017830412682
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_7
+      name: Boss2-AimedBullet_7
       rect:
         serializedVersion: 2
         x: 979
@@ -330,14 +330,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 070054ea70bbcba10800000000000000
-      internalID: 1926620382270652528
+      spriteID: 30dca16644c834110800000000000000
+      internalID: 1243992147483086083
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_8
+      name: Boss2-AimedBullet_8
       rect:
         serializedVersion: 2
         x: 1011
@@ -352,14 +352,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8d53d29561324d290800000000000000
-      internalID: -7866624070217026088
+      spriteID: 05e4f2835e16566b0800000000000000
+      internalID: -5303725349040861616
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_9
+      name: Boss2-AimedBullet_9
       rect:
         serializedVersion: 2
         x: 938
@@ -374,14 +374,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8ed45b0dfb935ded0800000000000000
-      internalID: -2389940531247100440
+      spriteID: 6510e2a525011ee80800000000000000
+      internalID: -8151215904677559978
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_10
+      name: Boss2-AimedBullet_10
       rect:
         serializedVersion: 2
         x: 1003
@@ -396,14 +396,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e5b1215967bd13a80800000000000000
-      internalID: -8488762520263058594
+      spriteID: d104919038f103150800000000000000
+      internalID: 5850210563608100893
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_11
+      name: Boss2-AimedBullet_11
       rect:
         serializedVersion: 2
         x: 997
@@ -418,14 +418,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 304bace20f781c830800000000000000
-      internalID: 4089699402276058115
+      spriteID: 40f9262d36ad7df00800000000000000
+      internalID: 1141621152828006148
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_12
+      name: Boss2-AimedBullet_12
       rect:
         serializedVersion: 2
         x: 417
@@ -440,14 +440,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: c13e134580da51b60800000000000000
-      internalID: 7716263787853112092
+      spriteID: 0a2020e07e7f84030800000000000000
+      internalID: 3479303283888226976
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_13
+      name: Boss2-AimedBullet_13
       rect:
         serializedVersion: 2
         x: 956
@@ -462,14 +462,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e2a233c7581196370800000000000000
-      internalID: 8316197451928381998
+      spriteID: 1bfafc221b1a023d0800000000000000
+      internalID: -3233406750286696527
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_14
+      name: Boss2-AimedBullet_14
       rect:
         serializedVersion: 2
         x: 569
@@ -484,14 +484,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: b86678afef366f5c0800000000000000
-      internalID: -4182045257190906229
+      spriteID: 1a2a170a0aff865f0800000000000000
+      internalID: -763079071487647071
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_15
+      name: Boss2-AimedBullet_15
       rect:
         serializedVersion: 2
         x: 96
@@ -506,14 +506,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 47392b27198701240800000000000000
-      internalID: 4760437372220511092
+      spriteID: c4aa24d9da455f950800000000000000
+      internalID: 6482180343314164300
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Boss2-bullet_16
+      name: Boss2-AimedBullet_16
       rect:
         serializedVersion: 2
         x: 617
@@ -528,8 +528,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6427b4c7504cf6110800000000000000
-      internalID: 1256438348898857542
+      spriteID: 0f7462986b6505950800000000000000
+      internalID: 6435739209497462768
       vertices: []
       indices: 
       edges: []
@@ -548,23 +548,23 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Boss2-bullet_0: 6946554223660043602
-      Boss2-bullet_1: -7122988410643966354
-      Boss2-bullet_10: -8488762520263058594
-      Boss2-bullet_11: 4089699402276058115
-      Boss2-bullet_12: 7716263787853112092
-      Boss2-bullet_13: 8316197451928381998
-      Boss2-bullet_14: -4182045257190906229
-      Boss2-bullet_15: 4760437372220511092
-      Boss2-bullet_16: 1256438348898857542
-      Boss2-bullet_2: 7501791755646482510
-      Boss2-bullet_3: -2754521579145399001
-      Boss2-bullet_4: -5441316202136876258
-      Boss2-bullet_5: -4576257703638885520
-      Boss2-bullet_6: -1042964352033954058
-      Boss2-bullet_7: 1926620382270652528
-      Boss2-bullet_8: -7866624070217026088
-      Boss2-bullet_9: -2389940531247100440
+      Boss2-AimedBullet_0: -5683180584811884601
+      Boss2-AimedBullet_1: -8724315792102178168
+      Boss2-AimedBullet_10: 5850210563608100893
+      Boss2-AimedBullet_11: 1141621152828006148
+      Boss2-AimedBullet_12: 3479303283888226976
+      Boss2-AimedBullet_13: -3233406750286696527
+      Boss2-AimedBullet_14: -763079071487647071
+      Boss2-AimedBullet_15: 6482180343314164300
+      Boss2-AimedBullet_16: 6435739209497462768
+      Boss2-AimedBullet_2: -282614131803094540
+      Boss2-AimedBullet_3: -6409476421108539350
+      Boss2-AimedBullet_4: 1931047919709916656
+      Boss2-AimedBullet_5: 2383538883110114396
+      Boss2-AimedBullet_6: -4519574017830412682
+      Boss2-AimedBullet_7: 1243992147483086083
+      Boss2-AimedBullet_8: -5303725349040861616
+      Boss2-AimedBullet_9: -8151215904677559978
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

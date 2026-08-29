@@ -13,27 +13,21 @@ public sealed class GameplayUI : MonoBehaviour
     const string FullscreenKey = "ui.fullscreen";
     const string StartModeKey = "game.startMode";
     const string CheckpointKey = "game.checkpoint";
-    const string QuickStartUnlockedKey = "game.quickStartUnlocked";
 
     [SerializeField] string titleScene = "Title-Consolidation";
     [SerializeField] GameObject optionsPrefab;
     [SerializeField] Sprite heartSprite;
 
     PlayerHealth health;
-    PlayerWallPhaseDash wallDash;
     readonly List<Image> hearts = new();
     GameObject optionsPanel;
-    GameObject deathPanel;
     OptionsPrefabUI optionsUI;
-    IBossEncounter retryBoss;
-    Transform retryPoint;
     float previousTimeScale = 1f;
     bool paused;
 
     void Awake()
     {
         health = FindFirstObjectByType<PlayerHealth>();
-        wallDash = health ? health.GetComponent<PlayerWallPhaseDash>() : null;
         Build();
         ApplySavedOptions();
     }
@@ -59,7 +53,6 @@ public sealed class GameplayUI : MonoBehaviour
         if (health)
         {
             health.HealthChanged += RefreshHearts;
-            health.Died += ShowDeath;
             RefreshHearts(health.CurrentHearts, health.MaxHearts);
         }
     }
@@ -69,7 +62,6 @@ public sealed class GameplayUI : MonoBehaviour
         if (health)
         {
             health.HealthChanged -= RefreshHearts;
-            health.Died -= ShowDeath;
         }
         RestoreTime();
     }
@@ -77,7 +69,6 @@ public sealed class GameplayUI : MonoBehaviour
     void Update()
     {
         if (Keyboard.current?.escapeKey.wasPressedThisFrame == true
-            && !deathPanel.activeSelf
             && !(DialogueRunner.Instance?.IsRunning ?? false))
             SetOptions(!optionsPanel.activeSelf);
 
@@ -97,7 +88,6 @@ public sealed class GameplayUI : MonoBehaviour
         BuildPlayerHud();
         BuildBossHud();
         BuildOptions();
-        BuildDeath();
     }
 
     void BuildPlayerHud()
@@ -136,17 +126,6 @@ public sealed class GameplayUI : MonoBehaviour
         optionsPanel.SetActive(false);
     }
 
-    void BuildDeath()
-    {
-        deathPanel = Panel("Death Panel", transform, new Color(.015f, .02f, .03f, .94f));
-        Stretch((RectTransform)deathPanel.transform, 0);
-        var title = Label("Title", deathPanel.transform, "SYSTEM FAILURE", 58, TextAnchor.MiddleCenter);
-        Place(title.gameObject, new Vector2(.5f, .5f), new Vector2(.5f, .5f), new Vector2(0, 115), new Vector2(800, 80), new Vector2(.5f, .5f));
-        ButtonControl(deathPanel.transform, "다시 시작", new Vector2(0, -10), Restart);
-        ButtonControl(deathPanel.transform, "타이틀 화면", new Vector2(0, -100), GoToTitle);
-        deathPanel.SetActive(false);
-    }
-
     void RefreshHearts(int current, int max)
     {
         for (int i = 0; i < hearts.Count; i++)
@@ -154,21 +133,6 @@ public sealed class GameplayUI : MonoBehaviour
             hearts[i].gameObject.SetActive(i < max);
             hearts[i].color = i < current ? Color.white : new Color(.2f, .23f, .27f);
         }
-    }
-
-    void ShowDeath()
-    {
-        IBossEncounter boss = FindActiveBoss();
-        if (boss != null && !boss.Health.IsDead)
-        {
-            PlayerPrefs.SetInt(QuickStartUnlockedKey, 1);
-            PlayerPrefs.Save();
-        }
-
-        if (optionsPanel.activeSelf) SetOptions(false);
-        deathPanel.SetActive(true);
-        Pause();
-        EventSystem.current?.SetSelectedGameObject(deathPanel.GetComponentInChildren<Button>().gameObject);
     }
 
     void SetOptions(bool visible)
@@ -201,28 +165,8 @@ public sealed class GameplayUI : MonoBehaviour
         paused = false;
     }
 
-    void Restart()
-    {
-        Time.timeScale = 1f;
-        paused = false;
-
-        IBossEncounter boss = retryBoss ?? FindActiveBoss();
-        if (boss == null)
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-            return;
-        }
-
-        deathPanel.SetActive(false);
-        boss.ResetForRetry();
-        wallDash?.ResetState();
-        health?.Respawn(retryPoint ? (Vector2)retryPoint.position : BossEntrancePosition(), health.MaxHearts);
-    }
-
     public void SetRetryCheckpoint(IBossEncounter boss, Transform point)
     {
-        retryBoss = boss;
-        retryPoint = point;
     }
 
     void GoToTitle()
@@ -240,13 +184,6 @@ public sealed class GameplayUI : MonoBehaviour
         return trigger
             ? new Vector2(trigger.bounds.min.x - 1f, trigger.bounds.center.y)
             : health ? (Vector2)health.transform.position : Vector2.zero;
-    }
-
-    static IBossEncounter FindActiveBoss()
-    {
-        foreach (MonoBehaviour behaviour in FindObjectsByType<MonoBehaviour>(FindObjectsInactive.Include))
-            if (behaviour is IBossEncounter boss && boss.IsBattleStarted && !boss.Health.IsDead) return boss;
-        return null;
     }
 
     void ApplySavedOptions()
@@ -322,14 +259,6 @@ public sealed class GameplayUI : MonoBehaviour
         var text = Label("Label", root.transform, label, 23, TextAnchor.MiddleLeft); Place(text.gameObject, Vector2.zero, Vector2.zero, new Vector2(58, 0), new Vector2(450, 42), Vector2.zero);
         var toggle = root.AddComponent<Toggle>(); toggle.targetGraphic = bg; toggle.graphic = check;
         return toggle;
-    }
-
-    static void ButtonControl(Transform parent, string label, Vector2 position, UnityEngine.Events.UnityAction action)
-    {
-        var root = Panel(label + " Button", parent, new Color(.1f, .32f, .38f, 1));
-        Place(root, new Vector2(.5f, .5f), new Vector2(.5f, .5f), position, new Vector2(330, 66), new Vector2(.5f, .5f));
-        var text = Label("Text", root.transform, label, 25, TextAnchor.MiddleCenter); Stretch(text.rectTransform, 0);
-        var button = root.AddComponent<Button>(); button.targetGraphic = root.GetComponent<Image>(); button.onClick.AddListener(action);
     }
 
     static void Place(GameObject go, Vector2 min, Vector2 max, Vector2 position, Vector2 size, Vector2 pivot)
