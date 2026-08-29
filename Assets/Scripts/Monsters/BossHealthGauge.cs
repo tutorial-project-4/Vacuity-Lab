@@ -71,8 +71,12 @@ public class BossHealthGauge : MonoBehaviour
             return;
         }
 
-        fillTop.fillAmount = Mathf.Clamp01(boss.HpRatio * 2f - 1f);
-        fill.fillAmount = Mathf.Clamp01(boss.HpRatio * 2f);
+        IBossEncounter encounter = boss.GetComponent<IBossEncounter>();
+        int phaseTwoHp = encounter != null ? encounter.PhaseTwoHp : boss.MaxHp / 2;
+        phaseTwoHp = Mathf.Clamp(phaseTwoHp, 1, boss.MaxHp - 1);
+
+        fillTop.fillAmount = Mathf.Clamp01((float)(boss.CurrentHp - phaseTwoHp) / (boss.MaxHp - phaseTwoHp));
+        fill.fillAmount = Mathf.Clamp01((float)boss.CurrentHp / phaseTwoHp);
     }
 
     static BossHealthGauge FindGauge()

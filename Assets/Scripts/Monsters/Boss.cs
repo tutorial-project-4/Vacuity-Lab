@@ -34,6 +34,7 @@ public class Boss : MonoBehaviour, IBossEncounter
     public float BeamAlignSpeed => beamAlignSpeed;
     public bool IsBattleStarted => _battleStarted;
     public BossHealth Health => _health;
+    public int PhaseTwoHp => phase2HpThreshold;
 
     [Header("애니메이션")]
     [SerializeField] RuntimeAnimatorController idleAnimation;
@@ -331,11 +332,11 @@ public class Boss : MonoBehaviour, IBossEncounter
 
         if (pc) pc.SetCutsceneLock(false);
         if (ph) ph.RemoveInvincibleOverride(this);
-        _health.Invulnerable = false;
         Debug.Log($"[BossPhase] 컷신 종료 — 조작권 반환, {prepDuration}s 준비");
 
         yield return new WaitForSeconds(prepDuration);
 
+        _health.Invulnerable = false;
         // Restart()의 Blackboard 초기화 여부 미확인(#15) — 앞뒤 양쪽에 세팅해 학습 재생을 막는다
         SetPhase2Blackboard();
         _agent.Restart();

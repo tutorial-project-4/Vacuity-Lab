@@ -148,6 +148,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
 
     public bool IsBattleStarted => battleStarted;
     public BossHealth Health => health;
+    public int PhaseTwoHp => phaseTwoHp;
 
     void Awake()
     {
