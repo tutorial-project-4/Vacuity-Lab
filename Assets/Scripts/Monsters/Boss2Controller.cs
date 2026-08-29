@@ -113,6 +113,8 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     [SerializeField] float aimedProjectileSize = .5f;
     [Tooltip("발사체 Sprite Renderer의 Order in Layer 값입니다. 값이 클수록 같은 Sorting Layer의 다른 스프라이트보다 앞에 표시됩니다.")]
     [SerializeField] int projectileOrderInLayer = 4;
+    [SerializeField] Sprite spreadProjectileSprite;
+    [SerializeField] Sprite aimedProjectileSprite;
     [Tooltip("조준탄 발사 전에 표시되는 조준선의 굵기입니다. 단위: position 값 1.")]
     [SerializeField] float warningLineWidth = .06f;
 
@@ -316,7 +318,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     internal void FireAimed(Vector2 direction, GameObject warning)
     {
         RemoveSpawned(warning);
-        FireProjectile(direction, aimedSpeed, aimedRange, aimedProjectileSize);
+        FireProjectile(direction, aimedSpeed, aimedRange, aimedProjectileSize, aimedProjectileSprite);
     }
 
     internal void CancelWarning(GameObject warning) => RemoveSpawned(warning);
@@ -365,7 +367,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         for (int i = -2; i <= 2; i++)
         {
             float angle = (center + i * 15f) * Mathf.Deg2Rad;
-            FireProjectile(new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)), spreadSpeed, spreadRange, spreadProjectileSize);
+            FireProjectile(new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)), spreadSpeed, spreadRange, spreadProjectileSize, spreadProjectileSprite);
         }
     }
 
@@ -477,18 +479,23 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     }
 #endif
 
-    void FireProjectile(Vector2 direction, float speed, float range, float size)
+    void FireProjectile(Vector2 direction, float speed, float range, float size, Sprite sprite)
     {
-        projectileSprite ??= Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * .5f, 1f);
+        if (projectileSprite == null)
+            projectileSprite = Sprite.Create(Texture2D.whiteTexture, new Rect(0, 0, 1, 1), Vector2.one * .5f, 1f);
+        if (sprite == null) sprite = projectileSprite;
 
         var projectile = new GameObject("Boss2 Projectile");
         projectile.layer = gameObject.layer;
         projectile.transform.SetPositionAndRotation(transform.position, Quaternion.identity);
-        projectile.transform.localScale = Vector3.one * size;
+        float spriteSize = Mathf.Max(sprite.bounds.size.x, sprite.bounds.size.y);
+        projectile.transform.localScale = Vector3.one * (size / spriteSize);
         SpriteRenderer renderer = projectile.AddComponent<SpriteRenderer>();
-        renderer.sprite = projectileSprite;
+        renderer.sprite = sprite;
         renderer.sortingOrder = projectileOrderInLayer;
-        projectile.AddComponent<CircleCollider2D>().isTrigger = true;
+        CircleCollider2D collider = projectile.AddComponent<CircleCollider2D>();
+        collider.radius = spriteSize * .5f;
+        collider.isTrigger = true;
         Rigidbody2D body = projectile.AddComponent<Rigidbody2D>();
         body.bodyType = RigidbodyType2D.Kinematic;
         body.gravityScale = 0f;
