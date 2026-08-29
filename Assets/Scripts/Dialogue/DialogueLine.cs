@@ -18,4 +18,5 @@ public struct DialogueChoice
     public string text;
     public DialogueLine[] nextLines;
     public DialogueInteractionAction[] actionsOnChoose;
+    public DialogueInteractionAction[] actionsOnComplete;
 }

@@ -2,7 +2,6 @@ using System.Collections;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(Collider2D))]
 public sealed class Boss2IntroTrigger : MonoBehaviour
 {
     const string CheckpointKey = "game.checkpoint";
@@ -11,6 +10,7 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
     [SerializeField] float platformTargetY = 26f;
     [SerializeField] float platformMoveDuration = 1f;
     [SerializeField] Transform retryPoint;
+    [SerializeField] bool triggerOnPlayerEnter = true;
     Transform platform;
     Transform bossTransform;
     Vector3 platformStartPosition;
@@ -33,18 +33,26 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (triggered || boss2 == null || other.GetComponentInParent<PlayerMovement>() == null) return;
+        if (!triggerOnPlayerEnter || other.GetComponentInParent<PlayerMovement>() == null) return;
+
+        PlayIntro();
+    }
+
+    public bool PlayIntro()
+    {
+        if (triggered || boss2 == null) return false;
         IBossEncounter encounter = boss2.GetComponent<IBossEncounter>();
         if (encounter == null)
         {
             Debug.LogWarning("[Boss2IntroTrigger] IBossEncounter 보스 참조가 없습니다", this);
-            return;
+            return false;
         }
         triggered = true;
         PlayerPrefs.SetInt(CheckpointKey, 2);
         PlayerPrefs.Save();
         FindAnyObjectByType<GameplayUI>()?.SetRetryCheckpoint(encounter, retryPoint);
         StartCoroutine(RaisePlatform(encounter));
+        return true;
     }
 
     IEnumerator RaisePlatform(IBossEncounter encounter)

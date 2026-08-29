@@ -12,6 +12,7 @@ public class BossRetryCheckpoint : MonoBehaviour
 
     [Header("Boss")]
     [SerializeField] private MonoBehaviour bossRetryTarget;
+    [SerializeField] private bool beginBattleAfterRetry;
 
     [Header("Arena State")]
     [SerializeField] private Transform[] raisedStateTargets;
@@ -25,8 +26,9 @@ public class BossRetryCheckpoint : MonoBehaviour
 
     public void ApplyRetryState(PlayerHealth playerHealth)
     {
-        ApplyArenaState();
         ResetBoss();
+        ApplyArenaState();
+        BeginBattleIfNeeded();
         RespawnPlayer(playerHealth);
         StartRespawnInvincibility(playerHealth);
         ApplyCamera(playerHealth);
@@ -78,6 +80,19 @@ public class BossRetryCheckpoint : MonoBehaviour
         }
 
         Debug.LogWarning("[BossRetryCheckpoint] IBossEncounter 재시작 대상이 연결되지 않았습니다.", this);
+    }
+
+    private void BeginBattleIfNeeded()
+    {
+        if (!beginBattleAfterRetry)
+        {
+            return;
+        }
+
+        if (bossRetryTarget is IBossEncounter encounter)
+        {
+            encounter.BeginBattle();
+        }
     }
 
     private void ApplyCamera(PlayerHealth playerHealth)
