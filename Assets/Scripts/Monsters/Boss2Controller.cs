@@ -23,6 +23,14 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     [Tooltip("활성화하면 BeginBattle() 호출 전까지 행동·피격·체력 UI를 중지합니다.")]
     [SerializeField] bool waitForBattleTrigger = true;
 
+    [Header("플랫폼 위치 이동")]
+    [Tooltip("보스가 무작위로 이동할 월드 위치 목록입니다. 플랫폼마다 빈 오브젝트를 배치해 연결하세요.")]
+    [SerializeField] List<Transform> platformMovePoints = new();
+    [Tooltip("다음 위치 이동까지 기다리는 최소 시간입니다. 단위: 초.")]
+    [SerializeField] float platformMoveMinInterval = 3f;
+    [Tooltip("다음 위치 이동까지 기다리는 최대 시간입니다. 단위: 초.")]
+    [SerializeField] float platformMoveMaxInterval = 10f;
+
     [Header("확산탄")]
     [Tooltip("확산탄이 1초 동안 이동하는 거리입니다. 단위: position 값 1/초.")]
     [SerializeField] float spreadSpeed = 4.25f;
@@ -118,6 +126,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     PlayerHealth playerHealth;
     float attackStartTime;
     Coroutine wallRushRoutine;
+    Coroutine platformMoveRoutine;
     Coroutine ceilingSpikeWallRoutine;
     Coroutine phaseTransitionRoutine;
     Coroutine droneSummonRoutine;
@@ -220,6 +229,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         attackStartTime = Time.time + .5f;
         agent.Restart();
         wallRushRoutine = StartCoroutine(WallRushLoop());
+        platformMoveRoutine = StartCoroutine(PlatformMoveLoop());
         BossHealthGauge.ShowFor(health);
         Debug.Log("[Boss2] 보스전 시작", this);
     }
@@ -531,6 +541,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         attackStartTime = Time.time + .5f;
         agent.Restart();
         wallRushRoutine = StartCoroutine(WallRushLoop());
+        platformMoveRoutine = StartCoroutine(PlatformMoveLoop());
         SpawnDrone();
         droneSummonRoutine = StartCoroutine(DroneSummonLoop());
         Debug.Log("[Boss2] 2페이즈 시작 및 첫 드론 소환", this);
@@ -576,6 +587,34 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
         Debug.Log("[Boss2] 사망 — 행동 및 생성물 정리", this);
     }
 
+    IEnumerator PlatformMoveLoop()
+    {
+        if (platformMovePoints.Count == 0)
+        {
+            Debug.LogWarning("[Boss2] 플랫폼 이동 위치가 연결되지 않았습니다.", this);
+            yield break;
+        }
+
+        while (battleStarted && !health.IsDead)
+        {
+            float min = Mathf.Max(.1f, Mathf.Min(platformMoveMinInterval, platformMoveMaxInterval));
+            float max = Mathf.Max(min, Mathf.Max(platformMoveMinInterval, platformMoveMaxInterval));
+            yield return new WaitForSeconds(Random.Range(min, max));
+            if (!battleStarted || health.IsDead || transitioning) yield break;
+
+            int startIndex = Random.Range(0, platformMovePoints.Count);
+            for (int i = 0; i < platformMovePoints.Count; i++)
+            {
+                Transform point = platformMovePoints[(startIndex + i) % platformMovePoints.Count];
+                if (point == null) continue;
+                Vector3 position = point.position;
+                position.z = transform.position.z;
+                transform.position = position;
+                break;
+            }
+        }
+    }
+
 
     void PlayAnimation(RuntimeAnimatorController controller)
     {
@@ -609,9 +648,11 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     void StopPatternRoutines()
     {
         if (wallRushRoutine != null) StopCoroutine(wallRushRoutine);
+        if (platformMoveRoutine != null) StopCoroutine(platformMoveRoutine);
         if (droneSummonRoutine != null) StopCoroutine(droneSummonRoutine);
         if (ceilingSpikeWallRoutine != null) StopCoroutine(ceilingSpikeWallRoutine);
         wallRushRoutine = null;
+        platformMoveRoutine = null;
         droneSummonRoutine = null;
         ceilingSpikeWallRoutine = null;
     }
