@@ -633,8 +633,7 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     void HandlePlayerDeath()
     {
         if (!battleStarted || health.IsDead) return;
-        health.Invulnerable = true;
-        Time.timeScale = 0f;
+        ResetForRetry();
     }
 
     void StopBattle()
