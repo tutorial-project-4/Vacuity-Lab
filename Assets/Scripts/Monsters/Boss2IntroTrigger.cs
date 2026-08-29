@@ -9,7 +9,6 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
     [SerializeField] string platformName = "platform-boss2";
     [SerializeField] float platformTargetY = 26f;
     [SerializeField] float platformMoveDuration = 1f;
-    [SerializeField] float bossRiseDistance = 20f;
     [SerializeField] Transform retryPoint;
     [SerializeField] bool triggerOnPlayerEnter = true;
     Transform platform;
@@ -62,8 +61,9 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
             Debug.LogWarning($"[Boss2IntroTrigger] '{platformName}' 오브젝트가 없습니다", this);
 
         Vector3 platformStart = platform != null ? platform.position : default;
-        Vector3 bossEntranceStart = bossStartPosition - Vector3.up * bossRiseDistance;
-        BeginBossEntrance(bossEntranceStart);
+        float platformRiseDistance = platform != null ? platformTargetY - platformStart.y : 0f;
+        Vector3 bossEntranceStart = bossStartPosition + Vector3.up * platformRiseDistance;
+        BeginBossEntrance(bossStartPosition);
         float elapsed = 0f;
         while (elapsed < platformMoveDuration)
         {
@@ -75,7 +75,7 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
                 position.y = Mathf.Lerp(platformStart.y, platformTargetY, t);
                 platform.position = position;
             }
-            if (bossTransform != null) bossTransform.position = Vector3.Lerp(bossEntranceStart, bossStartPosition, t);
+            if (bossTransform != null) bossTransform.position = Vector3.Lerp(bossStartPosition, bossEntranceStart, t);
             yield return null;
         }
 
@@ -85,7 +85,8 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
             target.y = platformTargetY;
             platform.position = target;
         }
-        RestoreBossEntrance();
+        if (bossTransform != null) bossTransform.position = bossEntranceStart;
+        RestoreBossEntrance(false);
         encounter.BeginBattle();
     }
 
@@ -101,9 +102,9 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
         bossTransform.position = start;
     }
 
-    void RestoreBossEntrance()
+    void RestoreBossEntrance(bool restorePosition = true)
     {
-        if (bossTransform != null) bossTransform.position = bossStartPosition;
+        if (restorePosition && bossTransform != null) bossTransform.position = bossStartPosition;
         if (bossColliders != null)
             for (int i = 0; i < bossColliders.Length; i++)
                 if (bossColliders[i] != null) bossColliders[i].enabled = bossColliderStates[i];
