@@ -11,6 +11,7 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
     [SerializeField] float platformMoveDuration = 1f;
     [SerializeField] Transform retryPoint;
     [SerializeField] bool triggerOnPlayerEnter = true;
+    [SerializeField] bool preservePositionsOnRetry;
     Transform platform;
     Transform bossTransform;
     Vector3 platformStartPosition;
@@ -117,6 +118,12 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
     public void ResetForRetry()
     {
         StopAllCoroutines();
+        if (preservePositionsOnRetry)
+        {
+            RestoreBossEntrance(false);
+            return;
+        }
+
         triggered = false;
         if (platform != null) platform.position = platformStartPosition;
         RestoreBossEntrance();

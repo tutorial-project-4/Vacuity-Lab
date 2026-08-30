@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public enum GameOverMenuAction
 {
     Retry,
-    ReloadScene
+    ReturnToTitle
 }
 
 [DisallowMultipleComponent]
@@ -59,7 +59,7 @@ public class GameOverMenuButton : MonoBehaviour, IPointerEnterHandler, IPointerE
         }
         else
         {
-            respawnController.ReloadCurrentScene();
+            respawnController.ReturnToTitle();
         }
     }
 

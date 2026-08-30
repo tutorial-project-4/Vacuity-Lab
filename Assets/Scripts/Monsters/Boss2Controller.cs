@@ -22,6 +22,8 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     [SerializeField] Transform target;
     [Tooltip("활성화하면 BeginBattle() 호출 전까지 행동·피격·체력 UI를 중지합니다.")]
     [SerializeField] bool waitForBattleTrigger = true;
+    [Tooltip("활성화하면 ResetForRetry()가 호출되어도 보스의 현재 위치를 유지합니다.")]
+    [SerializeField] bool preservePositionOnRetry;
 
     [Header("플랫폼 위치 이동")]
     [Tooltip("보스가 무작위로 이동할 월드 위치 목록입니다. 플랫폼마다 빈 오브젝트를 배치해 연결하세요.")]
@@ -241,7 +243,8 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     {
         Time.timeScale = 1f;
         StopBattle();
-        transform.position = startPosition;
+        if (!preservePositionOnRetry)
+            transform.position = startPosition;
         health.ResetHealth();
         health.Invulnerable = true;
         PlayIdleAnimation();
@@ -634,7 +637,9 @@ public sealed class Boss2Controller : MonoBehaviour, IBossEncounter
     void HandlePlayerDeath()
     {
         if (!battleStarted || health.IsDead) return;
-        ResetForRetry();
+
+        health.Invulnerable = true;
+        StopBattle();
     }
 
     void StopBattle()

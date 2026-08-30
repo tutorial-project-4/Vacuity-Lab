@@ -13,6 +13,7 @@ public class BossArenaRespawnController : MonoBehaviour
     [SerializeField] private GameObject gameOverRoot;
     [SerializeField] private CanvasGroup gameOverGroup;
     [SerializeField] private AudioClip gameOverClip;
+    [SerializeField] private string titleSceneName = "Title-Consolidation";
 
     [Header("Death Animation")]
     [SerializeField] private string deathStateName = "Death";
@@ -77,18 +78,31 @@ public class BossArenaRespawnController : MonoBehaviour
         activeCheckpoint.ApplyRetryState(playerHealth);
     }
 
-    public void ReloadCurrentScene()
+    public void ReturnToTitle()
     {
         Time.timeScale = 1f;
-        Scene activeScene = SceneManager.GetActiveScene();
-        if (activeScene.buildIndex >= 0)
+        if (!string.IsNullOrWhiteSpace(titleSceneName) && Application.CanStreamedLevelBeLoaded(titleSceneName))
         {
-            SceneManager.LoadScene(activeScene.buildIndex);
+            SceneManager.LoadScene(titleSceneName);
         }
         else
         {
-            SceneManager.LoadScene(activeScene.name);
+            Debug.LogWarning($"[BossArenaRespawnController] Title scene '{titleSceneName}' is not in build settings. Reloading the active scene.", this);
+            Scene activeScene = SceneManager.GetActiveScene();
+            if (activeScene.buildIndex >= 0)
+            {
+                SceneManager.LoadScene(activeScene.buildIndex);
+            }
+            else
+            {
+                SceneManager.LoadScene(activeScene.name);
+            }
         }
+    }
+
+    public void ReloadCurrentScene()
+    {
+        ReturnToTitle();
     }
 
     private void HandlePlayerDied()
