@@ -12,6 +12,7 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
     [SerializeField] Transform retryPoint;
     [SerializeField] bool triggerOnPlayerEnter = true;
     [SerializeField] bool preservePositionsOnRetry;
+    [SerializeField] BossHealthGaugeBinder healthGaugeBinder;
     Transform platform;
     Transform bossTransform;
     Vector3 platformStartPosition;
@@ -49,6 +50,7 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
             return false;
         }
         triggered = true;
+        BindHealthGauge(encounter);
         PlayerPrefs.SetInt(CheckpointKey, 2);
         PlayerPrefs.Save();
         FindAnyObjectByType<GameplayUI>()?.SetRetryCheckpoint(encounter, retryPoint);
@@ -133,7 +135,16 @@ public sealed class Boss2IntroTrigger : MonoBehaviour
     {
         IBossEncounter encounter = boss2 != null ? boss2.GetComponent<IBossEncounter>() : null;
         if (encounter == null || ui == null) return false;
+        BindHealthGauge(encounter);
         ui.SetRetryCheckpoint(encounter, retryPoint);
         return true;
+    }
+
+    void BindHealthGauge(IBossEncounter encounter)
+    {
+        if (encounter == null || encounter.Health == null) return;
+
+        if (healthGaugeBinder != null) healthGaugeBinder.Bind(encounter.Health);
+        else BossHealthGauge.ShowFor(encounter.Health);
     }
 }

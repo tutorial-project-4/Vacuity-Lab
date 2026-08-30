@@ -35,7 +35,12 @@ public class BossHealthGauge : MonoBehaviour
 
     public void Bind(BossHealth newBoss)
     {
-        if (boss == newBoss) return;
+        if (boss == newBoss)
+        {
+            Refresh();
+            return;
+        }
+
         if (isActiveAndEnabled && boss != null) boss.OnDamaged -= HandleDamaged;
         boss = newBoss;
         if (isActiveAndEnabled && boss != null) boss.OnDamaged += HandleDamaged;
@@ -44,7 +49,7 @@ public class BossHealthGauge : MonoBehaviour
 
     public static void ShowFor(BossHealth health)
     {
-        BossHealthGauge gauge = FindGauge();
+        BossHealthGauge gauge = FindGauge(health);
         if (gauge == null) return;
         gauge.Bind(health);
         gauge.SetVisible(true);
@@ -52,13 +57,14 @@ public class BossHealthGauge : MonoBehaviour
 
     public static void HideFor(BossHealth health)
     {
-        BossHealthGauge gauge = FindGauge();
+        BossHealthGauge gauge = FindGauge(health);
         if (gauge != null && gauge.boss == health) gauge.SetVisible(false);
     }
 
     public void SetVisible(bool visible)
     {
         if (fill != null) fill.transform.parent.gameObject.SetActive(visible);
+        if (visible) Refresh();
     }
 
     void Refresh()
@@ -79,10 +85,18 @@ public class BossHealthGauge : MonoBehaviour
         fill.fillAmount = Mathf.Clamp01((float)boss.CurrentHp / phaseTwoHp);
     }
 
-    static BossHealthGauge FindGauge()
+    static BossHealthGauge FindGauge(BossHealth health)
     {
+        BossHealthGauge fallback = null;
+
         foreach (BossHealthGauge gauge in FindObjectsByType<BossHealthGauge>(FindObjectsInactive.Include))
-            if (gauge.fill != null) return gauge;
-        return null;
+        {
+            if (gauge.fill == null) continue;
+            if (gauge.boss == health) return gauge;
+            if (fallback == null && gauge.boss == null) fallback = gauge;
+            else if (fallback == null) fallback = gauge;
+        }
+
+        return fallback;
     }
 }
