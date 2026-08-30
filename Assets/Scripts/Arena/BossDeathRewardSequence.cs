@@ -18,6 +18,11 @@ public class BossDeathRewardSequence : MonoBehaviour
     [SerializeField] private float platformFallDuration = 1.2f;
     [SerializeField] private bool disablePlatformCollidersOnFall = true;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip platformMoveLoopClip;
+    [SerializeField, Range(0f, 1f)] private float platformMoveVolume = 1f;
+
     [Header("Rewards")]
     [SerializeField] private Transform rewardSpawnOrigin;
     [SerializeField] private GameObject[] rewardsToReveal;
@@ -45,6 +50,8 @@ public class BossDeathRewardSequence : MonoBehaviour
             StopCoroutine(sequenceRoutine);
             sequenceRoutine = null;
         }
+
+        StopPlatformMoveLoop();
     }
 
     public void Play()
@@ -59,6 +66,7 @@ public class BossDeathRewardSequence : MonoBehaviour
         if (sequenceRoutine != null)
         {
             StopCoroutine(sequenceRoutine);
+            StopPlatformMoveLoop();
         }
 
         sequenceRoutine = StartCoroutine(SequenceRoutine());
@@ -106,6 +114,8 @@ public class BossDeathRewardSequence : MonoBehaviour
             SetPlatformCollidersEnabled(false);
         }
 
+        StartPlatformMoveLoop();
+
         float duration = Mathf.Max(0.01f, platformFallDuration);
         float elapsed = 0f;
         Vector3[] startPositions = new Vector3[fallingPlatforms.Length];
@@ -128,6 +138,7 @@ public class BossDeathRewardSequence : MonoBehaviour
         }
 
         ApplyPlatformPositions(startPositions, 1f);
+        StopPlatformMoveLoop();
     }
 
     private void ApplyPlatformPositions(Vector3[] startPositions, float t)
@@ -248,6 +259,54 @@ public class BossDeathRewardSequence : MonoBehaviour
                 rewardParticles[i].Play();
             }
         }
+    }
+
+    private void StartPlatformMoveLoop()
+    {
+        if (platformMoveLoopClip == null)
+        {
+            return;
+        }
+
+        AudioSource source = GetAudioSource();
+        if (source == null)
+        {
+            return;
+        }
+
+        source.clip = platformMoveLoopClip;
+        source.loop = true;
+        source.volume = platformMoveVolume;
+        source.Play();
+    }
+
+    private void StopPlatformMoveLoop()
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        audioSource.Stop();
+        audioSource.clip = null;
+    }
+
+    private AudioSource GetAudioSource()
+    {
+        if (audioSource != null)
+        {
+            return audioSource;
+        }
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
+        return audioSource;
     }
 
     private void OnValidate()

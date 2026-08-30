@@ -41,6 +41,7 @@ public class DialogueInteractable : MonoBehaviour
     [Header("Interaction")]
     [SerializeField] private string promptLabel = "F";
     [SerializeField] private bool triggerOnce = true;
+    [SerializeField] private DialogueInteractionAction[] actionsBeforeDialogue;
     [SerializeField] private DialogueInteractionAction[] actionsOnInteract;
 
     private PlayerController currentPlayer;
@@ -66,7 +67,14 @@ public class DialogueInteractable : MonoBehaviour
     private IEnumerator InteractionRoutine(DialogueRunner runner, PlayerController player)
     {
         DialogueSegment segment = SelectSegment();
+        if (segment == null && HasSegmentsConfigured())
+        {
+            interactionRoutine = null;
+            yield break;
+        }
+
         int segmentIndex = GetSegmentIndex(segment);
+        RunInteractionActions(actionsBeforeDialogue);
         RunInteractionActions(segment?.actionsBeforeDialogue);
         if (segment != null && segment.delayBeforeDialogue > 0f)
         {
@@ -154,6 +162,11 @@ public class DialogueInteractable : MonoBehaviour
         }
 
         return null;
+    }
+
+    private bool HasSegmentsConfigured()
+    {
+        return segments != null && segments.Length > 0;
     }
 
     private bool IsPlayCountMet(DialogueSegment segment, int index)

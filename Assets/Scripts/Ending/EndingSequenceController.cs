@@ -363,7 +363,18 @@ public sealed class EndingSequenceController : MonoBehaviour
 
     private void PlayBgm()
     {
-        if (bgmSource == null || endingBgm == null)
+        if (endingBgm == null)
+        {
+            return;
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayBgm(endingBgm);
+            return;
+        }
+
+        if (bgmSource == null)
         {
             return;
         }

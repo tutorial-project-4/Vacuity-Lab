@@ -24,11 +24,17 @@ public class DialogueRunner : MonoBehaviour
     [SerializeField] private Button[] choiceButtons;
     [SerializeField] private Text[] choiceTexts;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip choiceMoveClip;
+    [SerializeField] private AudioClip choiceConfirmClip;
+    [SerializeField] private bool duckBgmDuringDialogue = true;
+
     private static DialogueRunner instance;
     private Coroutine routine;
     private PlayerController lockedPlayer;
     private bool isTyping;
     private int selectedChoiceIndex = -1;
+    private int highlightedChoiceIndex;
 
     public static DialogueRunner Instance
     {
@@ -103,6 +109,7 @@ public class DialogueRunner : MonoBehaviour
 
         lockedPlayer = player;
         lockedPlayer?.SetDialogueInputLock(true);
+        SetBgmDucked(true);
         SetPromptVisible(false);
         SetDialogueVisible(true);
         yield return null;
@@ -141,6 +148,7 @@ public class DialogueRunner : MonoBehaviour
         SetDialogueVisible(false);
         SetImageOverlayVisible(false);
         SetChoiceVisible(false);
+        SetBgmDucked(false);
         lockedPlayer?.SetDialogueInputLock(false);
         lockedPlayer = null;
         routine = null;
@@ -202,6 +210,7 @@ public class DialogueRunner : MonoBehaviour
         {
             yield return null;
         }
+
     }
 
     private IEnumerator ShowImageLine(DialogueLine line)
@@ -239,7 +248,6 @@ public class DialogueRunner : MonoBehaviour
             yield break;
         }
 
-        selectedChoiceIndex = -1;
         int visibleCount = Mathf.Min(choices.Length, choiceButtons.Length, choiceTexts.Length);
         if (visibleCount <= 0)
         {
@@ -248,6 +256,8 @@ public class DialogueRunner : MonoBehaviour
             yield break;
         }
 
+        selectedChoiceIndex = -1;
+        highlightedChoiceIndex = 0;
         for (int i = 0; i < choiceButtons.Length; i++)
         {
             bool visible = i < visibleCount;
@@ -261,10 +271,11 @@ public class DialogueRunner : MonoBehaviour
             choiceTexts[i].text = $"{i + 1}. {choices[i].text}";
             EnsureChoiceButtonVisible(choiceButtons[i], choiceTexts[i]);
             choiceButtons[i].onClick.RemoveAllListeners();
-            choiceButtons[i].onClick.AddListener(() => selectedChoiceIndex = choiceIndex);
+            choiceButtons[i].onClick.AddListener(() => SelectChoice(choiceIndex));
         }
 
         SetChoiceVisible(true);
+        HighlightChoice(0, false);
         yield return null;
 
         while (selectedChoiceIndex < 0)
@@ -272,7 +283,16 @@ public class DialogueRunner : MonoBehaviour
             int keyboardChoice = GetKeyboardChoiceIndex(visibleCount);
             if (keyboardChoice >= 0)
             {
-                selectedChoiceIndex = keyboardChoice;
+                SelectChoice(keyboardChoice);
+            }
+            else if (TryMoveChoiceCursor(visibleCount))
+            {
+                yield return null;
+                continue;
+            }
+            else if (WasAdvancePressed())
+            {
+                SelectChoice(highlightedChoiceIndex);
             }
 
             yield return null;
@@ -331,6 +351,70 @@ public class DialogueRunner : MonoBehaviour
         }
 
         return -1;
+    }
+
+    private bool TryMoveChoiceCursor(int visibleCount)
+    {
+        Keyboard keyboard = Keyboard.current;
+        if (keyboard == null || visibleCount <= 1)
+        {
+            return false;
+        }
+
+        int direction = 0;
+        if (keyboard.upArrowKey.wasPressedThisFrame || keyboard.wKey.wasPressedThisFrame)
+        {
+            direction = -1;
+        }
+        else if (keyboard.downArrowKey.wasPressedThisFrame || keyboard.sKey.wasPressedThisFrame)
+        {
+            direction = 1;
+        }
+
+        if (direction == 0)
+        {
+            return false;
+        }
+
+        int nextIndex = (highlightedChoiceIndex + direction + visibleCount) % visibleCount;
+        HighlightChoice(nextIndex, true);
+        return true;
+    }
+
+    private void HighlightChoice(int choiceIndex, bool playSound)
+    {
+        highlightedChoiceIndex = choiceIndex;
+        if (choiceButtons != null && choiceIndex >= 0 && choiceIndex < choiceButtons.Length && choiceButtons[choiceIndex] != null)
+        {
+            choiceButtons[choiceIndex].Select();
+        }
+
+        if (playSound)
+        {
+            PlayUiSound(choiceMoveClip);
+        }
+    }
+
+    private void SelectChoice(int choiceIndex)
+    {
+        selectedChoiceIndex = choiceIndex;
+        PlayUiSound(choiceConfirmClip);
+    }
+
+    private void PlayUiSound(AudioClip clip)
+    {
+        if (clip != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayUi(clip);
+        }
+    }
+
+    private void SetBgmDucked(bool duck)
+    {
+        if (duckBgmDuringDialogue && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.DuckBgm(duck);
+        }
     }
 
     private static bool HasChoices(DialogueLine line)

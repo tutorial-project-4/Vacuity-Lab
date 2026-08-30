@@ -34,6 +34,13 @@ public class ElevatorRideTrigger : MonoBehaviour
     [SerializeField] private bool movePlayerWithElevator = true;
     [SerializeField] private bool releasePlayerOnComplete = true;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip startClip;
+    [SerializeField] private AudioClip moveLoopClip;
+    [SerializeField] private AudioClip stopClip;
+    [SerializeField, Range(0f, 1f)] private float audioVolume = 1f;
+
     [Header("Trigger")]
     [SerializeField] private bool triggerOnce = true;
 
@@ -144,6 +151,9 @@ public class ElevatorRideTrigger : MonoBehaviour
     {
         Transform playerTransform = playerController.transform;
 
+        PlayOneShot(startClip);
+        StartLoop(moveLoopClip);
+
         if (lockPlayerDuringRide)
         {
             playerController.SetCutsceneLock(true);
@@ -197,6 +207,8 @@ public class ElevatorRideTrigger : MonoBehaviour
         elevatorPosition = elevatorTransform.position;
         elevatorPosition.y = arriveY;
         elevatorTransform.position = elevatorPosition;
+        StopLoop();
+        PlayOneShot(stopClip);
 
         if (fadeRoutine != null)
         {
@@ -236,6 +248,74 @@ public class ElevatorRideTrigger : MonoBehaviour
         fadeOutDuration = Mathf.Max(0f, fadeOutDuration);
         fadeInDelay = Mathf.Max(0f, fadeInDelay);
         fadeInDuration = Mathf.Max(0f, fadeInDuration);
+    }
+
+    private void PlayOneShot(AudioClip clip)
+    {
+        if (clip == null)
+        {
+            return;
+        }
+
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySfx(clip, audioVolume);
+            return;
+        }
+
+        AudioSource source = GetAudioSource();
+        if (source != null)
+        {
+            source.PlayOneShot(clip, audioVolume);
+        }
+    }
+
+    private void StartLoop(AudioClip clip)
+    {
+        if (clip == null)
+        {
+            return;
+        }
+
+        AudioSource source = GetAudioSource();
+        if (source == null)
+        {
+            return;
+        }
+
+        source.clip = clip;
+        source.loop = true;
+        source.volume = audioVolume;
+        source.Play();
+    }
+
+    private void StopLoop()
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        audioSource.Stop();
+        audioSource.clip = null;
+    }
+
+    private AudioSource GetAudioSource()
+    {
+        if (audioSource != null)
+        {
+            return audioSource;
+        }
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
+        return audioSource;
     }
 
     private ScreenFadeController GetFadeController()
@@ -291,5 +371,10 @@ public class ElevatorRideTrigger : MonoBehaviour
         }
 
         Debug.LogWarning("[ElevatorRideTrigger] Camera follow component was not found while returning to player.", this);
+    }
+
+    private void OnDisable()
+    {
+        StopLoop();
     }
 }

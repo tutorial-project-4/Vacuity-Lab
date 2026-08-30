@@ -12,6 +12,7 @@ public class BossArenaRespawnController : MonoBehaviour
     [Header("Game Over UI")]
     [SerializeField] private GameObject gameOverRoot;
     [SerializeField] private CanvasGroup gameOverGroup;
+    [SerializeField] private AudioClip gameOverClip;
 
     [Header("Death Animation")]
     [SerializeField] private string deathStateName = "Death";
@@ -122,6 +123,11 @@ public class BossArenaRespawnController : MonoBehaviour
         if (gameOverRoot != null)
         {
             gameOverRoot.SetActive(true);
+        }
+
+        if (gameOverClip != null && AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayUi(gameOverClip);
         }
 
         if (gameOverGroup != null)
