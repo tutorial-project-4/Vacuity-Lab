@@ -12,9 +12,11 @@ public class BossRetryCheckpoint : MonoBehaviour
 
     [Header("Boss")]
     [SerializeField] private MonoBehaviour bossRetryTarget;
+    [SerializeField] private bool resetBossOnRetry = true;
     [SerializeField] private bool beginBattleAfterRetry;
 
     [Header("Arena State")]
+    [SerializeField] private bool applyArenaStateOnRetry = true;
     [SerializeField] private Transform[] raisedStateTargets;
     [SerializeField] private float raisedTargetLocalY = 0f;
 
@@ -26,8 +28,16 @@ public class BossRetryCheckpoint : MonoBehaviour
 
     public void ApplyRetryState(PlayerHealth playerHealth)
     {
-        ResetBoss();
-        ApplyArenaState();
+        if (resetBossOnRetry)
+        {
+            ResetBoss();
+        }
+
+        if (applyArenaStateOnRetry)
+        {
+            ApplyArenaState();
+        }
+
         BeginBattleIfNeeded();
         RespawnPlayer(playerHealth);
         StartRespawnInvincibility(playerHealth);
