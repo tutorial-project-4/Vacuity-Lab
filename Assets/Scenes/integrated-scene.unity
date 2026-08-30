@@ -4587,7 +4587,7 @@ MonoBehaviour:
       \uC544\uB0B4\uC758 \uC0DD\uC0AC\uBD80\uD130 \uD655\uC778\uD574\uC57C \uD588\uB2E4.
       \uB098\uB294 \uC11C\uB458\uB7EC \uC9D1\uC73C\uB85C \uB6F0\uC5B4\uAC14\uB2E4."
   - title: 
-    image: {fileID: 3118022364913050589, guid: 787677f0038f8d345bf327cf3703b027, type: 3}
+    image: {fileID: 5915171652813126827, guid: d2305e9257a6e3740beb151ca5f5d254, type: 3}
     text: "\uBE44\uBC00\uB9AC\uC5D0 \uC6B4\uC601\uB418\uB358 \uC5F0\uAD6C\uC18C\uC5D0\uB294
       \uCD1D 28\uBA85\uC758 \uC5F0\uAD6C\uC6D0\uC774 \uC788\uC5C8\uB2E4. \uC774\uBC88
       \uC0AC\uACE0\uB85C 28\uBA85 \uC911 27\uBA85\uC774 \uC0AC\uB9DD\uD588\uB2E4.
@@ -13611,6 +13611,7 @@ GameObject:
   - component: {fileID: 1384565082}
   - component: {fileID: 1384565081}
   - component: {fileID: 1384565080}
+  - component: {fileID: 1384565083}
   m_Layer: 0
   m_Name: Boss2 Intro Trigger
   m_TagString: Untagged
@@ -13637,6 +13638,7 @@ MonoBehaviour:
   retryPoint: {fileID: 910240001}
   triggerOnPlayerEnter: 0
   preservePositionsOnRetry: 1
+  healthGaugeBinder: {fileID: 1384565083}
 --- !u!61 &1384565081
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -13698,6 +13700,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1384565083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1384565079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd0c8131bc7e4222875905e745b2757a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bossHealth: {fileID: 910260005}
+  bossObject: {fileID: 51726293}
 --- !u!1 &1417112685
 GameObject:
   m_ObjectHideFlags: 0
