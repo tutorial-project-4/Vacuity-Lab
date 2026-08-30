@@ -10,6 +10,11 @@ public class TriggeredLocalYMove : MonoBehaviour
     [SerializeField] private bool triggerOnEnter = true;
     [SerializeField] private bool triggerOnce = true;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip moveLoopClip;
+    [SerializeField, Range(0f, 1f)] private float audioVolume = 1f;
+
     private bool hasTriggered;
     private Coroutine moveRoutine;
 
@@ -49,6 +54,7 @@ public class TriggeredLocalYMove : MonoBehaviour
         if (moveRoutine != null)
         {
             StopCoroutine(moveRoutine);
+            StopLoop();
         }
 
         moveRoutine = StartCoroutine(MoveTargetsRoutine());
@@ -75,6 +81,8 @@ public class TriggeredLocalYMove : MonoBehaviour
             }
         }
 
+        StartLoop(moveLoopClip);
+
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
@@ -86,6 +94,7 @@ public class TriggeredLocalYMove : MonoBehaviour
         }
 
         ApplyTargetPositions(startPositions, 1f);
+        StopLoop();
         moveRoutine = null;
     }
 
@@ -123,5 +132,58 @@ public class TriggeredLocalYMove : MonoBehaviour
         {
             Debug.LogWarning("[TriggeredLocalYMove] Move targets are not assigned.", this);
         }
+    }
+
+    private void StartLoop(AudioClip clip)
+    {
+        if (clip == null)
+        {
+            return;
+        }
+
+        AudioSource source = GetAudioSource();
+        if (source == null)
+        {
+            return;
+        }
+
+        source.clip = clip;
+        source.loop = true;
+        source.volume = audioVolume;
+        source.Play();
+    }
+
+    private void StopLoop()
+    {
+        if (audioSource == null)
+        {
+            return;
+        }
+
+        audioSource.Stop();
+        audioSource.clip = null;
+    }
+
+    private AudioSource GetAudioSource()
+    {
+        if (audioSource != null)
+        {
+            return audioSource;
+        }
+
+        audioSource = GetComponent<AudioSource>();
+        if (audioSource == null)
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 0f;
+        return audioSource;
+    }
+
+    private void OnDisable()
+    {
+        StopLoop();
     }
 }

@@ -16,6 +16,8 @@ GameObject:
   - component: {fileID: 7602029881211784412}
   - component: {fileID: 741025412550786804}
   - component: {fileID: 6045892710611344303}
+  - component: {fileID: 661589468595025939}
+  - component: {fileID: 661589468595025940}
   - component: {fileID: 661589468595025938}
   m_Layer: 0
   m_Name: Boss1 Intro Trigger
@@ -126,6 +128,9 @@ MonoBehaviour:
   moveDuration: 1
   triggerOnEnter: 0
   triggerOnce: 1
+  audioSource: {fileID: 0}
+  moveLoopClip: {fileID: 8300000, guid: 09c65cdbd0de07649bd82df6ba46eda5, type: 3}
+  audioVolume: 1
 --- !u!114 &8648164697785866221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -208,9 +213,39 @@ MonoBehaviour:
   - {fileID: 6931452794735160206}
   actions:
   - {fileID: 6045892710611344303}
+  - {fileID: 661589468595025939}
+  - {fileID: 661589468595025940}
   boss: {fileID: 0}
   bossStartDelay: 1
   respawnController: {fileID: 0}
   checkpoint: {fileID: 0}
   checkpointActivationDelay: 1
   triggerOnce: 1
+--- !u!114 &661589468595025939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8f4f46466fe487796d83bf33efc8f54, type: 3}
+  m_Name: ""
+  m_EditorClassIdentifier: ""
+  bgmClip: {fileID: 8300000, guid: ec8e717be19c29a4183d7b7cb7db3688, type: 3}
+  fadeDuration: 0.6
+--- !u!114 &661589468595025940
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1786070581455583813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d512b65ab794961bb64582823a7c88f, type: 3}
+  m_Name: ""
+  m_EditorClassIdentifier: ""
+  clip: {fileID: 8300000, guid: 8ba7ed728b11c62458dcbcac65818e39, type: 3}
+  channel: 0

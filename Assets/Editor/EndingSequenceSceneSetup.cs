@@ -41,6 +41,10 @@ public static class EndingSequenceSceneSetup
         ConfigureChoiceAction(acceptChoiceAction, choiceState, EndingChoice.AcceptedInjection, true);
         SetEndingChoiceAction rejectChoiceAction = GetOrAddChoiceAction(boss2DoorTrigger, EndingChoice.RejectedInjection);
         ConfigureChoiceAction(rejectChoiceAction, choiceState, EndingChoice.RejectedInjection, false);
+        PlayDialogueAudioAction acceptAudioAction = GetOrAddAudioAction(boss2DoorTrigger, "Assets/음악/Story/Syringe_Select.wav");
+        ConfigureAudioAction(acceptAudioAction, "Assets/음악/Story/Syringe_Select.wav", DialogueAudioChannel.Story);
+        PlayDialogueAudioAction rejectAudioAction = GetOrAddAudioAction(boss2DoorTrigger, "Assets/음악/Story/Syringe_Reject.wav");
+        ConfigureAudioAction(rejectAudioAction, "Assets/음악/Story/Syringe_Reject.wav", DialogueAudioChannel.Story);
 
         StartBoss2IntroAction boss2IntroAction = GetOrAdd<StartBoss2IntroAction>(boss2DoorTrigger);
         ConfigureBoss2IntroAction(boss2IntroAction);
@@ -56,7 +60,7 @@ public static class EndingSequenceSceneSetup
             autoDialogue = boss2DoorTrigger.AddComponent<AutoDialogueTrigger>();
         }
 
-        ConfigureBoss2DoorDialogue(autoDialogue, acceptChoiceAction, rejectChoiceAction, boss2IntroAction);
+        ConfigureBoss2DoorDialogue(autoDialogue, acceptChoiceAction, acceptAudioAction, rejectChoiceAction, rejectAudioAction, boss2IntroAction);
 
         EditorUtility.SetDirty(boss2DoorTrigger);
         EditorUtility.SetDirty(root);
@@ -96,6 +100,22 @@ public static class EndingSequenceSceneSetup
         }
 
         return target.AddComponent<SetEndingChoiceAction>();
+    }
+
+    private static PlayDialogueAudioAction GetOrAddAudioAction(GameObject target, string clipPath)
+    {
+        AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(clipPath);
+        PlayDialogueAudioAction[] actions = target.GetComponents<PlayDialogueAudioAction>();
+        for (int i = 0; i < actions.Length; i++)
+        {
+            SerializedObject serialized = new SerializedObject(actions[i]);
+            if (serialized.FindProperty("clip").objectReferenceValue == clip)
+            {
+                return actions[i];
+            }
+        }
+
+        return target.AddComponent<PlayDialogueAudioAction>();
     }
 
     private static Canvas BuildEndingCanvas(Transform parent)
@@ -299,6 +319,14 @@ public static class EndingSequenceSceneSetup
         serialized.ApplyModifiedPropertiesWithoutUndo();
     }
 
+    private static void ConfigureAudioAction(PlayDialogueAudioAction action, string clipPath, DialogueAudioChannel channel)
+    {
+        SerializedObject serialized = new SerializedObject(action);
+        serialized.FindProperty("clip").objectReferenceValue = AssetDatabase.LoadAssetAtPath<AudioClip>(clipPath);
+        serialized.FindProperty("channel").enumValueIndex = (int)channel;
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+    }
+
     private static void ConfigureEnding2Sequence(
         Canvas canvas,
         CanvasGroup rootGroup,
@@ -430,7 +458,9 @@ public static class EndingSequenceSceneSetup
     private static void ConfigureBoss2DoorDialogue(
         AutoDialogueTrigger trigger,
         SetEndingChoiceAction acceptChoiceAction,
+        PlayDialogueAudioAction acceptAudioAction,
         SetEndingChoiceAction rejectChoiceAction,
+        PlayDialogueAudioAction rejectAudioAction,
         StartBoss2IntroAction boss2IntroAction)
     {
         SerializedObject serialized = new SerializedObject(trigger);
@@ -446,8 +476,9 @@ public static class EndingSequenceSceneSetup
         SerializedProperty acceptChoice = choices.GetArrayElementAtIndex(0);
         acceptChoice.FindPropertyRelative("text").stringValue = "주사기를 맞는다";
         SerializedProperty acceptActions = acceptChoice.FindPropertyRelative("actionsOnChoose");
-        acceptActions.arraySize = 1;
+        acceptActions.arraySize = 2;
         acceptActions.GetArrayElementAtIndex(0).objectReferenceValue = acceptChoiceAction;
+        acceptActions.GetArrayElementAtIndex(1).objectReferenceValue = acceptAudioAction;
         acceptChoice.FindPropertyRelative("actionsOnComplete").arraySize = 0;
         SerializedProperty acceptLines = acceptChoice.FindPropertyRelative("nextLines");
         acceptLines.arraySize = 4;
@@ -459,8 +490,9 @@ public static class EndingSequenceSceneSetup
         SerializedProperty rejectChoice = choices.GetArrayElementAtIndex(1);
         rejectChoice.FindPropertyRelative("text").stringValue = "맞지 않는다";
         SerializedProperty rejectActions = rejectChoice.FindPropertyRelative("actionsOnChoose");
-        rejectActions.arraySize = 1;
+        rejectActions.arraySize = 2;
         rejectActions.GetArrayElementAtIndex(0).objectReferenceValue = rejectChoiceAction;
+        rejectActions.GetArrayElementAtIndex(1).objectReferenceValue = rejectAudioAction;
         SerializedProperty rejectCompleteActions = rejectChoice.FindPropertyRelative("actionsOnComplete");
         rejectCompleteActions.arraySize = 1;
         rejectCompleteActions.GetArrayElementAtIndex(0).objectReferenceValue = boss2IntroAction;
