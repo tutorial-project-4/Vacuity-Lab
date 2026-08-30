@@ -2266,7 +2266,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lines:
-  - speaker:
+  - speaker: 
     text: "\uC9C0\uAC11\uC774\uB2E4. \uC548\uC5D0 \uCE74\uB4DC \uD0A4\uAC00 \uC788\uC744
       \uAC83\uC774\uB2E4."
     image: {fileID: 0}
@@ -2277,13 +2277,13 @@ MonoBehaviour:
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker:
+  - speaker: 
     text: "\uC9C0\uAC11 \uC18D\uC5D0 \uB0AF\uC775\uC740 \uB0A8\uC790\uC640 \uC5EC\uC790\uC758
       \uC0AC\uC9C4\uC774 \uC788\uB2E4. \uB458\uC740 \uB0A8\uB9E4\uCC98\uB7FC \uBCF4\uC778\uB2E4."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker:
+  - speaker: 
     text: 
     image: {fileID: 3118022364913050589, guid: 787677f0038f8d345bf327cf3703b027, type: 3}
     hideDialogueWhileImage: 1
@@ -3369,108 +3369,127 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dialogueRunner: {fileID: 1163888852}
   lines:
-  - speaker: 폴
-    text: 대니.
+  - speaker: "\uD3F4"
+    text: "\uB300\uB2C8."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 뭐야? 왜 멈추는 거야?
+  - speaker: "\uB300\uB2C8"
+    text: "\uBB50\uC57C? \uC65C \uBA48\uCD94\uB294 \uAC70\uC57C?"
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 폴
-    text: 대니. 이대로 나갈 수 없어. 소중한 무언가를 두고 가는 것 같아.
+  - speaker: "\uD3F4"
+    text: "\uB300\uB2C8. \uC774\uB300\uB85C \uB098\uAC08 \uC218 \uC5C6\uC5B4. \uC18C\uC911\uD55C
+      \uBB34\uC5B8\uAC00\uB97C \uB450\uACE0 \uAC00\uB294 \uAC83 \uAC19\uC544."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 미치겠네, 이봐 폴, 네 소중한 것은 이곳에 없어.
+  - speaker: "\uB300\uB2C8"
+    text: "\uBBF8\uCE58\uACA0\uB124, \uC774\uBD10 \uD3F4, \uB124 \uC18C\uC911\uD55C
+      \uAC83\uC740 \uC774\uACF3\uC5D0 \uC5C6\uC5B4."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 밖에 있다고! 알아들었으면 얌전히 나가자구. 응?
+  - speaker: "\uB300\uB2C8"
+    text: "\uBC16\uC5D0 \uC788\uB2E4\uACE0! \uC54C\uC544\uB4E4\uC5C8\uC73C\uBA74
+      \uC58C\uC804\uD788 \uB098\uAC00\uC790\uAD6C. \uC751?"
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 폴
-    text: 밖에? 밖에 뭐가 있는데?
+  - speaker: "\uD3F4"
+    text: "\uBC16\uC5D0? \uBC16\uC5D0 \uBB50\uAC00 \uC788\uB294\uB370?"
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 이 가엾은 녀석, 이건 또 기억 안나? 네 아내 말이야.
+  - speaker: "\uB300\uB2C8"
+    text: "\uC774 \uAC00\uC5FE\uC740 \uB140\uC11D, \uC774\uAC74 \uB610 \uAE30\uC5B5
+      \uC548\uB098? \uB124 \uC544\uB0B4 \uB9D0\uC774\uC57C."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 네가 나와 갇혀 있을 때면 매번 자랑하던 세상에서 가장 아름다운 여자!
+  - speaker: "\uB300\uB2C8"
+    text: "\uB124\uAC00 \uB098\uC640 \uAC07\uD600 \uC788\uC744 \uB54C\uBA74 \uB9E4\uBC88
+      \uC790\uB791\uD558\uB358 \uC138\uC0C1\uC5D0\uC11C \uAC00\uC7A5 \uC544\uB984\uB2E4\uC6B4
+      \uC5EC\uC790!"
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 네 아내가 밖에서 널 애타게 기다릴 걸 생각해 봐!
+  - speaker: "\uB300\uB2C8"
+    text: "\uB124 \uC544\uB0B4\uAC00 \uBC16\uC5D0\uC11C \uB110 \uC560\uD0C0\uAC8C
+      \uAE30\uB2E4\uB9B4 \uAC78 \uC0DD\uAC01\uD574 \uBD10!"
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 폴
-    text: 그래, 나는 아내가 있었어. 으윽, 머리가, 머리가 너무 아파...
+  - speaker: "\uD3F4"
+    text: "\uADF8\uB798, \uB098\uB294 \uC544\uB0B4\uAC00 \uC788\uC5C8\uC5B4. \uC73C\uC73D,
+      \uBA38\uB9AC\uAC00, \uBA38\uB9AC\uAC00 \uB108\uBB34 \uC544\uD30C..."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 어쩔 수 없군. 이 주사를 써.
+  - speaker: "\uB300\uB2C8"
+    text: "\uC5B4\uCA54 \uC218 \uC5C6\uAD70. \uC774 \uC8FC\uC0AC\uB97C \uC368."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 폴
-    text: 이건?
+  - speaker: "\uD3F4"
+    text: "\uC774\uAC74?"
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker:
-    text: 녹색 용액이 들어있는 주사기다. 이동 중에 대니가 무언가를 주운 것 같았는데, 이 주사기였던 모양이다.
+  - speaker: 
+    text: "\uB179\uC0C9 \uC6A9\uC561\uC774 \uB4E4\uC5B4\uC788\uB294 \uC8FC\uC0AC\uAE30\uB2E4.
+      \uC774\uB3D9 \uC911\uC5D0 \uB300\uB2C8\uAC00 \uBB34\uC5B8\uAC00\uB97C \uC8FC\uC6B4
+      \uAC83 \uAC19\uC558\uB294\uB370, \uC774 \uC8FC\uC0AC\uAE30\uC600\uB358 \uBAA8\uC591\uC774\uB2E4."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 돌연변이를 처치하느라 체력이 많이 닳았지?
+  - speaker: "\uB300\uB2C8"
+    text: "\uB3CC\uC5F0\uBCC0\uC774\uB97C \uCC98\uCE58\uD558\uB290\uB77C \uCCB4\uB825\uC774
+      \uB9CE\uC774 \uB2F3\uC558\uC9C0?"
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 보아하니 몸뿐 아니라 마음도 상당히 혼란스러운 모양이네.
+  - speaker: "\uB300\uB2C8"
+    text: "\uBCF4\uC544\uD558\uB2C8 \uBAB8\uBFD0 \uC544\uB2C8\uB77C \uB9C8\uC74C\uB3C4
+      \uC0C1\uB2F9\uD788 \uD63C\uB780\uC2A4\uB7EC\uC6B4 \uBAA8\uC591\uC774\uB124."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 이건 여기서 개발하던 체력회복약이야. 이걸 사용해서 회복하도록 해.
+  - speaker: "\uB300\uB2C8"
+    text: "\uC774\uAC74 \uC5EC\uAE30\uC11C \uAC1C\uBC1C\uD558\uB358 \uCCB4\uB825\uD68C\uBCF5\uC57D\uC774\uC57C.
+      \uC774\uAC78 \uC0AC\uC6A9\uD574\uC11C \uD68C\uBCF5\uD558\uB3C4\uB85D \uD574."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker:
-    text: 이 주사, 이제보니 기억이 나. 대니의 말대로 체력 회복약이 맞아.
+  - speaker: 
+    text: "\uC774 \uC8FC\uC0AC, \uC774\uC81C\uBCF4\uB2C8 \uAE30\uC5B5\uC774 \uB098.
+      \uB300\uB2C8\uC758 \uB9D0\uB300\uB85C \uCCB4\uB825 \uD68C\uBCF5\uC57D\uC774
+      \uB9DE\uC544."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker:
-    text: 하지만 기억을 손상시키는 부작용이 있을텐데.
+  - speaker: 
+    text: "\uD558\uC9C0\uB9CC \uAE30\uC5B5\uC744 \uC190\uC0C1\uC2DC\uD0A4\uB294 \uBD80\uC791\uC6A9\uC774
+      \uC788\uC744\uD150\uB370."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 출구 밖에도 돌연변이가 돌아다닐지도 모른다구.
+  - speaker: "\uB300\uB2C8"
+    text: "\uCD9C\uAD6C \uBC16\uC5D0\uB3C4 \uB3CC\uC5F0\uBCC0\uC774\uAC00 \uB3CC\uC544\uB2E4\uB2D0\uC9C0\uB3C4
+      \uBAA8\uB978\uB2E4\uAD6C."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 탈출을 코앞에 두고 죽을 순 없잖아.
+  - speaker: "\uB300\uB2C8"
+    text: "\uD0C8\uCD9C\uC744 \uCF54\uC55E\uC5D0 \uB450\uACE0 \uC8FD\uC744 \uC21C
+      \uC5C6\uC796\uC544."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
-  - speaker: 대니
-    text: 기억은 차차 되찾을 기회가 있으니까 우선 체력부터 회복해.
+  - speaker: "\uB300\uB2C8"
+    text: "\uAE30\uC5B5\uC740 \uCC28\uCC28 \uB418\uCC3E\uC744 \uAE30\uD68C\uAC00
+      \uC788\uC73C\uB2C8\uAE4C \uC6B0\uC120 \uCCB4\uB825\uBD80\uD130 \uD68C\uBCF5\uD574."
     image: {fileID: 0}
     hideDialogueWhileImage: 0
     choices: []
@@ -44313,7 +44332,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6736790917704893872, guid: 866c319a4d0a77f40944fb908850cd78, type: 3}
       propertyPath: damage
-      value: 300
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6736790917704893872, guid: 866c319a4d0a77f40944fb908850cd78, type: 3}
       propertyPath: attackCooldown
