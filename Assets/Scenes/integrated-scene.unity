@@ -13387,14 +13387,6 @@ PrefabInstance:
       propertyPath: managedReferences[8727337478090391660].m_Value
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 2968482867279771849, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
-      propertyPath: fill
-      value: 
-      objectReference: {fileID: 1247157220}
-    - target: {fileID: 2968482867279771849, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
-      propertyPath: fillTop
-      value: 
-      objectReference: {fileID: 1705426958}
     - target: {fileID: 3163220603550389819, guid: f95949fb12364c845ae760d8fe98ad3c, type: 3}
       propertyPath: m_Controller
       value: 
@@ -13712,6 +13704,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd0c8131bc7e4222875905e745b2757a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gauge: {fileID: 397035439}
   bossHealth: {fileID: 910260005}
   bossObject: {fileID: 51726293}
 --- !u!1 &1417112685
