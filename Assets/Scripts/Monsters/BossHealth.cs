@@ -5,6 +5,7 @@ public interface IBossEncounter
 {
     bool IsBattleStarted { get; }
     BossHealth Health { get; }
+    int PhaseTwoHp { get; }
     void BeginBattle();
     void ResetForRetry();
 }
